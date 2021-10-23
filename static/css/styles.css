@@ -1,0 +1,59 @@
+body {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    color: #5a5a5a;
+  }
+
+#nav{
+    font-size: 20px;
+    background-color: #e3f2fd;
+  }
+
+  .carousel-caption {
+    bottom: 3rem;
+    z-index: 10;
+  }
+  
+  .carousel-item {
+    height: 40rem;
+  }
+  .carousel-item > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    height: auto;
+  }
+
+  /* carousel image hover effect*/
+img {
+  opacity: 0.8;
+  filter: alpha(opacity=50); /* For IE8 and earlier */
+}
+
+img:hover {
+  opacity: 1;
+  filter: alpha(opacity=80); /* For IE8 and earlier */
+}
+
+  .featurette-divider {
+    margin: 3rem 0; /* Space out the Bootstrap <hr> more */
+  }
+  
+  /* Thin out the marketing headings */
+  .featurette-heading {
+    font-weight: 300;
+    line-height: 1;
+    /* rtl:remove */
+    letter-spacing: -.05rem;
+  }
+
+.centerSearch{
+  display: flex;
+  flex-direction: row;
+}
+
+.searchIcon{
+  color:#ffffff;
+}
+
