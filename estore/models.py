@@ -9,6 +9,14 @@ class Cart(models.Model):
         managed = True
         db_table = 'cart'
 
+class Wishlist(models.Model):
+    wishlist = models.ForeignKey('Users', models.DO_NOTHING)
+    product = models.ForeignKey('Products', models.DO_NOTHING)
+
+    class Meta:
+        managed = True
+        db_table = 'wishlist'
+
 
 class Checkouts(models.Model):
     checkout_id = models.CharField(primary_key=True, max_length=90)
@@ -127,6 +135,7 @@ class Users(models.Model):
     is_phone_verified = models.CharField(max_length=90)
     is_email_verified = models.CharField(max_length=90)
     cart_id = models.CharField(unique=True, max_length=90)
+    wishlist_id = models.CharField(unique=True, max_length=90)
     profile_photo = models.ImageField(null=True, blank=True,  upload_to="userimages/")
 
     class Meta:
