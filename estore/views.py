@@ -18,3 +18,6 @@ def cart(request):
 def epayment(request):
     return render(request, 'estore/epayment.html')
 
+def base(request):
+    return render(request, 'estore/base.html')
+
