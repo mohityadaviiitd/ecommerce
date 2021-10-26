@@ -1,6 +1,8 @@
 from pathlib import Path
 import os
 
+from django.db.backends.mysql.base import DatabaseWrapper
+DatabaseWrapper.data_types['DateTimeField'] = 'datetime'
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -10,7 +12,7 @@ SECRET_KEY = 'django-insecure-4s(348yu5$j^)^(gop&=p2=ah2acc%1(74f6$7%3t@l0g^+q@t
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 INSTALLED_APPS = [
@@ -56,10 +58,20 @@ WSGI_APPLICATION = 'ecommerce.wsgi.application'
 
 # Database
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+DATABASES= {
+    'default':{
+        'ENGINE':'django.db.backends.mysql',
+        'NAME':'eshop',
+        'USER':'root',
+        'PASSWORD':'mohit',
+        'HOST':'localhost',
+        'PORT':'3306',
     }
 }
 
