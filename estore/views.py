@@ -1,5 +1,11 @@
 from django.shortcuts import render
 
+def products(request):
+    return render(request, 'estore/products.html')
+
+def items(request):
+    return render(request, 'estore/items.html')
+
 def signin(request):
     return render(request, 'estore/signin.html')
 
