@@ -1,1 +1,22 @@
-<h1>this is signin page</h1>
+{% if page == 'register' %}
+<form action ="{% url 'register' %}" method="POST">
+    {% csrf_token %}
+    {{form.as_p}}
+    <input type="submit" name="Login"/>
+</form>
+<p> Already registered. Signin here <a href="{% url 'signin' %}">Login</a></p>
+
+{% else %}
+<form action ="{% url 'signin' %}" method="POST">
+    {% csrf_token %}
+    <input type="email" id="email" name="email" placeholder="Email"/>
+    <input type="password" name="password" placeholder="Password"/>
+    <input type="submit" name="Login"/>
+    <p> Not Registered. Register here <a href="{% url 'register' %}">Register</a></p>
+</form>
+{% endif %}
+
+
+
+
+

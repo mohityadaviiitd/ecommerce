@@ -1,0 +1,16 @@
+{% block content %}
+
+{% if page == 'register' %}
+<h1> register user</h1>
+<p> Already registered. Signin here <a href="{% url 'signin' %}">Login</a></p>
+
+{% else %}
+<form action ="{% url 'newsignin' %}" method="POST">
+    {% csrf_token %}
+    {{form.as_p}}
+    <input type="submit" name="Login"/>
+    <p> Not Registered. Register here <a href="{% url 'register' %}">Register</a></p>
+</form>
+{% endif %}
+
+{% endblock %}

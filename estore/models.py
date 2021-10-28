@@ -1,4 +1,33 @@
 from django.db import models
+from django import forms
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+import uuid
+class usermanager(BaseUserManager):
+    def create_user(self, user_name, email,phone, password=None):
+        if not email:
+           raise ValueError('Users must have an email address')
+        if not phone:
+           raise ValueError('Users must have an phone no')
+        if not user_name:
+           raise ValueError('Users must have an name')
+
+        user = self.model(email=self.normalize_email(email))
+        user.set_password(password)
+        user.user_name=user_name
+        user.phone=phone
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, user_name, phone, email, password=None):
+        
+        user = self.create_user(email=self.normalize_email(email),password=password, user_name=user_name, phone=phone)
+        user.is_admin = True
+        user.is_superuser = True
+        user.is_staff = True
+        user.save(using=self._db)
+        return user
+
+
 
 class Cart(models.Model):
     cart = models.ForeignKey('Users', models.DO_NOTHING)
@@ -70,32 +99,30 @@ class Returns(models.Model):
         db_table = 'returns'
 
 
-class SellerAddresses(models.Model):
-    address_id = models.CharField(primary_key=True, max_length=90)
-    seller = models.ForeignKey('Sellers', models.DO_NOTHING)
-    house_no = models.CharField(max_length=90)
-    address_line1 = models.CharField(max_length=400)
-    address_line2 = models.CharField(max_length=400, blank=True, null=True)
-    ciyt_village_name = models.CharField(max_length=90)
-    landmark = models.CharField(max_length=400, blank=True, null=True)
-    state = models.CharField(max_length=90)
-    pincode = models.IntegerField()
 
-    class Meta:
-        managed = True
-        db_table = 'seller_addresses'
-
+def get_profile_photo(self, filename):
+    return f'profile_images/{self.pk}/{"profile_photo.png"}'
+def default_profile_photo():
+    return "defaultlogo/pp.png"
 
 class Sellers(models.Model):
-    seller_id = models.CharField(primary_key=True, max_length=90)
-    seller_name = models.CharField(max_length=90)
-    password = models.CharField(max_length=400)
-    email = models.CharField(unique=True, max_length=90)
-    phone = models.CharField(unique=True, max_length=90)
+    seller_id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
+    user = models.ForeignKey('Users', on_delete=models.CASCADE)
     pdf = models.FileField(upload_to='pdfs/', null=True, blank=True)
     approval_status = models.CharField(max_length=90)
     gst_number = models.CharField(unique=True, max_length=90)
-    profile_photo = models.ImageField(null=True, blank=True,  upload_to="sellerimages/")
+
+    def has_perm(self, perm, obj=None):
+        return self.is_admin
+
+    def has_module_perms(self, app_label):
+        return True
+
+    def __str__(self):
+        return self.email
+
+    def get_profile_photo(self):
+        return str(self.profile_photo)[str(self.profile_photo).index(f'profile_images/{self.pk}/'):]
 
     class Meta:
         managed = True
@@ -103,8 +130,8 @@ class Sellers(models.Model):
 
 
 class UserAddress(models.Model):
-    address_id = models.CharField(primary_key=True, max_length=90)
-    user = models.ForeignKey('Users', models.DO_NOTHING)
+    address_id = models.UUIDField(default=uuid.uuid4, primary_key=True,unique=True, editable=False)
+    user = models.ForeignKey('Users', on_delete=models.CASCADE)
     house_no = models.CharField(max_length=90)
     address_line1 = models.CharField(max_length=400)
     address_line2 = models.CharField(max_length=400, blank=True, null=True)
@@ -113,21 +140,47 @@ class UserAddress(models.Model):
     state = models.CharField(max_length=90)
     pincode = models.IntegerField()
 
+    def __str__(self):
+        return self.user
+
     class Meta:
         managed = True
         db_table = 'user_address'
 
 
-class Users(models.Model):
-    user_id = models.CharField(primary_key=True, max_length=90)
+class Users(AbstractBaseUser):
+    user_id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
     user_name = models.CharField(max_length=90)
-    password = models.CharField(max_length=400)
-    email = models.CharField(unique=True, max_length=90)
+    # password = models.CharField( max_length=400)
+    email = models.EmailField(verbose_name="email", unique=True, max_length=90)
     phone = models.CharField(unique=True, max_length=90)
-    is_phone_verified = models.CharField(max_length=90)
-    is_email_verified = models.CharField(max_length=90)
-    cart_id = models.CharField(unique=True, max_length=90)
-    profile_photo = models.ImageField(null=True, blank=True,  upload_to="userimages/")
+    is_phone_verified = models.CharField(default='no', max_length=90)
+    is_email_verified = models.BooleanField(default=False)
+    cart_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    profile_photo = models.ImageField(null=True, blank=True,  upload_to=get_profile_photo, default=default_profile_photo)
+    date_joined=models.DateTimeField(verbose_name="date joined", auto_now_add=True)
+    last_login=models.DateTimeField(verbose_name="last login", auto_now=True)
+    is_admin=models.BooleanField(default=False)
+    is_active=models.BooleanField(default=True)
+    is_staff=models.BooleanField(default=False)
+    is_superuser=models.BooleanField(default=False)
+    is_seller=models.BooleanField(default=False)
+
+    objects = usermanager()
+
+    USERNAME_FIELD='email'
+    REQUIRED_FIELDS=['user_name', 'phone']
+
+    def has_perm(self, perm, obj=None):
+        return self.is_admin
+
+    def has_module_perms(self, app_label):
+        return True
+    def __str__(self):
+        return self.email
+
+    def get_profile_photo(self):
+        return str(self.profile_photo)[str(self.profile_photo).index(f'profile_images/{self.pk}/'):]
 
     class Meta:
         managed = True
