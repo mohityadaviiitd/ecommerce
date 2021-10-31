@@ -1,4 +1,4 @@
-{% extends "./navfootbase.html" %}
+{% extends "./base.html" %}
 {% load static %}
 {% block extrahead %}
 <link rel="stylesheet" type="text/css" href="{% static 'items/itemStyle.css' %}" />
@@ -16,11 +16,11 @@
             </div>
         </div>
         <div class="rightSideBar">
-            <div class="product name">product name here</div>
+            <div class="product name">{{product.product_name}}</div>
             <div class="product description">
-                <p>description here</p>
+                <p>{{ product.details}}</p>
             </div>
-            <div class="product price">price</div>
+            <div class="product price">{{product.price}}</div>
         </div>
     </div>
 </div>

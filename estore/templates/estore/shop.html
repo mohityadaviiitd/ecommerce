@@ -1,4 +1,4 @@
-{% extends "./navfootbase.html" %} {% load static %} {% block extrahead %}
+{% extends "./base.html" %} {% load static %} {% block extrahead %}
 <link rel="stylesheet" type="text/css" href="{% static 'shopfile/shopStyle.css' %}" />
 {% endblock %}
 {% block title %}Home{% endblock %}
@@ -72,7 +72,7 @@
 <br />
 <br />
 <div class="cardsCategory global-margin">
-  <div class="card-container">
+  <div onclick = "goToPage('/products/Mobile')" class="card-container">
     {% comment %}
     <div>
       {% endcomment %}
@@ -86,7 +86,7 @@
       </h5>
     </div>
   </div>
-  <div class="card-container">
+  <div onclick = "goToPage('/products/Laptop')" class="card-container">
     {% comment %}
     <div>
       {% endcomment %}
@@ -100,7 +100,7 @@
       </h5>
     </div>
   </div>
-  <div class="card-container">
+  <div onclick = "goToPage('/products/TV')" class="card-container">
     {% comment %}
     <div>
       {% endcomment %}
@@ -114,7 +114,7 @@
       </h5>
     </div>
   </div>
-  <div class="card-container">
+  <div onclick = "goToPage('/products/Camera')" class="card-container">
     {% comment %}
     <div>
       {% endcomment %}
@@ -137,171 +137,56 @@
 <br />
 <br />
 
-<div class="auto-play global-margin" >
-  <div class="product-featured-card">
-    <div class="card shadow-sm">
-      <img
-        src="https://www.lenovo.com/medias/lenovo-laptop-ideapad-1-11-intel-hero.png?context=bWFzdGVyfHJvb3R8MjUyODM2fGltYWdlL3BuZ3xoODIvaGM2LzEwNzg2MTkyNTg4ODMwLnBuZ3w1MGYyMGJhMzU1ODg3ZDU2NDU4MWRlOGUxODc3ZWNkZTA3YjRhM2YwZjI2ZTAwMzQ1YTNlZTM1MzUzMDMwYTc1"
-        class="card-img-top" id="card" alt="web development" />
+<div class="auto-play global-margin">
+  {% for product in product_array %}
+    <div onclick = "goToPage('/itemDetails/id={{product.id}}')" class="product-featured-card card shadow-sm">
+      <div class="img-container"><img class="card-img-top" src="{{product.image}}" alt="products" />
+      </div>
       <div class="card-body">
+        <h5>{{product.name}}</h5>
         <p class="card-text">
-          This is a wider card with supporting text below as a natural
-          lead-in to additional content. This content is a little bit
-          longer.
+          {{ product.description}}
         </p>
         <div class="d-flex justify-content-between align-items-center">
           <div class="btn-group">
-            <button type="button" class="btn btn-sm btn-outline-secondary">
+            <!-- <button type="button" class="btn btn-sm btn-outline-secondary">
               View
-            </button>
+            </button> -->
             <button type="button" class="btn btn-sm btn-outline-secondary">
-              Add to cart
+              Wishlist
             </button>
+            <form action="{% url 'shop' %}" method="POST" class="form">
+              <input type="hidden" name="product_id" value="{{product.id}}" />
+              <!-- to change the card id -->
+              <input type="hidden" name="cart_id" value="1" />
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-secondary">
+                Add to cart
+              </button>
+            </form>
           </div>
-          <small class="text-muted">₹80,000</small>
+          <small class="text-muted">₹{{product.price}}</small>
         </div>
       </div>
     </div>
-  </div>
-  <div class="product-featured-card">
-    <div class="card shadow-sm">
-      <img
-        src="https://www.lenovo.com/medias/lenovo-laptop-ideapad-1-11-intel-hero.png?context=bWFzdGVyfHJvb3R8MjUyODM2fGltYWdlL3BuZ3xoODIvaGM2LzEwNzg2MTkyNTg4ODMwLnBuZ3w1MGYyMGJhMzU1ODg3ZDU2NDU4MWRlOGUxODc3ZWNkZTA3YjRhM2YwZjI2ZTAwMzQ1YTNlZTM1MzUzMDMwYTc1"
-        class="card-img-top" id="card" alt="web development" />
 
-      <div class="card-body">
-        <p class="card-text">
-          This is a wider card with supporting text below as a natural
-          lead-in to additional content. This content is a little bit
-          longer.
-        </p>
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="btn-group">
-            <button type="button" class="btn btn-sm btn-outline-secondary">
-              View
-            </button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">
-              Add to cart
-            </button>
-          </div>
-          <small class="text-muted">₹80,000</small>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="product-featured-card">
-    <div class="card shadow-sm">
-      <img
-        src="https://www.lenovo.com/medias/lenovo-laptop-ideapad-1-11-intel-hero.png?context=bWFzdGVyfHJvb3R8MjUyODM2fGltYWdlL3BuZ3xoODIvaGM2LzEwNzg2MTkyNTg4ODMwLnBuZ3w1MGYyMGJhMzU1ODg3ZDU2NDU4MWRlOGUxODc3ZWNkZTA3YjRhM2YwZjI2ZTAwMzQ1YTNlZTM1MzUzMDMwYTc1"
-        class="card-img-top" id="card" alt="web development" />
 
-      <div class="card-body">
-        <p class="card-text">
-          This is a wider card with supporting text below as a natural
-          lead-in to additional content. This content is a little bit
-          longer.
-        </p>
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="btn-group">
-            <button type="button" class="btn btn-sm btn-outline-secondary">
-              View
-            </button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">
-              Add to cart
-            </button>
-          </div>
-          <small class="text-muted">₹80,000</small>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="product-featured-card">
-    <div class="card shadow-sm">
-      <img
-        src="https://www.lenovo.com/medias/lenovo-laptop-ideapad-1-11-intel-hero.png?context=bWFzdGVyfHJvb3R8MjUyODM2fGltYWdlL3BuZ3xoODIvaGM2LzEwNzg2MTkyNTg4ODMwLnBuZ3w1MGYyMGJhMzU1ODg3ZDU2NDU4MWRlOGUxODc3ZWNkZTA3YjRhM2YwZjI2ZTAwMzQ1YTNlZTM1MzUzMDMwYTc1"
-        class="card-img-top" id="card" alt="web development" />
-
-      <div class="card-body">
-        <p class="card-text">
-          This is a wider card with supporting text below as a natural
-          lead-in to additional content. This content is a little bit
-          longer.
-        </p>
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="btn-group">
-            <button type="button" class="btn btn-sm btn-outline-secondary">
-              View
-            </button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">
-              Add to cart
-            </button>
-          </div>
-          <small class="text-muted">₹80,000</small>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="product-featured-card">
-    <div class="card shadow-sm">
-      <img
-        src="https://www.lenovo.com/medias/lenovo-laptop-ideapad-1-11-intel-hero.png?context=bWFzdGVyfHJvb3R8MjUyODM2fGltYWdlL3BuZ3xoODIvaGM2LzEwNzg2MTkyNTg4ODMwLnBuZ3w1MGYyMGJhMzU1ODg3ZDU2NDU4MWRlOGUxODc3ZWNkZTA3YjRhM2YwZjI2ZTAwMzQ1YTNlZTM1MzUzMDMwYTc1"
-        class="card-img-top" id="card" alt="web development" />
-
-      <div class="card-body">
-        <p class="card-text">
-          This is a wider card with supporting text below as a natural
-          lead-in to additional content. This content is a little bit
-          longer.
-        </p>
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="btn-group">
-            <button type="button" class="btn btn-sm btn-outline-secondary">
-              View
-            </button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">
-              Add to cart
-            </button>
-          </div>
-          <small class="text-muted">₹80,000</small>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="product-featured-card">
-    <div class="card shadow-sm">
-      <img
-        src="https://www.lenovo.com/medias/lenovo-laptop-ideapad-1-11-intel-hero.png?context=bWFzdGVyfHJvb3R8MjUyODM2fGltYWdlL3BuZ3xoODIvaGM2LzEwNzg2MTkyNTg4ODMwLnBuZ3w1MGYyMGJhMzU1ODg3ZDU2NDU4MWRlOGUxODc3ZWNkZTA3YjRhM2YwZjI2ZTAwMzQ1YTNlZTM1MzUzMDMwYTc1"
-        class="card-img-top" id="card" alt="web development" />
-
-      <div class="card-body">
-        <p class="card-text">
-          This is a wider card with supporting text below as a natural
-          lead-in to additional content. This content is a little bit
-          longer.
-        </p>
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="btn-group">
-            <button type="button" class="btn btn-sm btn-outline-secondary">
-              View
-            </button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">
-              Add to cart
-            </button>
-          </div>
-          <small class="text-muted">₹80,000</small>
-        </div>
-      </div>
-    </div>
-  </div>
+  {% endfor %}
 </div>
 <script type="text/javascript">
+  function goToPage(web){
+      window.location.href = web;}
   $(document).ready(function () {
+    window.sessionStorage.clear('sortByKey')
+    window.sessionStorage.clear('filterKey')
     $(".auto-play").slick({
       slidesToShow: 4,
       slidesToScroll: 1,
-      autoplay: true,
+      autoplay: false, // todo chagne to true  in final
       autoplaySpeed: 2000,
       dots: true,
+      touchMove: false,
+      pauseOnHover: true,
       centerMode: false,
       arrows: false,
       responsive: [{

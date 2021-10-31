@@ -1,0 +1,401 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="{% static 'products/prodStyles.css' %}" />
+{% endblock %}
+{% block title %}Products{% endblock %}
+
+{% block content %}
+<div class="main-container global-margin">
+    <div class="main-heading">
+        <h3>{{pageTitle}}</h3>
+    </div>
+
+    <div class="sub-container">
+        <div class="leftSideBar">
+            <div class="filter-container">
+                <h4>
+                    Select Filter
+                </h4>
+                <div class="filter-wrapper">
+                    <label>Price Range</label>
+                    <div class="range-selector">
+                        <select onchange="handleFilter()" name="minPrice" id="minPriceFilter" class="select-box">
+                            <option value="1000">₹1000</option>
+                            <option value="2000">₹2000</option>
+                            <option value="3000">₹3000</option>
+                            <option value="4000">₹4000</option>
+                            <option value="5000">₹5000</option>
+                            <option value="10000">₹10000</option>
+
+                        </select>
+                        <div style="margin: 0px 12px;">to</div>
+                        <select onchange="handleFilter()" name="maxPrice" id="maxPriceFilter" class="select-box">
+                            <option value="100000" selected disabled hidden>Max</option>
+                            <option value="10000">₹10000</option>
+                            <option value="15000">₹15000</option>
+                            <option value="20000">₹20000</option>
+                            <option value="30000">₹30000</option>
+                            <option value="50000">₹50000</option>
+                            <option value="100000">₹100000</option>
+
+                        </select>
+                    </div>
+
+                    <div class="inStock-wrapper">
+                        <input onchange="handleFilter()"  type="checkbox" id="inStock" name="inStock" value="inStock">
+                        <label style="padding-left: 5px;  padding-bottom: 4px; font-size: 16px;" for="inStock">In
+                            Stock</label><br>
+                    </div>
+
+
+                    <div >
+                        <button onclick="handleClearFilter()" id = "clearFilter">Clear Filters</button>
+                    </div>
+
+
+
+                </div>
+
+            </div>
+            <div style="margin-top: 50px;"></div>
+            <div class="sort-container">
+                <h4>Sort By</h4>
+                <div>
+                    <input onchange="handleSortBy('A-Z')" type="radio" id="A-Z" name="sortBy" value="A-Z">
+                    <label for="A-Z">A-Z</label><br>
+                    <input onchange="handleSortBy('price')" type="radio" id="price" name="sortBy" value="price">
+                    <label for="price">Price</label><br>
+
+                </div>
+            </div>
+
+
+        </div>
+        <div class="rightSideBar">
+            <div class="products-list">
+                {% if products|length > 0 %}
+                {% for product in products %}
+                <!-- <a class = "no-link" href="/item/{{product.id}}"> -->
+                <div onclick="goToPage('/itemDetails/id={{product.id}}')" class="product-featured-card card shadow-sm">
+                    <div class="img-container">
+                        <img src="{{product.image}}" class="card-img-top"  alt="web development" />
+                        
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            {{product.name}} {{product.description}}
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-outline-secondary">
+                                    Wishlist
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary">
+                                    Add to cart
+                                </button>
+                            </div>
+                            <small class="text-muted">₹{{product.price}}</small>
+                        </div>
+                    </div>
+                </div>
+                <!-- </a> -->
+                {% endfor %}
+                {% elif products|length == 0 %}
+                <div> No result found</div>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        document.getElementById('A-Z').checked = !!(window.sessionStorage.getItem('sortByKey') === 'A-Z')
+        document.getElementById('price').checked = !!(window.sessionStorage.getItem('sortByKey') === 'price')
+        const { min = 1000, max = 100000, inStock = false } = JSON.parse(window.sessionStorage.getItem('filterKey'))
+        document.getElementById('minPriceFilter').value = min.toString()
+        document.getElementById('maxPriceFilter').value = max.toString()
+        document.getElementById('inStock').checked = inStock
+    });
+    function goToPage(web) {
+        window.location.href = web;
+    }
+    function handleSortBy(sortBy) {
+        window.sessionStorage.setItem('sortByKey', sortBy);
+        const searchQuery = window.sessionStorage.getItem('searchKey') || ''
+        const { min = 1000, max = 100000, inStock = false } = JSON.parse(window.sessionStorage.getItem('filterKey')) || {}
+        // const min = parseInt(document.getElementById('minPriceFilter').innerText.slice(3))
+        // const max = parseInt(document.getElementById('maxPriceFilter').innerText.slice(3))
+        // const inStock = document.getElementById('inStock').checked
+        const filterStr = `&inStock&${inStock}&minValue&${min}&maxValue&${max}`
+        const urlnew = `/products${searchQuery !== '' ? '/search/' + searchQuery : ''}${min !== 0 ? '/filter/' + filterStr : ''}${sortBy !== '' ? '/sort/' + sortBy : ''}`
+        console.log('type sorty----------------', filterStr, urlnew)
+        window.location.href = urlnew
+    }
+    function handleFilter() {
+        const min = parseInt(document.getElementById('minPriceFilter').value)
+        const max = parseInt(document.getElementById('maxPriceFilter').value)
+        const inStock = document.getElementById('inStock').checked
+        window.sessionStorage.setItem('filterKey', JSON.stringify({ min, max, inStock }));
+        console.log('--------------------m,n,s,', min, max, inStock)
+        const filterStr = `&inStock&${inStock}&minValue&${min}&maxValue&${max}`
+        const searchQuery = window.sessionStorage.getItem('searchKey') || ''
+        const sortBy = window.sessionStorage.getItem('sortByKey') || ''
+        const urlnew = `/products${searchQuery !== '' ? '/search/' + searchQuery : ''}${filterStr !== '' ? '/filter/' + filterStr : ''}${sortBy !== '' ? '/sort/' + sortBy : ''}`
+        console.log('type fitler----------------', urlnew)
+        window.location.href = urlnew
+    }
+    function handleClearFilter() {
+        const min = 1000
+        const max = 100000
+        const inStock = false
+        window.sessionStorage.setItem('filterKey', JSON.stringify({ min, max, inStock }));
+        const filterStr = `&inStock&${inStock}&minValue&${min}&maxValue&${max}`
+        const searchQuery = window.sessionStorage.getItem('searchKey') || ''
+        const sortBy = window.sessionStorage.getItem('sortByKey') || ''
+        const urlnew = `/products${searchQuery !== '' ? '/search/' + searchQuery : ''}${filterStr !== '' ? '/filter/' + filterStr : ''}${sortBy !== '' ? '/sort/' + sortBy : ''}`
+        console.log('type fitler----------------', urlnew)
+        window.location.href = urlnew
+    }
+
+
+</script>
+<script>
+
+    /*
+    *   This content is licensed according to the W3C Software License at
+    *   https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document
+    *
+    *   File:   slider.js
+    *
+    *   Desc:   Slider widget that implements ARIA Authoring Practices
+    */
+
+    // Create Slider that contains value, valuemin, valuemax, and valuenow
+    var Slider = function (domNode) {
+
+        this.domNode = domNode;
+        this.railDomNode = domNode.parentNode;
+
+        this.labelDomNode = false;
+        this.minDomNode = false;
+        this.maxDomNode = false;
+
+        this.valueNow = 50;
+
+        this.railMin = 1000;
+        this.railMax = 100000;
+        this.railWidth = 0;
+        this.railBorderWidth = 1;
+
+        this.thumbWidth = 20;
+        this.thumbHeight = 24;
+
+        this.keyCode = Object.freeze({
+            'left': 37,
+            'up': 38,
+            'right': 39,
+            'down': 40,
+            'pageUp': 33,
+            'pageDown': 34,
+            'end': 35,
+            'home': 36
+        });
+    };
+
+    // Initialize slider
+    Slider.prototype.init = function () {
+
+        if (this.domNode.previousElementSibling) {
+            this.minDomNode = this.domNode.previousElementSibling;
+            this.railMin = parseInt((this.minDomNode.getAttribute('aria-valuemin')));
+        }
+        else {
+            this.railMin = parseInt((this.domNode.getAttribute('aria-valuemin')));
+        };
+
+        if (this.domNode.nextElementSibling) {
+            this.maxDomNode = this.domNode.nextElementSibling;
+            this.railMax = parseInt((this.maxDomNode.getAttribute('aria-valuemax')));
+        }
+
+        else {
+            this.railMax = parseInt((this.domNode.getAttribute('aria-valuemax')));
+        }
+
+        this.valueNow = parseInt((this.domNode.getAttribute('aria-valuenow')));
+
+        this.railWidth = parseInt(this.railDomNode.style.width.slice(0, -2));
+
+        if (this.domNode.classList.contains('min')) {
+            this.labelDomNode = this.domNode.parentElement.previousElementSibling;
+        }
+
+        if (this.domNode.classList.contains('max')) {
+            this.labelDomNode = this.domNode.parentElement.nextElementSibling;
+        }
+
+        if (this.domNode.tabIndex != 0) {
+            this.domNode.tabIndex = 0;
+        }
+
+        this.domNode.addEventListener('keydown', this.handleKeyDown.bind(this));
+        this.domNode.addEventListener('mousedown', this.handleMouseDown.bind(this));
+        this.domNode.addEventListener('focus', this.handleFocus.bind(this));
+        this.domNode.addEventListener('blur', this.handleBlur.bind(this));
+
+        this.moveSliderTo(this.valueNow);
+
+    };
+
+    Slider.prototype.moveSliderTo = function (value) {
+        var valueMax = parseInt(this.domNode.getAttribute('aria-valuemax'));
+        var valueMin = parseInt(this.domNode.getAttribute('aria-valuemin'));
+
+        if (value > valueMax) {
+            value = valueMax;
+        }
+
+        if (value < valueMin) {
+            value = valueMin;
+        }
+
+        this.valueNow = value;
+        this.dolValueNow = 'Rs.' + value;
+
+        this.domNode.setAttribute('aria-valuenow', this.valueNow);
+        this.domNode.setAttribute('aria-valuetext', this.dolValueNow);
+
+        if (this.minDomNode) {
+            this.minDomNode.setAttribute('aria-valuemax', this.valueNow);
+        }
+
+        if (this.maxDomNode) {
+            this.maxDomNode.setAttribute('aria-valuemin', this.valueNow);
+        }
+
+        var pos = Math.round(((this.valueNow - this.railMin) * (this.railWidth - 2 * (this.thumbWidth - this.railBorderWidth))) / (this.railMax - this.railMin));
+
+        if (this.minDomNode) {
+            this.domNode.style.left = (pos + this.thumbWidth - this.railBorderWidth) + 'px';
+        }
+        else {
+            this.domNode.style.left = (pos - this.railBorderWidth) + 'px';
+        }
+
+        if (this.labelDomNode) {
+            this.labelDomNode.innerHTML = this.dolValueNow.toString();
+        }
+    };
+
+    Slider.prototype.handleKeyDown = function (event) {
+
+        var flag = false;
+
+        switch (event.keyCode) {
+            case this.keyCode.left:
+            case this.keyCode.down:
+                this.moveSliderTo(this.valueNow - 100);
+                flag = true;
+                break;
+
+            case this.keyCode.right:
+            case this.keyCode.up:
+                this.moveSliderTo(this.valueNow + 100);
+                flag = true;
+                break;
+
+            case this.keyCode.pageDown:
+                this.moveSliderTo(this.valueNow - 1000);
+                flag = true;
+                break;
+
+            case this.keyCode.pageUp:
+                this.moveSliderTo(this.valueNow + 1000);
+                flag = true;
+                break;
+
+            case this.keyCode.home:
+                this.moveSliderTo(this.railMin);
+                flag = true;
+                break;
+
+            case this.keyCode.end:
+                this.moveSliderTo(this.railMax);
+                flag = true;
+                break;
+
+            default:
+                break;
+        }
+
+        if (flag) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+    };
+
+    Slider.prototype.handleFocus = function (event) {
+        this.domNode.classList.add('focus');
+        this.railDomNode.classList.add('focus');
+    };
+
+    Slider.prototype.handleBlur = function (event) {
+        this.domNode.classList.remove('focus');
+        this.railDomNode.classList.remove('focus');
+    };
+
+    Slider.prototype.handleMouseDown = function (event) {
+
+        var self = this;
+
+        var handleMouseMove = function (event) {
+
+            var diffX = event.pageX - self.railDomNode.offsetLeft;
+            self.valueNow = self.railMin + parseInt(((self.railMax - self.railMin) * diffX) / self.railWidth);
+            self.moveSliderTo(self.valueNow);
+
+            event.preventDefault();
+            event.stopPropagation();
+        };
+
+        var handleMouseUp = function (event) {
+
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+
+        };
+
+        // bind a mousemove event handler to move pointer
+        document.addEventListener('mousemove', handleMouseMove);
+
+        // bind a mouseup event handler to stop tracking mouse movements
+        document.addEventListener('mouseup', handleMouseUp);
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        // Set focus to the clicked handle
+        this.domNode.focus();
+
+    };
+    window.addEventListener('load', function () {
+
+        var sliders = document.querySelectorAll('[role=slider]');;
+
+        for (var i = 0; i < sliders.length; i++) {
+            var s = new Slider(sliders[i]);
+            s.init();
+        }
+
+    });
+
+</script>
+<hr class="featurette-divider">
+{% endblock %}
