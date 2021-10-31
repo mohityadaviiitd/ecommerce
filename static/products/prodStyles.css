@@ -1,0 +1,131 @@
+.main-container{
+    display:flex;
+    flex-direction: column;
+    
+}
+.global-margin{
+    margin-left: 7%;
+    margin-right:7%;
+  }
+.main-heading{
+    display: flex;
+    padding-left: 30%;
+    width: 100%;
+    padding-top: 40px;
+    padding-bottom: 30px;
+}
+.card{
+    width:  280px;
+}
+.card-img-top{
+  height:auto !important;
+  width: 100%;
+}
+
+.sub-container{
+    display: flex;
+    flex-direction: row;
+}
+.leftSideBar{
+    flex:30%;
+    display: flex;
+    flex-direction: column;
+}
+.rightSideBar{
+    flex:70%
+}
+.filter-container{
+    display: flex;
+    flex-direction: column;
+}
+.sort-container{
+    display: flex;
+    flex-direction: column;
+}
+/* .slider-container{
+    width: 30%;
+} */
+.products-list{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.product-featured-card{
+  padding-right: 5px;
+  padding-bottom: 5px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  height:400px !important;
+}
+.filter-wrapper{
+  display: flex;
+  flex-direction: column;
+}
+.inStock-wrapper{
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+ 
+}
+.range-selector{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 1rem;
+  margin-top: .5rem;
+}
+input#inStock{
+  height: 15px;
+  width: 15px;
+}
+.row-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+.select-box{
+  width: 100px;
+}
+
+.img-container{
+  height: 300px !important;
+  width: 100%; 
+  overflow: hidden; 
+  display: flex;
+  align-items: center; /* vertical */
+  justify-content: center; /* horizontal */
+  padding: 20px;
+  /* object-fit: contain; */
+}
+
+#clearFilter{
+  padding: 5px;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
+  border: none;
+  float: left;
+  background: rgb(245, 76, 76);
+  color: #fff;
+}
+
+
+#clearFilter:hover {
+  padding: 5px;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
+  border: none;
+  float: left;
+  background: rgb(255, 44, 44);
+  color: #fff;
+}
+#clearFilter:active{
+  padding: 5px;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
+  border: none;
+  float: left;
+  background: rgb(255, 69, 69);
+  color: #fff;
+}

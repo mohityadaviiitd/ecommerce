@@ -1,0 +1,139 @@
+.main-container {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.global-margin {
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+.main-title {
+    display: flex;
+    align-self: center;
+    justify-content: center;
+    width: 100%;
+    padding-top: 40px;
+    padding-bottom: 30px;
+}
+
+.card {
+    width: 280px;
+}
+
+.sub-container {
+    display: flex;
+    flex-direction: row;
+    padding-top: 30px;
+}
+
+.leftSideBar {
+    flex: 40%;
+    
+}
+
+.rightSideBar {
+    flex: 60%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border: solid rgba(0, 0, 0, .125);
+    border-width: 1px;
+    height: auto;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.products-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.product-featured-card {
+    padding-right: 5px;
+    padding-bottom: 5px;
+}
+
+.btn-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+}
+
+.carasoul-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    border: solid rgba(0, 0, 0, .125);
+    border-width: 1px;
+    height: 500px;
+}
+
+.addToCart {
+    margin-right: 10px;
+}
+#addToCartBtn{
+    padding: 8px;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
+    border: none;
+    float: left;
+    background: rgb(255, 160, 18);
+    color: #fff;
+}
+
+#buyNowBtn{
+    padding: 8px;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
+    border: none;
+    float: left;
+    background: rgb(9, 198, 255);
+    color: #fff;
+}
+
+#addToCartBtn:active {
+    padding: 8px;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
+    border: none;
+    float: left;
+    background: rgb(255, 160, 18);
+    color: #fff;
+}
+
+#buyNowBtn:active{
+    padding: 8px;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
+    border: none;
+    float: left;
+    background: rgb(9, 198, 255);
+    color: #fff;
+}
+#addToCartBtn:hover {
+    padding: 8px;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
+    border: none;
+    float: left;
+    background: rgb(236, 142, 1);
+    color: #fff;
+}
+
+#buyNowBtn:hover {
+    padding: 8px;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
+    border: none;
+    float: left;
+    background: rgb(0, 151, 197);
+    color: #fff;
+}
+
+

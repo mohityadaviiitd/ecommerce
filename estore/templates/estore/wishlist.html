@@ -1,0 +1,36 @@
+{% extends "estore/basic.html" %}
+
+{% block content %}
+<div class="d-flex flex-wrap mx-auto" style="width: 70%;">
+{% for product in product_list %}
+    <div class="card m-auto rounded-3 bg-light shadow-sm" style="width: 14rem; height: 21rem;">
+  <img class="card-img-top mx-auto pt-2" style="width: 10rem; height: 10rem;" src="{{ product.product_image }}" alt="{{ product.product_name }}">
+  <div class="card-body">
+    <h5 class="card-title lh-1 text-center font-monospace text-uppercase">{{ product.product_name }}</h5>
+
+  <ul class="list-group list-group-flush lh-1 mx-auto d-flex align-items-center">
+    <li class="list-group-item border-0 bg-light fw-lighter pt-0" style="font-size: 13px;">Seller: {{ product.product_seller_name }}</li>
+      {% if product.stock_status == True %}
+          <li class="list-group-item border-0 bg-light fw-lighter pt-0" style="font-size: 12px;">Instock</li>
+          {% else %}
+          <li class="list-group-item border-0 bg-light pt-0">Out of stock</li>
+          {% endif %}
+    <li class="list-group-item border-0 bg-light pt-0"><button type="button" class="btn btn-outline-primary btn-sm">
+          Rs {{ product.price }}</button></li>
+    <li class="list-group-item border-0 bg-light"><form  action="{% url 'wishlist' %}" method="POST" class="form">
+        <input type="hidden" name="product_id" value="{{product.product_id}}" />
+        <input type="hidden" name="wishlist_id" value="{{wishlist}}" />
+    {% csrf_token %}
+        <button type="submit" class="btn btn-warning btn-sm">Remove</button>
+  </form></li>
+  </ul>
+  </div>
+</div>
+    {% endfor %}
+    </div>
+
+
+
+{% endblock content %}
+
+
