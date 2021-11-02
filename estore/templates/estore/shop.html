@@ -3,6 +3,7 @@
 {% endblock %}
 {% block title %}Home{% endblock %}
 {% block content %}
+<div id="snackbar"></div>
 <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
   <div class="carousel-indicators">
     <li type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true"
@@ -72,62 +73,56 @@
 <br />
 <br />
 <div class="cardsCategory global-margin">
-  <div onclick = "goToPage('/products/Mobile')" class="card-container">
-    {% comment %}
-    <div>
-      {% endcomment %}
-      <img src="https://navbharattimes.indiatimes.com/photo/msid-86262503,imgsize-64352/pic.jpg" class="cat-img" />
-      {% comment %}
-    </div>
-    {% endcomment %}
+  <div onclick="goToPage('/products/Mobile')" class="card-container">
+
+    <img src="https://navbharattimes.indiatimes.com/photo/msid-86262503,imgsize-64352/pic.jpg" class="cat-img" />
+
     <div class="titleContainer">
       <h5 class="cat-title">
         <button class="button-borderless">Mobiles</button>
       </h5>
     </div>
   </div>
-  <div onclick = "goToPage('/products/Laptop')" class="card-container">
+  <div onclick="goToPage('/products/Laptop')" class="card-container">
+
+    <img src="https://navbharattimes.indiatimes.com/photo/msid-86262503,imgsize-64352/pic.jpg" class="cat-img" />
     {% comment %}
-    <div>
-      {% endcomment %}
-      <img src="https://navbharattimes.indiatimes.com/photo/msid-86262503,imgsize-64352/pic.jpg" class="cat-img" />
-      {% comment %}
-    </div>
-    {% endcomment %}
-    <div class="titleContainer">
-      <h5 class="cat-title">
-        <button class="button-borderless">Laptops</button>
-      </h5>
-    </div>
   </div>
-  <div onclick = "goToPage('/products/TV')" class="card-container">
+  {% endcomment %}
+  <div class="titleContainer">
+    <h5 class="cat-title">
+      <button class="button-borderless">Laptops</button>
+    </h5>
+  </div>
+</div>
+<div onclick="goToPage('/products/TV')" class="card-container">
+  {% comment %}
+  <div>
+    {% endcomment %}
+    <img src="https://navbharattimes.indiatimes.com/photo/msid-86262503,imgsize-64352/pic.jpg" class="cat-img" />
     {% comment %}
-    <div>
-      {% endcomment %}
-      <img src="https://navbharattimes.indiatimes.com/photo/msid-86262503,imgsize-64352/pic.jpg" class="cat-img" />
-      {% comment %}
-    </div>
-    {% endcomment %}
-    <div class="titleContainer">
-      <h5 class="cat-title">
-        <button class="button-borderless">TV&Appliances</button>
-      </h5>
-    </div>
   </div>
-  <div onclick = "goToPage('/products/Camera')" class="card-container">
+  {% endcomment %}
+  <div class="titleContainer">
+    <h5 class="cat-title">
+      <button class="button-borderless">TV&Appliances</button>
+    </h5>
+  </div>
+</div>
+<div onclick="goToPage('/products/Camera')" class="card-container">
+  {% comment %}
+  <div>
+    {% endcomment %}
+    <img src="https://navbharattimes.indiatimes.com/photo/msid-86262503,imgsize-64352/pic.jpg" class="cat-img" />
     {% comment %}
-    <div>
-      {% endcomment %}
-      <img src="https://navbharattimes.indiatimes.com/photo/msid-86262503,imgsize-64352/pic.jpg" class="cat-img" />
-      {% comment %}
-    </div>
-    {% endcomment %}
-    <div class="titleContainer">
-      <h5 class="cat-title">
-        <button class="button-borderless">Camera&Accessories</button>
-      </h5>
-    </div>
   </div>
+  {% endcomment %}
+  <div class="titleContainer">
+    <h5 class="cat-title">
+      <button class="button-borderless">Camera&Accessories</button>
+    </h5>
+  </div>
+</div>
 </div>
 
 <hr class="featurette-divider" />
@@ -139,43 +134,48 @@
 
 <div class="auto-play global-margin">
   {% for product in product_array %}
-    <div onclick = "goToPage('/itemDetails/id={{product.id}}')" class="product-featured-card card shadow-sm">
-      <div class="img-container"><img class="card-img-top" src="{{product.image}}" alt="products" />
-      </div>
-      <div class="card-body">
-        <h5>{{product.name}}</h5>
-        <p class="card-text">
-          {{ product.description}}
-        </p>
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="btn-group">
-            <!-- <button type="button" class="btn btn-sm btn-outline-secondary">
+  <div onclick="goToPage('/itemDetails/id={{product.id}}')" class="product-featured-card card shadow-sm">
+    <div class="img-container"><img class="card-img-top" src="{{product.image}}" alt="products" />
+    </div>
+    <div class="card-body">
+      <h5>{{product.name}}</h5>
+      <p class="card-text">
+        {{ product.description}}
+      </p>
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="btn-group">
+          <!-- <button type="button" class="btn btn-sm btn-outline-secondary">
               View
             </button> -->
-            <button type="button" class="btn btn-sm btn-outline-secondary">
+          <!-- <button type="button" class="btn btn-sm btn-outline-secondary">
               Wishlist
+            </button> -->
+          <!-- change 1 to  wishlist_id =------->
+
+          <form action="/addToCart" method="POST" class="form">
+            <input type="hidden" name="product_id" value="{{product.id}}" />
+            <!-- to change the card id -->
+            <input type="hidden" name="cart_id" value="1" />
+            {% csrf_token %}
+            <button onclick="showMessage('Product added to cart successfully!')" type="submit"
+              class="btn btn-sm btn-outline-secondary">
+              Add to cart
             </button>
-            <form action="{% url 'shop' %}" method="POST" class="form">
-              <input type="hidden" name="product_id" value="{{product.id}}" />
-              <!-- to change the card id -->
-              <input type="hidden" name="cart_id" value="1" />
-              {% csrf_token %}
-              <button type="submit" class="btn btn-sm btn-outline-secondary">
-                Add to cart
-              </button>
-            </form>
-          </div>
-          <small class="text-muted">₹{{product.price}}</small>
+          </form>
         </div>
+        <small class="text-muted">₹{{product.price}}</small>
       </div>
     </div>
+  </div>
 
 
   {% endfor %}
+  
 </div>
 <script type="text/javascript">
-  function goToPage(web){
-      window.location.href = web;}
+  function goToPage(web) {
+    window.location.href = web;
+  }
   $(document).ready(function () {
     window.sessionStorage.clear('sortByKey')
     window.sessionStorage.clear('filterKey')
@@ -211,6 +211,17 @@
       // left
     });
   });
+  function showMessage(mesg) {
+    // Get the snackbar DIV
+    var x = document.getElementById("snackbar");
+    x.innerHTML = mesg
+
+    // Add the "show" class to DIV
+    x.className = "show";
+
+    // After 3 seconds, remove the show class from DIV
+    setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
+  }
 </script>
 
 <hr class="featurette-divider" />

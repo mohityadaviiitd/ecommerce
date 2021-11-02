@@ -1,5 +1,6 @@
+from django.http.response import HttpResponse
 from django.shortcuts import render
-from estore.models import Cart
+from estore.models import Cart, UserAddress, Users
 from estore.models import Products
 from estore.models import ProductImages
 from estore.models import Sellers
@@ -7,7 +8,6 @@ from estore.models import Wishlist
 from django.http import HttpResponseRedirect
 import random
 import re
-
 
 def products(request,productCategory = "",searchQuery="",filterQuery="",sortBy=""):
     print('-data------------------------',productCategory,   searchQuery,filterQuery)
@@ -87,7 +87,60 @@ def items(request,item_id):
 
 def signin(request):
     return render(request, 'estore/signin.html')
+def addToCart(request):
+    print('req-------------',request)
+    if(request.POST):
+        cart_id_form = request.POST.get('cart_id')
+        product_id_form = request.POST.get('product_id')
+        print("cart" + cart_id_form + "prod_id" + product_id_form)
+        try:
+            cartObj = Cart.objects.get(
+                cart_id=cart_id_form, product_id=product_id_form)
+            
+            newQuantity = cartObj.quantity + 1
+            # print("new =======",newQuantity)
+            setattr(cartObj,'quantity',newQuantity)
+            # print('inside trty',cartObj)
+            # cart = Cart(cart_id=cart_id_form, quantity=1,
+            #             product_id=product_id_form)
+            cartObj.save()
+        except Cart.DoesNotExist:
+            # cartObj = Cart.objects.get(
+            #     cart_id=cart_id_form, product_id=product_id_form)
+            cart = Cart(cart_id=cart_id_form, quantity=1,
+                        product_id=product_id_form)
+            # cartObj['quantity'] += 1
+            # print("quantity=======")
+            cart.save()   
+    return HttpResponse(status=204)  
 
+# TO_DO--->
+
+# def addToWishlist(request):
+#     if(request.POST):
+#         wishlist_id_form = request.POST.get('wishlist_id')
+#         product_id_form = request.POST.get('product_id')
+#         print("cart" + wishlist_id_form + "prod_id" + product_id_form)
+#         try:
+#             wishlistObj = Wishlist.objects.get(
+#                 wish_id=wishlist_id_form, product_id=product_id_form)
+            
+#             newQuantity = wishlistObj.quantity + 1
+#             # print("new =======",newQuantity)
+#             setattr(wishlistObj,'quantity',newQuantity)
+#             # print('inside trty',cartObj)
+#             # cart = Cart(cart_id=cart_id_form, quantity=1,
+#             #             product_id=product_id_form)
+#             wishlistObj.save()
+#         except Cart.DoesNotExist:
+#             # cartObj = Cart.objects.get(
+#             #     cart_id=cart_id_form, product_id=product_id_form)
+#             cart = Cart(wishlist_id=cart_id_form, quantity=1,
+#                         product_id=product_id_form)
+#             # cartObj['quantity'] += 1
+#             # print("quantity=======")
+#             cart.save()   
+#     return HttpResponse(status=204)
 
 def shop(request):
     if(request.POST):
@@ -129,15 +182,12 @@ def shop(request):
             product_dict['description'] = i.details
             product_dict['stock'] = i.stock
             product_dict['status'] = i.status
-            # product_dict['imgSource'] = findImage(i.product_id,imgData)
-            # print('img-----------------',product_dict['imgSource'])
             productArr.append(product_dict)
         # print("data =========",productArr)
         for i in productArr:
             for j in imgData:
                 if (i['id'] == j.product_id):
                     i['image'] = j.image
-                    # print("images ==============",j.image)
                     break
         dest = productArr[:]
         random.shuffle(dest)
@@ -215,12 +265,42 @@ def epayment(request):
 def base(request):
     return render(request, 'estore/base.html')
 
+def admin(request):
+    return render(request, 'estore/adminBase.html')
+
+def adminBuyer(request):
+    resUserData = Users.objects.all()
+    resAddData = UserAddress.objects.all()
+    usersArr = []
+    for data in resUserData:
+        if(data.deleted != 1):
+            userObj = {}
+            userObj['id'] = data.user_id
+            userObj['name'] = data.user_name
+            userObj['email'] = data.email
+            userObj['phone'] = data.phone
+            userObj['isPhoneVerified'] = data.is_phone_verified
+            userObj['isEmailVerified'] = data.is_email_verified
+            userObj['cartId'] = data.cart_id
+            userObj['wishlistId'] = data.wishlist_id
+            userObj['active'] = data.active #need to be updated
+            for address in resAddData:
+                if (address.user_id == data.user_id):
+                    userObj["address_line"] = str(address.house_no) + ", " + str(address.address_line1) +", " + str(address.address_line2) + ", " + str(address.landmark) + ", " + str(address.pincode)
+                    userObj["city"] = address.city_village_name
+                    userObj["state"] = address.state
+            usersArr.append(userObj) 
+    print('----user data----',usersArr)   
+    return render(request, 'estore/adminBuyer.html',{'users':usersArr })
+
+def adminSeller(request):
+    return render(request, 'estore/adminSeller.html')
+
 
 def wishlist(request):
     if (request.POST):
         wishlist_id_form = request.POST.get('wishlist_id')
         product_id_form = request.POST.get('product_id')
-        # print("wish" + wishlist_id_form + "prod_id" + product_id_form)
         Wishlist.objects.filter(
             wishlist_id=wishlist_id_form, product_id=product_id_form).delete()
         return HttpResponseRedirect('')
