@@ -127,16 +127,25 @@ class UserAddress(models.Model):
 
 
 class Users(models.Model):
+    TRUE = 'TRUE'
+    FALSE = 'FALSE'
+    CHOOSE = (
+        (TRUE, 'true'),
+        (FALSE, 'flase'),
+    )
+
     user_id = models.CharField(primary_key=True, max_length=90)
     user_name = models.CharField(max_length=90)
     password = models.CharField(max_length=400)
     email = models.CharField(unique=True, max_length=90)
     phone = models.CharField(unique=True, max_length=90)
-    is_phone_verified = models.CharField(max_length=90)
-    is_email_verified = models.CharField(max_length=90)
+    is_phone_verified = models.BooleanField(default=0)
+    is_email_verified = models.BooleanField(default=0)
     cart_id = models.CharField(unique=True, max_length=90)
     wishlist_id = models.CharField(unique=True, max_length=90)
     profile_photo = models.ImageField(null=True, blank=True,  upload_to="userimages/")
+    active = models.BooleanField(default=1)
+    deleted = models.BooleanField(default=0)
 
     class Meta:
         managed = True

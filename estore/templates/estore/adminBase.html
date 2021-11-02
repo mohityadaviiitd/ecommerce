@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>{% block title %}Admin{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous" />
+  {% block extrahead %}{% endblock %}
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: "Lato", sans-serif;
+    }
+
+    .sidenav {
+      height: 100%;
+      width: 220px;
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      background-color: #111;
+      overflow-x: hidden;
+      padding-top: 20px;
+    }
+
+    .paddingLeft {
+      padding-left: 25px;
+    }
+
+    .sidenav a {
+      text-decoration: none;
+
+      color: #d1d1d1;
+      display: block;
+    }
+
+    .text-sidebar {
+      color: #d1d1d1;
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+
+    h6 {
+      margin-bottom: 0px !important;
+    }
+
+    .sidenav a:hover {
+      color: #ffffff;
+    }
+
+    .main {
+      margin-left: 220px;
+      /* Same as the width of the sidenav */
+      font-size: 28px;
+      /* Increased text to enable scrolling */
+    }
+
+    .one-px-div {
+      margin-top: 25px 0px;
+    }
+
+    .sidebar-line {
+      border: 0;
+      height: 2px !important;
+      background: rgb(19, 141, 255);
+    }
+
+    .menu-dashboard:hover {
+      color: rgb(19, 141, 255);
+    }
+
+    .menu-item:hover {
+      background-color: rgb(19, 141, 255);
+      border-radius: 3px;
+      color: #ffffff;
+    }
+
+    .menu-logout:hover {
+      background-color: rgb(255, 72, 72);
+      border-radius: 3px;
+      color: #ffffff;
+    }
+
+    @media screen and (max-height: 450px) {
+      .sidenav {
+        padding-top: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="sidenav">
+    <div class="text-sidebar paddingLeft menu-dashboard">
+      <h4>Dashboard</h4>
+    </div>
+    <div class="one-px-div">
+      <hr class="sidebar-line">
+    </div>
+    <div class="text-sidebar paddingLeft menu-item"><a href="/admin-home/buyer-list">
+        <h6>Manage Buyers</h6>
+      </a></div>
+    <div class="text-sidebar paddingLeft menu-item"><a href="/admin-home/seller-list">
+        <h6>Manage Sellers</h6>
+      </a></div>
+
+    <div class="one-px-div">
+      <hr class="sidebar-line">
+    </div>
+    <div class="text-sidebar paddingLeft menu-logout">
+      <h6>Logout</h6>
+    </div>
+  </div>
+
+  <div class="main">
+    <div id="content">{% block content %} {% endblock %}</div>
+  </div>
+
+</body>
+
+</html>

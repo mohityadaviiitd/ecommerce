@@ -1,0 +1,75 @@
+{% extends "./adminBase.html" %} {% load static %} {% block extrahead %}
+<link rel="stylesheet" type="text/css" href="{% static 'adminCss/seller.css' %}" />
+{% endblock %}
+{% block title %}Admin-Seller{% endblock %}
+{% block content %}
+
+
+<div>
+    <div class="header-container ">
+        <div id="pageTitle" class="main-padding">Seller List</div>
+        <hr class="border-line">
+    </div>
+    <div class="table-wrapper main-padding">
+        <table>
+            <tr>
+                <th class="text-style1">Name</th>
+                <th class="text-style1">Email</th>
+                <th class="text-style1">Address</th>
+                <th class="text-style1">City</th>
+                <th class="text-style1">State</th>
+                <th class="text-style1">Phone</th>
+                <th class="text-style1">Email Verified</th>
+                <th class="text-style1">Phone Verified</th>
+                <th class="text-style1">Action</th>
+            </tr>
+            {% for user in users %}
+            <tr>
+                <td class="text-style1">{{user.name}}</td>
+                <td class="text-style1">{{user.email}}</td>
+                <td class="text-style1">{{user.address_line}}</td>
+                <td class="text-style1">{{user.city}}</td>
+                <td class="text-style1">{{user.state}}</td>
+                <td class="text-style1">{{user.phone}}</td>
+                <td class="text-style1">
+                    <div class="cell-center">
+                        {% if user.isEmailVerified == 0 %}
+                        -
+                        {% elif user.isEmailVerified != 0 %}
+                        <img src="{% static 'media/patch-check-fill.svg' %}">
+                        {% endif %}
+                    </div>
+                    
+                </td>
+                <td class="text-style1">
+                    <div class="cell-center">
+                        {% if user.isPhoneVerified == 0 %}
+                        -
+                        {% elif user.isPhoneVerified != 0 %}
+                        <img src="{% static 'media/patch-check-fill.svg' %}">
+                        {% endif %}
+                    </div>
+                    
+                </td>
+                <td class="text-style1 ">
+                    {% if user.active == 0 %}
+                    <img src="{% static 'media/person-check-fill.svg' %}">
+                    {% elif user.active != 0 %}
+                    <img src="{% static 'media/person-x-fill.svg' %}">
+                    {% endif %}
+                    <img src="{% static 'media/trash-fill.svg' %}">
+                </td>
+
+            </tr>
+            {% endfor %}
+
+        </table>
+    </div>
+
+
+</div>
+
+
+
+
+{% endblock %}
