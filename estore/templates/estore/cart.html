@@ -1,1 +1,43 @@
-<h1>this is cart page</h1>
+{% extends "estore/base.html" %}
+
+{% block content %}
+
+<div style="position: fixed; right: 5%;">
+    <p class="fw-lighter text-center">Total: Rs {{ cart_total }}</p>
+    <button type="submit" class="btn btn-success" style="width: 200px;">Checkout</button>
+</div>
+
+{% for product in product_list %}
+<div class="d-flex border m-auto rounded-3 mb-3 justify-content-between bg-light text-dark shadow-sm"
+    style="width: 50%;">
+    <div class="p-2" style="width: 30%;">
+        <img class="py-2 px-2" height="210px" width="200px" src="{{ product.product_image }}"
+            alt="{{ product.product_name }}">
+    </div>
+    <div class="p-2 lh-1" style="width: 40%;">
+        <ul class="list-group">
+            <li class="list-group-item border-0 font-monospace text-uppercase">{{ product.product_name }}</li>
+            <li class="list-group-item border-0 fw-lighter pt-0" style="font-size: 12px;">Seller: {{product.product_seller_name }}</li>
+            <li class="list-group-item border-0 fw-lighter" style="font-size: 12px;">{{ product.stock_status }} items
+                available</li>
+            <li class="list-group-item border-0 fw-lighter" style="font-size: 12px;">
+                <p>({{ product.stock_status }} * Rs {{ product.price }})</p>
+            </li>
+            <li class="list-group-item border-0 ">
+                <button type="button" class="btn btn-outline-primary btn-sm">Rs {{ product.total_price }}</button>
+            </li>
+            <li class="list-group-item d-flex border-0">
+                <form action="{% url 'cart' %}" method="POST" class="form">
+                    <input type="hidden" name="product_id" value="{{product.product_id}}" />
+                    <input type="hidden" name="cart_id" value="{{cart}}" />
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning btn-sm ms-auto">Remove</button>
+                </form>
+            </li>
+
+
+        </ul>
+    </div>
+</div>
+{% endfor %}
+{% endblock content %}

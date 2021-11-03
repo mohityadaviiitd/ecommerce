@@ -70,7 +70,7 @@ DATABASES= {
         'ENGINE':'django.db.backends.mysql',
         'NAME':'eshop',
         'USER':'root',
-        'PASSWORD':'mohit',
+        'PASSWORD':'',
         'HOST':'localhost',
         'PORT':'3306',
     }
@@ -120,8 +120,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_HOST='smtp.gmail.com'
-EMAIL_HOST_USER='sahilyadav8086@gmail.com'
+EMAIL_HOST_USER=''
 EMAIL_USE_TLS=True
-DEFAULT_FROM_EMAIL='sahilyadav8086@gmail.com'
+DEFAULT_FROM_EMAIL=''
 EMAIL_PORT=587
-EMAIL_HOST_PASSWORD='Sahil-2001'
+EMAIL_HOST_PASSWORD=''

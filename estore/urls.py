@@ -1,7 +1,18 @@
 from django.urls import path
 from . import views
 urlpatterns = [
-    path('', views.base, name="base"),
+    path('', views.shop, name="shop"),
+    path('addToCart',views.addToCart, name="addToCart"),
+    path('products/<str:productCategory>', views.products, name="products"),
+    path('products/search/<str:searchQuery>', views.products, name="products"),
+    path('products/filter/<str:filterQuery>', views.products, name="products"),
+    path('products/sort/<str:sortBy>', views.products, name="products"),
+    path('products/search/<str:searchQuery>/filter/<str:filterQuery>', views.products, name="products"),
+    path('products/filter/<str:filterQuery>/sort/<str:sortBy>', views.products, name="products"),
+    path('products/search/<str:searchQuery>/sort/<str:sortBy>', views.products, name="products"),
+    path('products/search/<str:searchQuery>/filter/<str:filterQuery>/sort/<str:sortBy>', views.products, name="products"),
+    path('products/', views.products, name="products"),
+    path('itemDetails/id=<int:item_id>', views.items, name="items"),
     path('signin/', views.signin, name="signin"),
     path('register/', views.registerUser, name="register"),
     path('signout/', views.signout, name="signout"),
@@ -12,4 +23,8 @@ urlpatterns = [
     path('activate/<uidb64>/<token>', views.activate_user, name="activate"),
     path('become_seller/', views.become_seller, name="become_seller"),
     path('upload_product/', views.upload_product, name="upload_product"),
+    path('wishlist/', views.wishlist, name="wishlist"),
+    path('admin-home/', views.admin, name="admin"),
+    path('admin-home/buyer-list', views.adminBuyer, name="buyerList"),
+    path('admin-home/seller-list', views.adminSeller, name="sellerList"),
 ]

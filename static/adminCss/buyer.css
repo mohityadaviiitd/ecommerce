@@ -1,0 +1,51 @@
+#pageTitle{
+    margin-top: 25px;
+    font-size: 20px;
+    font-weight: 700;
+}
+.border-line {
+    border: 0;
+    height:2px !important;
+    background: rgb(19, 141, 255);
+    margin:29px 0px 0px 0px !important;
+
+  }
+.main-padding{
+    padding: 0px 15px;
+    /* color: rgb(0, 124, 226); */
+}
+.cell-center{
+   display: flex;
+   flex-direction: row;
+   justify-content: center;
+}
+/* tabel css-----------------------------> */
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 25px;
+  
+}
+
+.header-size{
+    font-size: 18px;
+    font-weight: 600;
+}
+.text-style1{
+    font-size: 15px;
+}
+td, th {
+  border: 0.5px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+tr:nth-child(even) {
+    background-color: #d5eafd;
+  }
+
+/* tabel css end <<<<<<<<<<<<<<<-----*/

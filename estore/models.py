@@ -39,6 +39,14 @@ class Cart(models.Model):
         managed = True
         db_table = 'cart'
 
+class Wishlist(models.Model):
+    wishlist = models.ForeignKey('Users', models.DO_NOTHING)
+    product = models.ForeignKey('Products', models.DO_NOTHING)
+
+    class Meta:
+        managed = True
+        db_table = 'wishlist'
+
 
 class Checkouts(models.Model):
     checkout_id = models.CharField(primary_key=True, max_length=90)
@@ -162,7 +170,7 @@ class Users(AbstractBaseUser):
     # password = models.CharField( max_length=400)
     email = models.EmailField(verbose_name="email", unique=True, max_length=90)
     phone = models.CharField(unique=True, max_length=90)
-    is_phone_verified = models.CharField(default='no', max_length=90)
+    is_phone_verified = models.BooleanField(default=0)
     is_email_verified = models.BooleanField(default=False)
     cart_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     profile_photo = models.ImageField(null=True, blank=True,  upload_to=get_profile_photo, default=default_profile_photo)
@@ -173,6 +181,10 @@ class Users(AbstractBaseUser):
     is_staff=models.BooleanField(default=False)
     is_superuser=models.BooleanField(default=False)
     is_seller=models.BooleanField(default=False)
+    cart_id = models.CharField(unique=True, max_length=90)
+    wishlist_id = models.CharField(unique=True, max_length=90)
+    active = models.BooleanField(default=1)
+    deleted = models.BooleanField(default=0)
 
     objects = usermanager()
 
@@ -189,6 +201,7 @@ class Users(AbstractBaseUser):
 
     def get_profile_photo(self):
         return str(self.profile_photo)[str(self.profile_photo).index(f'profile_images/{self.pk}/'):]
+    
 
     class Meta:
         managed = True
