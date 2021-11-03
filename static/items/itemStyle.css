@@ -84,7 +84,7 @@
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
     border: none;
     float: left;
-    background: rgb(8, 153, 39);
+    background: rgb(255, 118, 134);
     color: #fff;
 }
 
@@ -95,7 +95,7 @@
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
     border: none;
     float: left;
-    background: rgb(8, 141, 42);
+    background: rgb(255, 79, 100);
     color: #fff;
 }
 
@@ -105,7 +105,7 @@
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
     border: none;
     float: left;
-    background: rgb(5, 197, 92);
+    background: rgb(255, 79, 100);
     color: #fff;
 }
 #addToCartBtn {
@@ -114,7 +114,7 @@
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
     border: none;
     float: left;
-    background: rgb(255, 169, 41);
+    background: rgb(0, 196, 170);
     color: #fff;
 }
 #addToCartBtn:active {
@@ -123,7 +123,7 @@
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
     border: none;
     float: left;
-    background: rgb(255, 160, 18);
+    background: rgb(0, 168, 146);
     color: #fff;
 }
 
@@ -133,7 +133,7 @@
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
     border: none;
     float: left;
-    background: rgb(236, 142, 1);
+    background: rgb(0, 168, 146);
     color: #fff;
 }
 #buyNowBtn{

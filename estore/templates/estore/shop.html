@@ -3,66 +3,7 @@
 {% endblock %}
 {% block title %}Home{% endblock %}
 {% block content %}
-<div id="snackbar"></div>
-<!-- <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
-  <div class="carousel-indicators">
-    <li type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true"
-      aria-label="Slide 1"></li>
-    <li type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></li>
-    <li type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></li>
-  </div>
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <img class = "carousal-img" src="{% static 'media/carousal2.jpg' %}" />
 
-      <div class="container">
-        <div class="carousel-caption text-start">
-          <h1>Example headline.</h1>
-          <p>
-            Some representative placeholder content for the first slide of the
-            carousel.
-          </p>
-          <p><a class="btn btn-lg btn-primary" href="#">Sign up today</a></p>
-        </div>
-      </div>
-    </div>
-    <div class="carousel-item">
-      <img class = "carousal-img" src="{% static 'media/carousal3.jpg' %}" />
-      <div class="container">
-        <div class="carousel-caption">
-          <h1>Another example headline.</h1>
-          <p>
-            Some representative placeholder content for the second slide of the
-            carousel.
-          </p>
-          <p><a class="btn btn-lg btn-primary" href="#">Learn more</a></p>
-        </div>
-      </div>
-    </div>
-    <div class="carousel-item">
-      <img class = "carousal-img" src="{% static 'media/carousal4.jpg' %}" />
-
-      <div class="container">
-        <div class="carousel-caption text-end">
-          <h1>One more for good measure.</h1>
-          <p>
-            Some representative placeholder content for the third slide of this
-            carousel.
-          </p>
-          <p><a class="btn btn-lg btn-primary" href="#">Browse gallery</a></p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <a class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </a>
-  <a class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
-    <span class="carousel-control-next-icon"></span>
-    <span class="visually-hidden">Next</span>
-  </a>
-</div> -->
 <div class="jumbotron jumbotron-fluid custom-jumbotron">
   <div class="container">
     <h1 class="display-4">Fluid jumbotron</h1>
@@ -154,14 +95,15 @@
               Wishlist
             </button> -->
           <!-- change 1 to  wishlist_id =------->
-
+          <button type="button" id="addToWishlistBtn">
+            Wishlist
+          </button>
           <form action="/addToCart" method="POST" class="form">
             <input type="hidden" name="product_id" value="{{product.id}}" />
             <!-- to change the card id -->
             <input type="hidden" name="cart_id" value="1" />
             {% csrf_token %}
-            <button onclick="showMessage('Product added to cart successfully!')" type="submit"
-              class="btn btn-sm btn-outline-secondary">
+            <button onclick="showMessage('Product added to cart successfully!')" type="submit" id="addToCartBtn">
               Add to cart
             </button>
           </form>
@@ -173,7 +115,7 @@
 
 
   {% endfor %}
-  
+
 </div>
 <script type="text/javascript">
   function goToPage(web) {

@@ -88,12 +88,21 @@
                         </p>
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-outline-secondary">
-                                    Wishlist
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <div><button id="addToWishlistBtn">Wishlist</button></div>
+
+                                <form action="/addToCart" method="POST" class="form">
+                                    <input type="hidden" name="product_id" value="{{product.product_id}}" />
+                                    <!-- to change the card id -->
+                                    <input type="hidden" name="cart_id" value="1" />
+                                    {% csrf_token %}
+                                    <button onclick="showMessage('Product added to cart successfully!')" type="submit"
+                                        id="addToCartBtn">
+                                        Add to cart
+                                    </button>
+                                </form>
+                                <!-- <button type="button" class="btn btn-sm btn-outline-secondary">
                                     Add to cart
-                                </button>
+                                </button> -->
                             </div>
                             <small class="text-muted">₹{{product.price}}</small>
                         </div>

@@ -40,18 +40,29 @@
                         including versions of Lorem Ipsum.</p>
                 </div>
                 <div class="product name" id="productPrice">Seller: Kajal Rawat</div>
-               
+
             </div>
             <div class="bottom-wrapper">
                 <div class="product price" id="productPrice">₹{{product.price}}</div>
                 <div class="btn-container">
                     <div class="product addToWishlist"><button id="addToWishlistBtn">Add to Wishlist</button></div>
-                    <div class="product addToCart"><button id="addToCartBtn">Add to cart</button></div>
+
+                    <div class="product addToCart">
+                        <form action="/addToCart" method="POST" class="form">
+                            <input type="hidden" name="product_id" value="{{product.product_id}}" />
+                            <!-- to change the card id -->
+                            <input type="hidden" name="cart_id" value="1" />
+                            {% csrf_token %}
+                            <button onclick="showMessage('Product added to cart successfully!')" type="submit"
+                                id="addToCartBtn">
+                                Add to cart
+                            </button>
+                        </form>
+                        <!-- <button id="addToCartBtn">Add to cart</button> -->
+                    </div>
                     <div class="product buyNow"><button id="buyNowBtn">Buy Now</button></div>
                 </div>
             </div>
-
-
         </div>
     </div>
 </div>
@@ -72,6 +83,12 @@
     function consoleData(product) {
         console.log('--------datate--', product)
     }
+    function showMessage(mesg) {
+    var x = document.getElementById("snackbar");
+    x.innerHTML = mesg
+    x.className = "show";
+    setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
+  }
 </script>
 <hr class="featurette-divider">
 {% endblock %}
