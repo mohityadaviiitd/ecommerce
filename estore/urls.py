@@ -10,4 +10,6 @@ urlpatterns = [
 	path('epayment/', views.epayment, name="epayment"),
     path('cart/', views.cart, name="cart"),
     path('activate/<uidb64>/<token>', views.activate_user, name="activate"),
+    path('become_seller/', views.become_seller, name="become_seller"),
+    path('upload_product/', views.upload_product, name="upload_product"),
 ]

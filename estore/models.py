@@ -27,7 +27,8 @@ class usermanager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-
+def get_product_photo(self, filename):
+    return f'profile_images/{self.pk}/{"profile_photo.png"}'
 
 class Cart(models.Model):
     cart = models.ForeignKey('Users', models.DO_NOTHING)
@@ -62,20 +63,24 @@ class DelliverablePincodes(models.Model):
         db_table = 'delliverable_pincodes'
 
 
-
+def get_product_photo(self, filename):
+    return f'product_images/{self.pk}/{"product_photo.png"}'
 
 class ProductImages(models.Model):
-    image_id = models.IntegerField(primary_key=True)
+    image_id =  models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
     product = models.ForeignKey('Products', models.DO_NOTHING)
-    image = models.ImageField(null=True, blank=True,  upload_to="productimages/")
+    image = models.ImageField(null=True, blank=True,  upload_to=get_product_photo)
 
     class Meta:
         managed = True
         db_table = 'product_images'
+    
+    def get_product_photo(self):
+        return str(self.pdf)[str(self.pdf).index(f'product_images/{self.pk}/'):]
 
 
 class Products(models.Model):
-    product_id = models.IntegerField(primary_key=True)
+    product_id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
     product_name = models.CharField(max_length=1000)
     details = models.CharField(max_length=4000, blank=True, null=True)
     category = models.CharField(max_length=90)
@@ -105,11 +110,14 @@ def get_profile_photo(self, filename):
 def default_profile_photo():
     return "defaultlogo/pp.png"
 
+def get_pdf(self, filename):
+    return f'pdf/{self.pk}/{"proof.pdf"}'
+
 class Sellers(models.Model):
     seller_id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
     user = models.ForeignKey('Users', on_delete=models.CASCADE)
-    pdf = models.FileField(upload_to='pdfs/', null=True, blank=True)
-    approval_status = models.CharField(max_length=90)
+    pdf = models.FileField(upload_to=get_pdf, null=True, blank=True)
+    approval_status = models.BooleanField(default=False)
     gst_number = models.CharField(unique=True, max_length=90)
 
     def has_perm(self, perm, obj=None):
@@ -118,11 +126,11 @@ class Sellers(models.Model):
     def has_module_perms(self, app_label):
         return True
 
-    def __str__(self):
-        return self.email
+    # def __str__(self):
+    #     return self.seller_id
 
-    def get_profile_photo(self):
-        return str(self.profile_photo)[str(self.profile_photo).index(f'profile_images/{self.pk}/'):]
+    def get_pdf(self):
+        return str(self.pdf)[str(self.pdf).index(f'pdf/{self.pk}/'):]
 
     class Meta:
         managed = True

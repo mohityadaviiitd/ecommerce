@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
-from .models import Users
+from .models import Users, Sellers, ProductImages, Products
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import RegisterForm
+from .forms import RegisterForm, SellerForm, ProductForm, ProductImagesForm
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
@@ -23,9 +23,9 @@ def signin(request):
         except:
             messages.error(request, "wrong email")
         user=authenticate(request, email=email, password=password)
-        if not user.is_email.verified:
-            messages.add_message(request, messages.ERROR, "email not verified")
-            return redirect('register')
+        # if not user.is_email.verified:
+        #     messages.add_message(request, messages.ERROR, "email not verified")
+        #     return redirect('register')
 
         if user is not None:
             login(request, user)
@@ -39,31 +39,31 @@ def registerUser(request):
     if request.user.is_authenticated:
         return redirect("profile")
     page='register'
-    form=RegisterForm()
+    form=RegisterForm(request.POST, request.FILES)
     if request.method=='POST':
-        form=RegisterForm(request.POST)
+        # form=RegisterForm(request.POST)
         if form.is_valid():
             u=form.save(commit=False)
             email=request.POST.get('email')
             u.email=u.email.lower()
             u.save()
 
-            currenturl=get_current_site(request)
+            # currenturl=get_current_site(request)
 
-            subject='Verify your Email'
-            body=render_to_string('estore/activate.html',{
-                'user':u,
-                'domain':currenturl,
-                'uid':urlsafe_base64_encode(force_bytes(u.pk)),
-                'token': maketoken.make_token(u)
-            })
+            # subject='Verify your Email'
+            # body=render_to_string('estore/activate.html',{
+            #     'user':u,
+            #     'domain':currenturl,
+            #     'uid':urlsafe_base64_encode(force_bytes(u.pk)),
+            #     'token': maketoken.make_token(u)
+            # })
 
-            send_mail(subject,
-                    body,
-                    settings.EMAIL_HOST_USER,
-                    [email],
-                    fail_silently=False,
-                    )
+            # send_mail(subject,
+            #         body,
+            #         settings.EMAIL_HOST_USER,
+            #         [email],
+            #         fail_silently=False,
+            #         )
             
 
             messages.success(request, "User account created")
@@ -90,6 +90,47 @@ def activate_user(request, uidb64, token):
         return redirect('signin')
     return redirect('register')
 
+@login_required(login_url="signin")
+def become_seller(request):
+    id_user=request.user.user_id
+    if request.user.is_seller==True:
+        print('from here')
+        return redirect('profile')
+    form=SellerForm(request.POST, request.FILES)
+    if request.method=='POST':
+        if form.is_valid():
+            sell=form.save(commit=False)
+            sell.user_id=id_user
+            sell.save()
+            u=Users.objects.get(user_id=id_user)
+            u.is_seller=True
+            u.save()
+            return redirect('register')
+    context={'form':form}
+    return render(request, 'estore/become_seller.html', context)
+
+@login_required(login_url="signin")
+def upload_product(request):
+    id_user=request.user.user_id
+    uobject=Users.objects.get(user_id=id_user)
+    sobject=Sellers.objects.get(user_id=id_user)
+    form=ProductForm(request.POST, request.FILES)
+    form2=ProductImagesForm(request.POST, request.FILES)
+    if uobject.is_seller==False or sobject.approval_status==False:
+        return redirect('signin')
+    if request.method=='POST':
+        if form.is_valid() and form2.is_valid():
+            pro=form.save(commit=False)
+            pro.seller=sobject
+            ima=form.save(commit=False)
+            ima.product=Products.objects.get(seller=sobject)
+            pro.save()
+            ima.save()
+            return redirect('Profile')
+
+    context={'form':form, 'form2': form2}
+    return render(request, 'estore/upload_product.html', context)
+    
 
 
 @login_required(login_url="signin")
