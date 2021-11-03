@@ -228,7 +228,7 @@ img:hover {
   padding-bottom: 125px;
 }
 
-#addToWishlistBtn{
+.addToWishlistBtn{
   padding: 4px 6px;
   border-radius: 5px 0px 0px 5px;
   /* box-shadow: 0 1px 2px 0; */
@@ -239,7 +239,7 @@ img:hover {
 }
 
 
-#addToWishlistBtn:active {
+.addToWishlistBtn:active {
   padding: 4px 6px;
   border-radius: 5px 0px 0px 5px;
   border: none;
@@ -248,7 +248,7 @@ img:hover {
   color: #fff;
 }
 
-#addToWishlistBtn:hover {
+.addToWishlistBtn:hover {
   padding: 4px 6px;
   border-radius: 5px 0px 0px 5px;
   border: none;
@@ -256,7 +256,7 @@ img:hover {
   background: rgb(255, 79, 100);
   color: #fff;
 }
-#addToCartBtn {
+.addToCartBtn {
   padding: 4px 6px;
   border-radius: 0px 5px 5px 0px;
   border: none;
@@ -264,7 +264,7 @@ img:hover {
   background: rgb(0, 196, 170);
   color: #fff;
 }
-#addToCartBtn:active {
+.addToCartBtn:active {
   padding: 4px 6px;
   border-radius: 0px 5px 5px 0px;
   border: none;
@@ -273,7 +273,7 @@ img:hover {
   color: #fff;
 }
 
-#addToCartBtn:hover {
+.addToCartBtn:hover {
   padding: 4px 6px;
   border-radius: 0px 5px 5px 0px;
   box-shadow: 0 1px 2px 0;

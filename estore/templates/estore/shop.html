@@ -95,7 +95,7 @@
               Wishlist
             </button> -->
           <!-- change 1 to  wishlist_id =------->
-          <button type="button" id="addToWishlistBtn">
+          <button class="addToWishlistBtn" type="button"  >
             Wishlist
           </button>
           <form action="/addToCart" method="POST" class="form">
@@ -103,7 +103,7 @@
             <!-- to change the card id -->
             <input type="hidden" name="cart_id" value="1" />
             {% csrf_token %}
-            <button onclick="showMessage('Product added to cart successfully!')" type="submit" id="addToCartBtn">
+            <button class="addToCartBtn" onclick="showMessage('Product added to cart successfully!')" type="submit"  >
               Add to cart
             </button>
           </form>
