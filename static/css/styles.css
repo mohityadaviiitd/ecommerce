@@ -44,24 +44,26 @@ img:hover {
 .searchIcon {
   color: #ffffff;
 }
-
-
+.carousal-img{
+  height: 600px;
+  width: 100%;
+}
 .carousel-caption {
   bottom: 3rem;
   z-index: 10;
 }
 
 .carousel-item {
-  height: 40rem;
+  height: 30rem;
 }
 
-.carousel-item>img {
+/* .carousel-item>img {
   position: absolute;
   top: 0;
   left: 0;
   min-width: 100%;
   height: auto;
-}
+} */
 
 #search_icon {
   position: absolute;

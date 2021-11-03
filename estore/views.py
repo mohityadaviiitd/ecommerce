@@ -77,11 +77,16 @@ def products(request,productCategory = "",searchQuery="",filterQuery="",sortBy="
 
 
 def items(request,item_id):
+    print("id------", item_id)
     productDetails = Products.objects.get(product_id=item_id)
-    imgDetails = ProductImages.objects.get(product_id=item_id)
-    
-    setattr(productDetails,'image',imgDetails.image)
-    # print("ietem id ========", item_id)
+    imgRes = ProductImages.objects.all()
+    images= []
+    for img in imgRes:
+        if(img.product_id==item_id):
+            images.append(img.image)
+    setattr(productDetails,'images',images)
+    setattr(productDetails,'price',int(productDetails.price))
+    print("ietem id ========", productDetails.images)
     return render(request, 'estore/itemDetails.html',{'product':productDetails})
 
 

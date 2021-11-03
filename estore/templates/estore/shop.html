@@ -4,7 +4,7 @@
 {% block title %}Home{% endblock %}
 {% block content %}
 <div id="snackbar"></div>
-<div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+<!-- <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
   <div class="carousel-indicators">
     <li type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true"
       aria-label="Slide 1"></li>
@@ -13,8 +13,7 @@
   </div>
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <img
-        src="https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" />
+      <img class = "carousal-img" src="{% static 'media/carousal2.jpg' %}" />
 
       <div class="container">
         <div class="carousel-caption text-start">
@@ -28,8 +27,7 @@
       </div>
     </div>
     <div class="carousel-item">
-      <img
-        src="https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" />
+      <img class = "carousal-img" src="{% static 'media/carousal3.jpg' %}" />
       <div class="container">
         <div class="carousel-caption">
           <h1>Another example headline.</h1>
@@ -42,8 +40,7 @@
       </div>
     </div>
     <div class="carousel-item">
-      <img
-        src="https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" />
+      <img class = "carousal-img" src="{% static 'media/carousal4.jpg' %}" />
 
       <div class="container">
         <div class="carousel-caption text-end">
@@ -65,8 +62,14 @@
     <span class="carousel-control-next-icon"></span>
     <span class="visually-hidden">Next</span>
   </a>
+</div> -->
+<div class="jumbotron jumbotron-fluid custom-jumbotron">
+  <div class="container">
+    <h1 class="display-4">Fluid jumbotron</h1>
+    <p class="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p>
+  </div>
 </div>
-<hr class="featurette-divider" />
+<!-- <hr class="featurette-divider" /> -->
 <div>
   <h1 id="top">Categories</h1>
 </div>
@@ -75,7 +78,7 @@
 <div class="cardsCategory global-margin">
   <div onclick="goToPage('/products/Mobile')" class="card-container">
 
-    <img src="https://navbharattimes.indiatimes.com/photo/msid-86262503,imgsize-64352/pic.jpg" class="cat-img" />
+    <img src="{% static 'media/mobile.jpg' %}" class="cat-img" />
 
     <div class="titleContainer">
       <h5 class="cat-title">
@@ -85,7 +88,7 @@
   </div>
   <div onclick="goToPage('/products/Laptop')" class="card-container">
 
-    <img src="https://navbharattimes.indiatimes.com/photo/msid-86262503,imgsize-64352/pic.jpg" class="cat-img" />
+    <img src="{% static 'media/laptop.jpg' %}" class="cat-img" />
     {% comment %}
   </div>
   {% endcomment %}
@@ -99,7 +102,7 @@
   {% comment %}
   <div>
     {% endcomment %}
-    <img src="https://navbharattimes.indiatimes.com/photo/msid-86262503,imgsize-64352/pic.jpg" class="cat-img" />
+    <img src="{% static 'media/tv.jpg' %}" class="cat-img" />
     {% comment %}
   </div>
   {% endcomment %}
@@ -113,7 +116,7 @@
   {% comment %}
   <div>
     {% endcomment %}
-    <img src="https://navbharattimes.indiatimes.com/photo/msid-86262503,imgsize-64352/pic.jpg" class="cat-img" />
+    <img src="{% static 'media/camera.jpg' %}" class="cat-img" />
     {% comment %}
   </div>
   {% endcomment %}
@@ -134,7 +137,7 @@
 
 <div class="auto-play global-margin">
   {% for product in product_array %}
-  <div onclick="goToPage('/itemDetails/id={{product.id}}')" class="product-featured-card card shadow-sm">
+  <div onclick="goToPage('/itemDetails/id/{{product.id}}')" class="product-featured-card card shadow-sm">
     <div class="img-container"><img class="card-img-top" src="{{product.image}}" alt="products" />
     </div>
     <div class="card-body">
