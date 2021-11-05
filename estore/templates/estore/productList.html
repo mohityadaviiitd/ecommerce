@@ -108,7 +108,9 @@
                 </div>
                 {% endfor %}
                 {% elif products|length == 0 %}
-                <div> No result found</div>
+                <div  class="img-wrapper" >
+                    <img style="object-fit: contain; height:100px;" src = "{% static 'media/404img.png' %}" >
+                </div>
                 {% endif %}
             </div>
         </div>
