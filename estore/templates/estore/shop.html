@@ -6,11 +6,10 @@
 
 <div class="jumbotron jumbotron-fluid custom-jumbotron">
   <div class="container">
-    <h1 class="display-4">Fluid jumbotron</h1>
-    <p class="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p>
+    <h1 class="display-4">OUR LOGO</h1>
+    <p class="lead">Anything but ordinary. An exciting place for the whole family to shop.</p>
   </div>
 </div>
-<!-- <hr class="featurette-divider" /> -->
 <div>
   <h1 id="top">Categories</h1>
 </div>
@@ -49,7 +48,7 @@
   {% endcomment %}
   <div class="titleContainer">
     <h5 class="cat-title">
-      <button class="button-borderless">TV&Appliances</button>
+      <button class="button-borderless">TV</button>
     </h5>
   </div>
 </div>
@@ -63,7 +62,7 @@
   {% endcomment %}
   <div class="titleContainer">
     <h5 class="cat-title">
-      <button class="button-borderless">Camera&Accessories</button>
+      <button class="button-borderless">Camera</button>
     </h5>
   </div>
 </div>
@@ -75,49 +74,35 @@
 </div>
 <br />
 <br />
-
 <div class="auto-play global-margin" id="productLocation">
   {% for product in product_array %}
   <div class="product-featured-card card shadow-sm">
-    <div onclick="goToPage('/itemDetails/id/{{product.id}}')" class="img-container"><img class="card-img-top"
-        src="{{product.image}}" alt="products" />
+    <div class="img-container"><img class="card-img-top" src="{{product.image}}" alt="products" />
     </div>
     <div class="card-body">
-      <h5>{{product.name}}</h5>
+      <h5 style="cursor: pointer;" onclick="goToPage('/itemDetails/id/{{product.id}}')">{{product.name}}</h5>
       <p class="card-text">
         {{ product.description}}
       </p>
-      <!-- <div>{{product.inWishlist}}</div> -->
       <div class="d-flex justify-content-between align-items-center">
         <div class="btn-group">
-          <!-- <button type="button" class="btn btn-sm btn-outline-secondary">
-              View
-            </button> -->
-          <!-- <button type="button" class="btn btn-sm btn-outline-secondary">
-              Wishlist
-            </button> -->
-          <!-- change 1 to  wishlist_id =------->
-
           {% if product.inWishlist %}
-          <button disabled class="addToWishlistBtn" onclick="showMessage('Product already exists in wishlist!')" type="button">
-            Wishlist
+          <button disabled class="addToWishlistBtn" type="button">
+            Wishlisted
           </button>
           {% else %}
-          <form action="/addToWishlist" method="POST" class="form">
+          <form action="/" method="POST" class="form">
             <input type="hidden" name="product_id" value="{{product.id}}" />
-            <!-- to change the card id -->
             <input type="hidden" name="wishlist_id" value="{{user.wishlist_id}}" />
             {% csrf_token %}
-            <button id='{{product.id}}' class="addToWishlistBtn" onclick="showMessage('Product added to wishlist successfully!','{{product.id}}')"
-              type="submit">
+            <button id='{{product.id}}' class="addToWishlistBtn"
+               type="submit">
               Wishlist
             </button>
           </form>
           {% endif %}
-
           <form action="/addToCart" method="POST" class="form">
             <input type="hidden" name="product_id" value="{{product.id}}" />
-            <!-- to change the card id -->
             <input type="hidden" name="cart_id" value="{{user.cart_id}}" />
             {% csrf_token %}
             <button class="addToCartBtn" onclick="showMessage('Product added to cart successfully!')" type="submit">
@@ -129,8 +114,6 @@
       </div>
     </div>
   </div>
-
-
   {% endfor %}
 
 </div>
@@ -141,11 +124,10 @@
   $(document).ready(function () {
     window.sessionStorage.clear('sortByKey')
     window.sessionStorage.clear('filterKey')
-    console.log('pprucs=======', '{{products}}')
     $(".auto-play").slick({
       slidesToShow: 4,
       slidesToScroll: 1,
-      autoplay: false, // todo chagne to true  in final
+      autoplay: true, 
       autoplaySpeed: 2000,
       dots: true,
       touchMove: false,
@@ -169,25 +151,13 @@
         settings: "unslick" // destroys slick
       }]
     });
-    $(".auto-play").on("click", function (e) {
-      console.log(e);
-      // left
-    });
   });
-  function showMessage(mesg, id='') {
-    // Get the snackbar DIV
+  function showMessage(mesg) {
     var x = document.getElementById("snackbar");
     x.innerHTML = mesg
-
-    // Add the "show" class to DIV
     x.className = "show";
-    console.log('-----1--------', id)
-    const toggleBtn = document.getElementById(id)
-    toggleBtn.disabled = true
-    // After 3 seconds, remove the show class from DI
     setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
   }
 </script>
-
 <hr class="featurette-divider" />
 {% endblock %}

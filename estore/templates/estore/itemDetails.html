@@ -7,50 +7,47 @@
 {% block content %}
 <div class="main-container global-margin">
     <div class="sub-container">
-        <div onclick="consoleData('{{product.images}}')" class="leftSideBar">
+        <div class="leftSideBar">
             <div class="carasoul-container">
                 <div class="item-images">
                     {% for image in product.images %}
-
-                    <!-- <p>{{image}}</p> -->
                     <div class="product-featured-card">
                         <div class="img-container"><img class="card-img-top" src="{{image}}" alt="products" />
                         </div>
                     </div>
-
-
                     {% endfor %}
                 </div>
-
-
             </div>
-
-
         </div>
         <div class="rightSideBar">
             <div>
                 <div class="product name" id="productTitle">{{product.product_name}}</div>
                 <div class="product description" id="productDes">
-                    <p>{{ product.details}}Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                        Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown
-                        printer took a galley of type and scrambled it to make a type specimen book. It has survived not
-                        only five centuries, but also the leap into electronic typesetting, remaining essentially
-                        unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem
-                        Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker
-                        including versions of Lorem Ipsum.</p>
+                    <p>{{ product.details}}</p>
                 </div>
                 <div class="product name" id="productPrice">Seller: {{product.sellerName}}</div>
-
             </div>
             <div class="bottom-wrapper">
                 <div class="product price" id="productPrice">₹{{product.price}}</div>
                 <div class="btn-container">
-                    <div class="product addToWishlist"><button id="addToWishlistBtn">Add to Wishlist</button></div>
+                    {% if product.inWishlist %}
+                    <button disabled class="addToWishlistBtn" type="button">
+                        Wishlisted
+                    </button>
+                    {% else %}
+                    <form action='{{currentUrl}}' method="POST" class="form">
+                        <input type="hidden" name="product_id" value="{{product.product_id}}" />
+                        <input type="hidden" name="wishlist_id" value="{{user.wishlist_id}}" />
+                        {% csrf_token %}
+                        <button id='{{product.id}}' class="addToWishlistBtn" type="submit">
+                            Wishlist
+                        </button>
+                    </form>
+                    {% endif %}
 
                     <div class="product addToCart">
                         <form action="/addToCart" method="POST" class="form">
                             <input type="hidden" name="product_id" value="{{product.product_id}}" />
-                            <!-- to change the card id -->
                             <input type="hidden" name="cart_id" value="{{user.cart_id}}" />
                             {% csrf_token %}
                             <button onclick="showMessage('Product added to cart successfully!')" type="submit"
@@ -58,7 +55,6 @@
                                 Add to cart
                             </button>
                         </form>
-                        <!-- <button id="addToCartBtn">Add to cart</button> -->
                     </div>
                     <div class="product buyNow"><button id="buyNowBtn">Buy Now</button></div>
                 </div>
@@ -71,7 +67,7 @@
         $(".item-images").slick({
             slidesToShow: 1,
             slidesToScroll: 1,
-            autoplay: false, // todo chagne to true  in final
+            autoplay: true,
             autoplaySpeed: 2000,
             dots: true,
             touchMove: false,
@@ -80,15 +76,12 @@
             arrows: false,
         });
     });
-    function consoleData(product) {
-        console.log('--------datate--', product)
-    }
     function showMessage(mesg) {
-    var x = document.getElementById("snackbar");
-    x.innerHTML = mesg
-    x.className = "show";
-    setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
-  }
+        var x = document.getElementById("snackbar");
+        x.innerHTML = mesg
+        x.className = "show";
+        setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
+    }
 </script>
 <hr class="featurette-divider">
 {% endblock %}
