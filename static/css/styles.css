@@ -80,6 +80,20 @@ img:hover {
   width: 100%;
 }
 
+.nav-container{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding:0 6%;
+}
+.sub-nav{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 /* snackbar css */
 /* The snackbar - position it at the bottom and in the middle of the screen */
 #snackbar {

@@ -39,7 +39,7 @@
                         Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker
                         including versions of Lorem Ipsum.</p>
                 </div>
-                <div class="product name" id="productPrice">Seller: Kajal Rawat</div>
+                <div class="product name" id="productPrice">Seller: {{product.sellerName}}</div>
 
             </div>
             <div class="bottom-wrapper">
@@ -51,7 +51,7 @@
                         <form action="/addToCart" method="POST" class="form">
                             <input type="hidden" name="product_id" value="{{product.product_id}}" />
                             <!-- to change the card id -->
-                            <input type="hidden" name="cart_id" value="1" />
+                            <input type="hidden" name="cart_id" value="{{user.cart_id}}" />
                             {% csrf_token %}
                             <button onclick="showMessage('Product added to cart successfully!')" type="submit"
                                 id="addToCartBtn">

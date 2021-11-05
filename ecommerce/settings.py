@@ -14,6 +14,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1']
 
+AUTH_USER_MODEL= "estore.Users"
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -117,3 +118,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
 # Default primary key field type
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_HOST='smtp.gmail.com'
+EMAIL_HOST_USER=''
+EMAIL_USE_TLS=True
+DEFAULT_FROM_EMAIL=''
+EMAIL_PORT=587
+EMAIL_HOST_PASSWORD=''

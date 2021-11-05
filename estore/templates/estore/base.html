@@ -27,10 +27,9 @@
   <main class="main-container">
     <div>
       <header>
-        {% comment %} <nav class="navbar navbar-expand-md navbar-light fixed-top bg-white"> {% endcomment %}
-          <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark" id="nav">
-            <div class="container-xl main-header">
-              {% comment %} <a class="navbar-brand" href="#">Our Logo</a> {% endcomment %}
+        <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark" id="nav">
+          <div class="nav-container main-header">
+            <div class="sub-nav">
               <span class="navbar-brand mb-0 h1">Our Logo</span>
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
                 aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,21 +55,28 @@
                 </ul>
 
 
-                <div class="centerSearch">
-                  <input onchange="clearSearch()" class="form-control mr-sm-2" type="text" id="searchValue" placeholder="Search"
-                    aria-label="Search" >
-                    <img  src="{% static 'media/search.svg' %}" id="search_icon">
-            
-                </div>
+                
+
+              </div>
+            </div>
+            <div class="sub-nav">
+              <div class="centerSearch">
+                <input onchange="clearSearch()" class="form-control mr-sm-2" type="text" id="searchValue"
+                  placeholder="Search" aria-label="Search">
+                <img src="{% static 'media/search.svg' %}" id="search_icon">
 
               </div>
               <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                  <a class="nav-link active" aria-current="page" href="#">Login</a>
+                  {% if user.firstName != '' %}
+                  <div class="nav-link active" aria-current="page" href="/profile">Hi, {{user.firstName}} !</div>
+                  {% else %}
+                  <a class="nav-link active" aria-current="page" href="/signin">Login</a>
+                  {% endif %}
                 </li>
               </ul>
-
             </div>
+          </div>
     </div>
     </nav>
 
@@ -93,10 +99,10 @@
     $(document).ready(function () {
       document.getElementById('searchValue').value = window.sessionStorage.getItem('searchKey')
     });
-    
+
     function handleSearch() {
       searchQuery = document.getElementById('searchValue').value;
-      if(!!searchQuery){
+      if (!!searchQuery) {
         window.sessionStorage.setItem('searchKey', searchQuery)
         const { min = 1000, max = 100000, inStock = false } = JSON.parse(window.sessionStorage.getItem('filterKey')) || {}
         const sortBy = window.sessionStorage.getItem('sortByKey') || ''
@@ -104,21 +110,21 @@
         const urlnew = `/products${searchQuery !== '' ? '/search/' + searchQuery : ''}${filterStr !== '' ? '/filter/' + filterStr : ''}${sortBy !== '' ? '/sort/' + sortBy : ''}`
         window.location.href = urlnew
       }
-      
+
 
     };
     function clearSearch() {
       searchQuery = document.getElementById('searchValue').value;
       // console.log('clr-----------', searchQuery)
-      if(searchQuery === ''){
-        window.sessionStorage.setItem('searchKey','')
+      if (searchQuery === '') {
+        window.sessionStorage.setItem('searchKey', '')
         const { min = 1000, max = 100000, inStock = false } = JSON.parse(window.sessionStorage.getItem('filterKey')) || {}
         const sortBy = window.sessionStorage.getItem('sortByKey') || ''
         const filterStr = `&inStock&${inStock}&minValue&${min}&maxValue&${max}`
         const urlnew = `/products${searchQuery !== '' ? '/search/' + searchQuery : ''}${filterStr !== '' ? '/filter/' + filterStr : ''}${sortBy !== '' ? '/sort/' + sortBy : ''}`
         window.location.href = urlnew
       }
-      else{
+      else {
         handleSearch()
       }
     };
