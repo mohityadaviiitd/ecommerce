@@ -17,9 +17,7 @@
 <br />
 <div class="cardsCategory global-margin">
   <div onclick="goToPage('/products/Mobile')" class="card-container">
-
-    <img src="{% static 'media/mobile.jpg' %}" class="cat-img" />
-
+    <div class="imgContainer"><img src="{% static 'media/mobile.jpg' %}" class="cat-img" /></div>
     <div class="titleContainer">
       <h5 class="cat-title">
         <button class="button-borderless">Mobiles</button>
@@ -27,45 +25,29 @@
     </div>
   </div>
   <div onclick="goToPage('/products/Laptop')" class="card-container">
-
-    <img src="{% static 'media/laptop.jpg' %}" class="cat-img" />
-    {% comment %}
+    <div class="imgContainer"><img src="{% static 'media/laptop.jpg' %}" class="cat-img" /></div>
+    <div class="titleContainer">
+      <h5 class="cat-title">
+        <button class="button-borderless">Laptops</button>
+      </h5>
+    </div>
   </div>
-  {% endcomment %}
-  <div class="titleContainer">
-    <h5 class="cat-title">
-      <button class="button-borderless">Laptops</button>
-    </h5>
+  <div onclick="goToPage('/products/TV')" class="card-container">
+    <div class="imgContainer"><img src="{% static 'media/tv.jpg' %}" class="cat-img" /></div>
+    <div class="titleContainer">
+      <h5 class="cat-title">
+        <button class="button-borderless">TV</button>
+      </h5>
+    </div>
   </div>
-</div>
-<div onclick="goToPage('/products/TV')" class="card-container">
-  {% comment %}
-  <div>
-    {% endcomment %}
-    <img src="{% static 'media/tv.jpg' %}" class="cat-img" />
-    {% comment %}
+  <div onclick="goToPage('/products/Camera')" class="card-container">
+    <div class="imgContainer"><img src="{% static 'media/camera.jpg' %}" class="cat-img" /></div>
+    <div class="titleContainer">
+      <h5 class="cat-title">
+        <button class="button-borderless">Camera</button>
+      </h5>
+    </div>
   </div>
-  {% endcomment %}
-  <div class="titleContainer">
-    <h5 class="cat-title">
-      <button class="button-borderless">TV</button>
-    </h5>
-  </div>
-</div>
-<div onclick="goToPage('/products/Camera')" class="card-container">
-  {% comment %}
-  <div>
-    {% endcomment %}
-    <img src="{% static 'media/camera.jpg' %}" class="cat-img" />
-    {% comment %}
-  </div>
-  {% endcomment %}
-  <div class="titleContainer">
-    <h5 class="cat-title">
-      <button class="button-borderless">Camera</button>
-    </h5>
-  </div>
-</div>
 </div>
 
 <hr class="featurette-divider" />
@@ -95,8 +77,7 @@
             <input type="hidden" name="product_id" value="{{product.id}}" />
             <input type="hidden" name="wishlist_id" value="{{user.wishlist_id}}" />
             {% csrf_token %}
-            <button id='{{product.id}}' class="addToWishlistBtn"
-               type="submit">
+            <button id='{{product.id}}' class="addToWishlistBtn" type="submit">
               Wishlist
             </button>
           </form>
@@ -127,7 +108,7 @@
     $(".auto-play").slick({
       slidesToShow: 4,
       slidesToScroll: 1,
-      autoplay: true, 
+      autoplay: true,
       autoplaySpeed: 2000,
       dots: true,
       touchMove: false,

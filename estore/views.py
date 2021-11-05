@@ -19,6 +19,8 @@ from django.urls import resolve
 import re
 
 def products(request,productCategory = "",searchQuery="",filterQuery="",sortBy=""):
+    if(request.user.is_authenticated and request.user.is_admin == True):
+        return HttpResponseRedirect('/admin-home')
     current_url = request.path_info
     # print('curnrul;-----',current_url)
     # print('-data------------------------',productCategory,   searchQuery,filterQuery)
@@ -119,6 +121,8 @@ def products(request,productCategory = "",searchQuery="",filterQuery="",sortBy="
 
 
 def items(request,item_id):
+    if(request.user.is_authenticated and request.user.is_admin == True):
+        return HttpResponseRedirect('/admin-home')
     current_url = request.path_info
     wishlistData = []
     if(request.POST):
@@ -189,45 +193,28 @@ def signin(request):
             messages.error(request, "email or password incorrect")
         
     return render(request, 'estore/signin.html')
-def addToCart(request):
     
+def addToCart(request):
     if(request.POST):
-        cart_id_form = request.POST.get('cart_id')
-        product_id_form = request.POST.get('product_id')
-        print("cart" + cart_id_form + "prod_id" + product_id_form)
-        try:
-            cartObj = Cart.objects.get(
-                cart_id=cart_id_form, product_id=product_id_form)
-            
-            newQuantity = cartObj.quantity + 1
-            # print("new =======",newQuantity)
-            setattr(cartObj,'quantity',newQuantity)
-            # print('inside trty',cartObj)
-            # cart = Cart(cart_id=cart_id_form, quantity=1,
-            #             product_id=product_id_form)
-            cartObj.save()
-        except Cart.DoesNotExist:
-            # cartObj = Cart.objects.get(
-            #     cart_id=cart_id_form, product_id=product_id_form)
-            cart = Cart(cart_id=cart_id_form, quantity=1,
-                        product_id=product_id_form)
-            # cartObj['quantity'] += 1
-            # print("quantity=======")
-            cart.save()   
-    return HttpResponse(status=204)  
+        if request.user.is_authenticated: 
+            cart_id_form = request.POST.get('cart_id')
+            product_id_form = request.POST.get('product_id')
+            print("cart" + cart_id_form + "prod_id" + product_id_form)
+            try:
+                cartObj = Cart.objects.get(
+                    cart_id=cart_id_form, product_id=product_id_form)
+                
+                newQuantity = cartObj.quantity + 1
+                setattr(cartObj,'quantity',newQuantity)
+                cartObj.save()
+            except Cart.DoesNotExist:
+                cart = Cart(cart_id=cart_id_form, quantity=1,
+                            product_id=product_id_form)
+                cart.save()   
+            return HttpResponse(status=204)  
+        else:
+            return HttpResponseRedirect('/signin')
 
-# TO_DO--->
-
-def addToWishlist(request):
-    if(request.POST):
-        wishlist_id_form = request.POST.get('wishlist_id')
-        product_id_form = request.POST.get('product_id')
-        wishlistObj = Wishlist(wishlist_id=wishlist_id_form,
-                        product_id=product_id_form)          
-        wishlistObj.save()
-            
-        
-    return HttpResponse(status=205)
 
 def registerUser(request):
     if request.user.is_authenticated:
@@ -334,6 +321,8 @@ def signout(request):
 
 # @login_required(login_url="signin")
 def shop(request):
+    if(request.user.is_authenticated and request.user.is_admin == True):
+        return HttpResponseRedirect('/admin-home')
     if(request.POST):
         if request.user.is_authenticated: 
             wishlist_id_form = request.POST.get('wishlist_id')
@@ -391,6 +380,8 @@ def shop(request):
 
 @login_required(login_url="signin")
 def profile(request):
+    if(request.user.is_authenticated and request.user.is_admin == True):
+        return HttpResponseRedirect('/admin-home')
     userId = request.user.user_id
     return render(request, 'estore/profile.html')
 
@@ -470,11 +461,13 @@ def admin(request):
     return render(request, 'estore/adminBase.html')
 
 def adminBuyer(request):
+    if(request.user.is_authenticated and request.user.is_admin == False):
+        return HttpResponseRedirect('/signin')
     resUserData = Users.objects.all()
     resAddData = UserAddress.objects.all()
     usersArr = []
     for data in resUserData:
-        if(data.deleted != 1 and data.is_seller != 1 ):
+        if(data.deleted != 1 and data.is_seller != 1 and data.is_admin != 1):
             userObj = {}
             userObj['id'] = data.user_id
             userObj['name'] = data.user_name
