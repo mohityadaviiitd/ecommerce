@@ -181,8 +181,7 @@ class Users(AbstractBaseUser):
     is_staff=models.BooleanField(default=False)
     is_superuser=models.BooleanField(default=False)
     is_seller=models.BooleanField(default=False)
-    cart_id = models.CharField(unique=True, max_length=90)
-    wishlist_id = models.CharField(unique=True, max_length=90)
+    wishlist_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     active = models.BooleanField(default=1)
     deleted = models.BooleanField(default=0)
 

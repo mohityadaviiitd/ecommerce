@@ -77,23 +77,32 @@
                 {% if products|length > 0 %}
                 {% for product in products %}
                 <!-- <a class = "no-link" href="/item/{{product.id}}"> -->
-                <div onclick="goToPage('/itemDetails/id={{product.id}}')" class="product-featured-card card shadow-sm">
-                    <div class="img-container">
+                <div class="product-featured-card card shadow-sm">
+                    <div onclick="goToPage('/itemDetails/id/{{product.id}}')"  class="img-container">
                         <img src="{{product.image}}" class="card-img-top" alt="web development" />
 
                     </div>
                     <div class="card-body">
-                        <p class="card-text">
+                        <p onclick="goToPage('/itemDetails/id/{{product.id}}')"  class="card-text">
                             {{product.name}} {{product.description}}
                         </p>
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-outline-secondary">
-                                    Wishlist
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <div><button id="addToWishlistBtn">Wishlist</button></div>
+
+                                <form action="/addToCart" method="POST" class="form">
+                                    <input type="hidden" name="product_id" value="{{product.id}}" />
+                                    <!-- to change the card id -->
+                                    <input type="hidden" name="cart_id" value="{{user.cart_id}}" />
+                                    {% csrf_token %}
+                                    <button onclick="showMessage('Product added to cart successfully!')" type="submit"
+                                        id="addToCartBtn">
+                                        Add to cart
+                                    </button>
+                                </form>
+                                <!-- <button type="button" class="btn btn-sm btn-outline-secondary">
                                     Add to cart
-                                </button>
+                                </button> -->
                             </div>
                             <small class="text-muted">₹{{product.price}}</small>
                         </div>

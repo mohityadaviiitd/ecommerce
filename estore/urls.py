@@ -3,6 +3,7 @@ from . import views
 urlpatterns = [
     path('', views.shop, name="shop"),
     path('addToCart',views.addToCart, name="addToCart"),
+     path('addToWishlist',views.addToWishlist, name="addToWishlist"),
     path('products/<str:productCategory>', views.products, name="products"),
     path('products/search/<str:searchQuery>', views.products, name="products"),
     path('products/filter/<str:filterQuery>', views.products, name="products"),
@@ -12,7 +13,7 @@ urlpatterns = [
     path('products/search/<str:searchQuery>/sort/<str:sortBy>', views.products, name="products"),
     path('products/search/<str:searchQuery>/filter/<str:filterQuery>/sort/<str:sortBy>', views.products, name="products"),
     path('products/', views.products, name="products"),
-    path('itemDetails/id=<int:item_id>', views.items, name="items"),
+    path('itemDetails/id/<str:item_id>', views.items, name="items"),
     path('signin/', views.signin, name="signin"),
     path('register/', views.registerUser, name="register"),
     path('signout/', views.signout, name="signout"),

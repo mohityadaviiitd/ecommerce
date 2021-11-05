@@ -1,7 +1,8 @@
+import uuid
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from .models import Users, Sellers, ProductImages, Products, Cart, UserAddress, Users, Wishlist
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from .forms import RegisterForm, SellerForm, ProductForm, ProductImagesForm
 from django.core.mail import send_mail
@@ -69,27 +70,53 @@ def products(request,productCategory = "",searchQuery="",filterQuery="",sortBy="
         product_dict['name'] = i.product_name
         product_dict['price'] = int(i.price)
         product_dict['category'] = i.category
-        product_dict['description'] = i.details
+        product_dict['fullDescription'] = i.details
+        product_dict['description'] = i.details[0:50] + ' ...'
         product_dict['stock'] = i.stock
         product_dict['status'] = i.status
+        product_dict['sellerId'] = i.seller_id
         productArr.append(product_dict)
     # print('-------arr product=----------------------',productArr)
+
     for i in productArr:
             for j in imgData:
                 if (i['id'] == j.product_id):
                     i['image'] = j.image
                     # print("images ==============",j.image)
                     break
-    return render(request, 'estore/productList.html',{'products':productArr,'pageTitle':pageTitle})
+    user = {}
+    if request.user.is_authenticated:   
+        user['firstName'] = request.user.user_name.split(" ")[0]
+        #Note sending userid as cart id,userid is matched with cart_id in CART model
+        user['cart_id'] = request.user.user_id
+    else:
+        user['firstName'] =''
+        user['cart_id'] =''
+    return render(request, 'estore/productList.html',{'products':productArr,'pageTitle':pageTitle,'user':user})
 
 
 def items(request,item_id):
+    print("id------", item_id)
     productDetails = Products.objects.get(product_id=item_id)
-    imgDetails = ProductImages.objects.get(product_id=item_id)
-    
-    setattr(productDetails,'image',imgDetails.image)
-    # print("ietem id ========", item_id)
-    return render(request, 'estore/itemDetails.html',{'product':productDetails})
+    imgRes = ProductImages.objects.all()
+    images= []
+    for img in imgRes:
+        if(img.product_id==productDetails.product_id):
+            images.append(img.image)
+    setattr(productDetails,'images',images)
+    setattr(productDetails,'price',int(productDetails.price))
+    sellerData = Sellers.objects.get(seller_id = productDetails.seller_id)
+    sellerDataFromUserDb = Users.objects.get(user_id = sellerData.user_id )
+    setattr(productDetails,'sellerName',sellerDataFromUserDb.user_name)
+    user = {}
+    if request.user.is_authenticated:   
+        user['firstName'] = request.user.user_name.split(" ")[0]
+        #Note sending userid as cart id,userid is matched with cart_id in CART model
+        user['cart_id'] = request.user.user_id
+    else:
+        user['firstName'] =''
+        user['cart_id'] =''
+    return render(request, 'estore/itemDetails.html',{'product':productDetails,'user':user})
 
 
 def signin(request):
@@ -116,7 +143,7 @@ def signin(request):
         
     return render(request, 'estore/signin.html')
 def addToCart(request):
-    print('req-------------',request)
+    
     if(request.POST):
         cart_id_form = request.POST.get('cart_id')
         product_id_form = request.POST.get('product_id')
@@ -144,31 +171,17 @@ def addToCart(request):
 
 # TO_DO--->
 
-# def addToWishlist(request):
-#     if(request.POST):
-#         wishlist_id_form = request.POST.get('wishlist_id')
-#         product_id_form = request.POST.get('product_id')
-#         print("cart" + wishlist_id_form + "prod_id" + product_id_form)
-#         try:
-#             wishlistObj = Wishlist.objects.get(
-#                 wish_id=wishlist_id_form, product_id=product_id_form)
+def addToWishlist(request):
+    if(request.POST):
+        wishlist_id_form = request.POST.get('wishlist_id')
+        product_id_form = request.POST.get('product_id')
+        print("cart" + wishlist_id_form + "prod_id" + product_id_form)
+        wishlistObj = Wishlist(wishlist_id=wishlist_id_form,
+                        product_id=product_id_form)          
+        wishlistObj.save()
             
-#             newQuantity = wishlistObj.quantity + 1
-#             # print("new =======",newQuantity)
-#             setattr(wishlistObj,'quantity',newQuantity)
-#             # print('inside trty',cartObj)
-#             # cart = Cart(cart_id=cart_id_form, quantity=1,
-#             #             product_id=product_id_form)
-#             wishlistObj.save()
-#         except Cart.DoesNotExist:
-#             # cartObj = Cart.objects.get(
-#             #     cart_id=cart_id_form, product_id=product_id_form)
-#             cart = Cart(wishlist_id=cart_id_form, quantity=1,
-#                         product_id=product_id_form)
-#             # cartObj['quantity'] += 1
-#             # print("quantity=======")
-#             cart.save()   
-#     return HttpResponse(status=204)
+        
+    return HttpResponse(status=205)
 
 def registerUser(request):
     if request.user.is_authenticated:
@@ -273,7 +286,7 @@ def signout(request):
     logout(request)
     return redirect('signin')
 
-@login_required(login_url="signin")
+# @login_required(login_url="signin")
 def shop(request):
     if(request.POST):
         cart_id_form = request.POST.get('cart_id')
@@ -302,20 +315,36 @@ def shop(request):
         
         return HttpResponseRedirect('/')
     else:
+        user = {}
+        wishlistData = []
+        if request.user.is_authenticated:   
+            user['firstName'] = request.user.user_name.split(" ")[0]
+            #Note sending userid as cart id,userid is matched with cart_id in CART model
+            user['cart_id'] = request.user.user_id
+            #Note sending userid as wishlist id,userid is matched with wishlist_id in CART model
+            user['wishlist_id'] = request.user.user_id
+            wishlistData = Wishlist.objects.filter(wishlist_id = request.user.user_id)
+        else:
+            user['firstName'] =''
+            user['cart_id'] =''
         resData = Products.objects.all()
+        print('prod data--------',wishlistData[0].product_id)
         imgData = ProductImages.objects.all()
         productArr = []
         for i in resData:
+            print('-------------pid-----',i,i.product_id)
             product_dict = {}
             product_dict['id'] = i.product_id
             product_dict['name'] = i.product_name
             product_dict['price'] = int(i.price)
             product_dict['category'] = i.category
-            product_dict['description'] = i.details
+            product_dict['fullDescription'] = i.details
+            product_dict['description'] = i.details[0:50] + ' ...'
             product_dict['stock'] = i.stock
             product_dict['status'] = i.status
+            product_dict['inWishlist'] = any(obj.product_id == i.product_id for obj in wishlistData)
             productArr.append(product_dict)
-        # print("data =========",productArr)
+        print("data =========",productArr)
         for i in productArr:
             for j in imgData:
                 if (i['id'] == j.product_id):
@@ -325,11 +354,34 @@ def shop(request):
         random.shuffle(dest)
         productsFeatured = dest[0:6]
         # print(productsFeatured)
-        return render(request, 'estore/shop.html', {'product_array': productsFeatured})
+       
+        return render(request, 'estore/shop.html', {'product_array': productsFeatured,'user': user})
 
 
 @login_required(login_url="signin")
 def profile(request):
+    userId = request.user.user_id
+    # print("request========",request)
+    print("1========",type(userId),userId)
+    useridStr= str(userId)
+    print("2=========",type(useridStr),useridStr)
+    uqId = uuid.UUID(useridStr)
+    print("3=========",type(uqId),uqId)
+    print("4=========",request.user.cart_id)
+    check1 = useridStr == uqId
+    check2 = uqId == userId
+    check3 = userId == useridStr
+    print('4------------------',check1,check2,check3,uuid.uuid4())
+    cartData = Cart.objects.get(cart_id = userId)
+    # for i in cartData:
+    #     print('id--------',i.cart_id,type(i.cart_id),uuid.uuid4())
+    #     if(str(i.cart_id) == userId):
+    #         print('card-----',i.product_id,i.id)
+    # user_id_uuid = uuid.UUID(str(userId))
+    # print("uuid=============",type())
+    # cart= Cart.objects.get(cart_id = userId)
+    print("cart =======",cartData)
+    # print("wishlist_id=========",cart.cart_id)
     return render(request, 'estore/profile.html')
 
 @login_required(login_url="signin")
