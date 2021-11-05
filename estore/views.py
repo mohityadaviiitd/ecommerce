@@ -15,108 +15,155 @@ from .utils import maketoken
 from django.http.response import HttpResponse
 from django.http import HttpResponseRedirect
 import random
+from django.urls import resolve
 import re
 
 def products(request,productCategory = "",searchQuery="",filterQuery="",sortBy=""):
-    print('-data------------------------',productCategory,   searchQuery,filterQuery)
+    current_url = request.path_info
+    # print('curnrul;-----',current_url)
+    # print('-data------------------------',productCategory,   searchQuery,filterQuery)
     filterArr= []
     finalArr = []
     pageTitle = ''
     imgData = ProductImages.objects.all()
-    if productCategory=="" and searchQuery == "" :
-        pageTitle="Products"
-        # print('1--------------')
-        filterArr = Products.objects.all()
-    elif productCategory != "" and searchQuery == ""  :
-         pageTitle = productCategory
-        #  print('2--------------')
-         filterArr = Products.objects.filter(category=productCategory)
-    elif productCategory == "" and searchQuery != "":
-        # print('3--------------')
-        pageTitle = "Search Results"
-        tempArr = Products.objects.all()
-        for product in tempArr:
-            foundInName = re.search(searchQuery.lower(),product.product_name.lower())
-            foundInDes = re.search(searchQuery.lower(),product.details.lower())
-            foundInCategory = re.search(searchQuery.lower(),product.category.lower())
-            #print('41--------------',foundInName,foundInCategory,foundInDes)
-            if(foundInName != None or foundInDes != None or foundInCategory != None):
-                filterArr.append(product)
-    if filterQuery != "" : 
-        arrQueries = filterQuery.split('&')
-        inStock = arrQueries[2]
-        minPrice = arrQueries[4]
-        maxPrice = arrQueries[6]
-        print('mix---------------', type(filterArr))
-        tempArr = filterArr
-        for elem in tempArr:
-            if int(elem.price) >= int(minPrice) and int(elem.price) <= int(maxPrice) :
-                if inStock == 'true':
-                    if elem.stock > 0:
+    if(request.POST):
+        if request.user.is_authenticated: 
+            wishlist_id_form = request.POST.get('wishlist_id')
+            product_id_form = request.POST.get('product_id')
+            wishlistObj = Wishlist(wishlist_id=wishlist_id_form,
+                            product_id=product_id_form)          
+            wishlistObj.save() 
+            
+            current_url = request.path_info
+            
+            return HttpResponseRedirect(current_url)
+        else:
+            return HttpResponseRedirect('/signin')
+    else:
+        user = {}
+        wishlistData = []
+        if request.user.is_authenticated:   
+            user['firstName'] = request.user.user_name.split(" ")[0]
+            #Note sending userid as cart id,userid is matched with cart_id in CART model
+            user['cart_id'] = request.user.user_id
+            #Note sending userid as wishlist id,userid is matched with wishlist_id in CART model
+            user['wishlist_id'] = request.user.user_id
+            wishlistData = Wishlist.objects.filter(wishlist_id = request.user.user_id)
+        else:
+            user['firstName'] =''
+            user['cart_id'] =''
+        if productCategory=="" and searchQuery == "" :
+            pageTitle="Products"
+            # print('1--------------')
+            filterArr = Products.objects.all()
+        elif productCategory != "" and searchQuery == ""  :
+            pageTitle = productCategory
+            #  print('2--------------')
+            filterArr = Products.objects.filter(category=productCategory)
+        elif productCategory == "" and searchQuery != "":
+            # print('3--------------')
+            pageTitle = "Search Results"
+            tempArr = Products.objects.all()
+            for product in tempArr:
+                foundInName = re.search(searchQuery.lower(),product.product_name.lower())
+                foundInDes = re.search(searchQuery.lower(),product.details.lower())
+                foundInCategory = re.search(searchQuery.lower(),product.category.lower())
+                #print('41--------------',foundInName,foundInCategory,foundInDes)
+                if(foundInName != None or foundInDes != None or foundInCategory != None):
+                    filterArr.append(product)
+        if filterQuery != "" : 
+            arrQueries = filterQuery.split('&')
+            inStock = arrQueries[2]
+            minPrice = arrQueries[4]
+            maxPrice = arrQueries[6]
+            print('mix---------------', type(filterArr))
+            tempArr = filterArr
+            for elem in tempArr:
+                if int(elem.price) >= int(minPrice) and int(elem.price) <= int(maxPrice) :
+                    if inStock == 'true':
+                        if elem.stock > 0:
+                            finalArr.append(elem)
+                    else:
                         finalArr.append(elem)
-                else:
-                    finalArr.append(elem)
-    else:
-        finalArr = filterArr        
-    if sortBy == "A-Z" :
-        finalArr.sort(key=lambda x: x.product_name, reverse=False)
-        print('-sorted arr alpla----',finalArr)
-    if sortBy == 'price' :
-        finalArr.sort(key=lambda x: x.price, reverse=False)
-    productArr = []
-    for i in finalArr:
-        product_dict = {}
-        product_dict['id'] = i.product_id
-        product_dict['name'] = i.product_name
-        product_dict['price'] = int(i.price)
-        product_dict['category'] = i.category
-        product_dict['fullDescription'] = i.details
-        product_dict['description'] = i.details[0:50] + ' ...'
-        product_dict['stock'] = i.stock
-        product_dict['status'] = i.status
-        product_dict['sellerId'] = i.seller_id
-        productArr.append(product_dict)
-    # print('-------arr product=----------------------',productArr)
+        else:
+            finalArr = filterArr        
+        if sortBy == "A-Z" :
+            finalArr.sort(key=lambda x: x.product_name, reverse=False)
+            print('-sorted arr alpla----',finalArr)
+        if sortBy == 'price' :
+            finalArr.sort(key=lambda x: x.price, reverse=False)
+        productArr = []
+        for i in finalArr:
+            product_dict = {}
+            product_dict['id'] = i.product_id
+            product_dict['name'] = i.product_name
+            product_dict['price'] = int(i.price)
+            product_dict['category'] = i.category
+            product_dict['fullDescription'] = i.details
+            product_dict['description'] = i.details[0:50] + ' ...'
+            product_dict['stock'] = i.stock
+            product_dict['status'] = i.status
+            product_dict['sellerId'] = i.seller_id
+            product_dict['inWishlist'] = any(obj.product_id == i.product_id for obj in wishlistData)
+            productArr.append(product_dict)
+        # print('-------arr product=----------------------',productArr)
 
-    for i in productArr:
-            for j in imgData:
-                if (i['id'] == j.product_id):
-                    i['image'] = j.image
-                    # print("images ==============",j.image)
-                    break
-    user = {}
-    if request.user.is_authenticated:   
-        user['firstName'] = request.user.user_name.split(" ")[0]
-        #Note sending userid as cart id,userid is matched with cart_id in CART model
-        user['cart_id'] = request.user.user_id
-    else:
-        user['firstName'] =''
-        user['cart_id'] =''
-    return render(request, 'estore/productList.html',{'products':productArr,'pageTitle':pageTitle,'user':user})
+        for i in productArr:
+                for j in imgData:
+                    if (i['id'] == j.product_id):
+                        i['image'] = j.image
+                        # print("images ==============",j.image)
+                        break
+
+        return render(request, 'estore/productList.html',{'products':productArr,'pageTitle':pageTitle,'user':user,'currentUrl':current_url})
 
 
 def items(request,item_id):
-    print("id------", item_id)
-    productDetails = Products.objects.get(product_id=item_id)
-    imgRes = ProductImages.objects.all()
-    images= []
-    for img in imgRes:
-        if(img.product_id==productDetails.product_id):
-            images.append(img.image)
-    setattr(productDetails,'images',images)
-    setattr(productDetails,'price',int(productDetails.price))
-    sellerData = Sellers.objects.get(seller_id = productDetails.seller_id)
-    sellerDataFromUserDb = Users.objects.get(user_id = sellerData.user_id )
-    setattr(productDetails,'sellerName',sellerDataFromUserDb.user_name)
-    user = {}
-    if request.user.is_authenticated:   
-        user['firstName'] = request.user.user_name.split(" ")[0]
-        #Note sending userid as cart id,userid is matched with cart_id in CART model
-        user['cart_id'] = request.user.user_id
+    current_url = request.path_info
+    wishlistData = []
+    if(request.POST):
+        user = {}
+        if request.user.is_authenticated: 
+            wishlist_id_form = request.POST.get('wishlist_id')
+            product_id_form = request.POST.get('product_id')
+            wishlistObj = Wishlist(wishlist_id=wishlist_id_form,
+                            product_id=product_id_form)          
+            wishlistObj.save() 
+            
+            current_url = request.path_info
+            
+            return HttpResponseRedirect(current_url)
+        else:
+            return HttpResponseRedirect('/signin')
     else:
-        user['firstName'] =''
-        user['cart_id'] =''
-    return render(request, 'estore/itemDetails.html',{'product':productDetails,'user':user})
+        user = {}
+        if request.user.is_authenticated:   
+            user['firstName'] = request.user.user_name.split(" ")[0]
+            #Note sending userid as cart id,userid is matched with cart_id in CART model
+            user['cart_id'] = request.user.user_id
+            user['wishlist_id'] = request.user.user_id
+            wishlistData = Wishlist.objects.filter(wishlist_id = request.user.user_id)  
+        else:
+            user['firstName'] =''
+            user['cart_id'] =''    
+            user['wishlist_id'] =''    
+
+        print("id------", item_id)
+        productDetails = Products.objects.get(product_id=item_id)
+        imgRes = ProductImages.objects.all()
+        images= []
+        for img in imgRes:
+            if(img.product_id==productDetails.product_id):
+                images.append(img.image)
+        setattr(productDetails,'images',images)
+        setattr(productDetails,'price',int(productDetails.price))
+        sellerData = Sellers.objects.get(seller_id = productDetails.seller_id)
+        sellerDataFromUserDb = Users.objects.get(user_id = sellerData.user_id )
+        setattr(productDetails,'sellerName',sellerDataFromUserDb.user_name)
+        setattr(productDetails,'inWishlist',any(obj.product_id == productDetails.product_id for obj in wishlistData))
+        # product_dict['inWishlist'] = any(obj.product_id == i.product_id for obj in wishlistData)
+        
+        return render(request, 'estore/itemDetails.html',{'product':productDetails,'user':user,'currentUrl':current_url})
 
 
 def signin(request):
@@ -175,7 +222,6 @@ def addToWishlist(request):
     if(request.POST):
         wishlist_id_form = request.POST.get('wishlist_id')
         product_id_form = request.POST.get('product_id')
-        print("cart" + wishlist_id_form + "prod_id" + product_id_form)
         wishlistObj = Wishlist(wishlist_id=wishlist_id_form,
                         product_id=product_id_form)          
         wishlistObj.save()
@@ -289,31 +335,16 @@ def signout(request):
 # @login_required(login_url="signin")
 def shop(request):
     if(request.POST):
-        cart_id_form = request.POST.get('cart_id')
-        product_id_form = request.POST.get('product_id')
-        print("cart" + cart_id_form + "prod_id" + product_id_form)
-        try:
-            cartObj = Cart.objects.get(
-                cart_id=cart_id_form, product_id=product_id_form)
-            
-            newQuantity = cartObj.quantity + 1
-            # print("new =======",newQuantity)
-            setattr(cartObj,'quantity',newQuantity)
-            # print('inside trty',cartObj)
-            # cart = Cart(cart_id=cart_id_form, quantity=1,
-            #             product_id=product_id_form)
-            cartObj.save()
-           
-        except Cart.DoesNotExist:
-            # cartObj = Cart.objects.get(
-            #     cart_id=cart_id_form, product_id=product_id_form)
-            cart = Cart(cart_id=cart_id_form, quantity=1,
-                        product_id=product_id_form)
-            # cartObj['quantity'] += 1
-            # print("quantity=======")
-            cart.save()
-        
-        return HttpResponseRedirect('/')
+        if request.user.is_authenticated: 
+            wishlist_id_form = request.POST.get('wishlist_id')
+            product_id_form = request.POST.get('product_id')
+            print('-wish---------------',wishlist_id_form,product_id_form)
+            wishlistObj = Wishlist(wishlist_id=wishlist_id_form,
+                            product_id=product_id_form)          
+            wishlistObj.save() 
+            return HttpResponseRedirect('/')
+        else:
+            return HttpResponseRedirect('/signin')
     else:
         user = {}
         wishlistData = []
@@ -328,7 +359,7 @@ def shop(request):
             user['firstName'] =''
             user['cart_id'] =''
         resData = Products.objects.all()
-        print('prod data--------',wishlistData[0].product_id)
+        # print('prod data--------',wishlistData[0].product_id)
         imgData = ProductImages.objects.all()
         productArr = []
         for i in resData:
@@ -361,27 +392,6 @@ def shop(request):
 @login_required(login_url="signin")
 def profile(request):
     userId = request.user.user_id
-    # print("request========",request)
-    print("1========",type(userId),userId)
-    useridStr= str(userId)
-    print("2=========",type(useridStr),useridStr)
-    uqId = uuid.UUID(useridStr)
-    print("3=========",type(uqId),uqId)
-    print("4=========",request.user.cart_id)
-    check1 = useridStr == uqId
-    check2 = uqId == userId
-    check3 = userId == useridStr
-    print('4------------------',check1,check2,check3,uuid.uuid4())
-    cartData = Cart.objects.get(cart_id = userId)
-    # for i in cartData:
-    #     print('id--------',i.cart_id,type(i.cart_id),uuid.uuid4())
-    #     if(str(i.cart_id) == userId):
-    #         print('card-----',i.product_id,i.id)
-    # user_id_uuid = uuid.UUID(str(userId))
-    # print("uuid=============",type())
-    # cart= Cart.objects.get(cart_id = userId)
-    print("cart =======",cartData)
-    # print("wishlist_id=========",cart.cart_id)
     return render(request, 'estore/profile.html')
 
 @login_required(login_url="signin")

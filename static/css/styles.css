@@ -9,29 +9,24 @@ body {
   background-color: #e3f2fd;
 }
 
-/* carousel image hover effect*/
+
 img {
   opacity: 0.8;
   filter: alpha(opacity=50);
-  /* For IE8 and earlier */
 }
 
 img:hover {
   opacity: 1;
   filter: alpha(opacity=80);
-  /* For IE8 and earlier */
 }
 
 .featurette-divider {
   margin: 3rem 0;
-  /* Space out the Bootstrap <hr> more */
 }
 
-/* Thin out the marketing headings */
 .featurette-heading {
   font-weight: 300;
   line-height: 1;
-  /* rtl:remove */
   letter-spacing: -.05rem;
 }
 
@@ -44,26 +39,6 @@ img:hover {
 .searchIcon {
   color: #ffffff;
 }
-.carousal-img{
-  height: 600px;
-  width: 100%;
-}
-.carousel-caption {
-  bottom: 3rem;
-  z-index: 10;
-}
-
-.carousel-item {
-  height: 30rem;
-}
-
-/* .carousel-item>img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  min-width: 100%;
-  height: auto;
-} */
 
 #search_icon {
   position: absolute;
@@ -94,33 +69,77 @@ img:hover {
   align-items: center;
 }
 
-/* snackbar css */
-/* The snackbar - position it at the bottom and in the middle of the screen */
-#snackbar {
-  visibility: hidden; /* Hidden by default. Visible on click */
-  min-width: 250px; /* Set a default minimum width */
-  margin-left: -125px; /* Divide value of min-width by 2 */
-  background-color: #333; /* Black background color */
-  color: #fff; /* White text color */
-  text-align: center; /* Centered text */
-  border-radius: 2px; /* Rounded borders */
-  padding: 16px; /* Padding */
-  position: fixed; /* Sit on top of the screen */
-  z-index: 1; /* Add a z-index if needed */
-  left: 50%; /* Center the snackbar */
-  bottom: 30px; /* 30px from the bottom */
+#navbar-hr{
+  margin:0px!important;
+}
+#nav-logout{
+  padding: 5px 1rem !important;
+}
+#nav-logout:hover{
+  background-color: rgba(255, 40, 75, 0.842);
+  border-radius: 0px 0px 3px 3px;
+  color: #fff;
+  padding: 5px 1rem!important;
+}
+#nav-profile{
+  padding: 5px 1rem !important;
+}
+#nav-profile:hover{
+  border-radius: 3px 3px 0px 0px;
+  color: #fff;
+  padding: 5px 1rem !important;
+}
+#nav-orders{
+  padding: 5px 1rem 8px 1rem !important;
+}
+#nav-orders:hover{
+  padding: 5px 1rem 8px 1rem !important;
 }
 
-/* Show the snackbar when clicking on a button (class added with JavaScript) */
+#nav-camera:hover{
+  border-radius: 0px 0px 3px 3px;
+}
+.nav-dropdown-items{
+  padding: 5px 1rem !important;
+}
+.nav-dropdown-items:hover{
+  padding: 5px 1rem !important;
+  background-color: rgb(122, 106, 109) !important;
+  color: #fff !important ;
+}
+.dropdown-custom{
+  margin-top: 0px !important;
+  padding-top: 0px !important;
+  margin-bottom: 0px !important;
+  padding-bottom: 0px !important;
+  border:none !important;
+}
+
+
+/* snackbar css */
+#snackbar {
+  visibility: hidden; 
+  min-width: 250px; 
+  margin-left: -125px; 
+  background-color: #333; 
+  color: #fff; 
+  text-align: center; 
+  border-radius: 2px; 
+  padding: 16px; 
+  position: fixed; 
+  z-index: 1; 
+  left: 50%; 
+  bottom: 30px; 
+}
+
+
 #snackbar.show {
-  visibility: visible; /* Show the snackbar */
-  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
-  However, delay the fade out process for 2.5 seconds */
+  visibility: visible; 
   -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
   animation: fadein 0.5s, fadeout 0.5s 2.5s;
 }
 
-/* Animations to fade the snackbar in and out */
+
 @-webkit-keyframes fadein {
   from {bottom: 0; opacity: 0;}
   to {bottom: 30px; opacity: 1;}
@@ -140,3 +159,4 @@ img:hover {
   from {bottom: 30px; opacity: 1;}
   to {bottom: 0; opacity: 0;}
 }
+

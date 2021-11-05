@@ -63,6 +63,7 @@ img:hover {
 }
 
 #top {
+  margin-top: 50px;
   text-align: center;
   font-family: 'Arimo', sans-serif;
 
@@ -223,9 +224,9 @@ img:hover {
 
 
 .custom-jumbotron{
-  background: linear-gradient(to right, #7f7fd5, #86a8e7, #91eae4);
-  padding-top: 150px;
-  padding-bottom: 125px;
+  background: linear-gradient(to right, #ee9ca7, #ffdde1);
+  padding-top: 175px;
+  padding-bottom: 150px;
 }
 
 .addToWishlistBtn{
