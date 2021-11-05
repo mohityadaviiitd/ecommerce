@@ -229,7 +229,7 @@ img:hover {
   padding-bottom: 150px;
 }
 
-.addToWishlistBtn{
+.addToWishlistBtn, .addToWishlistBtn:focus{
   padding: 4px 6px;
   border-radius: 5px 0px 0px 5px;
   /* box-shadow: 0 1px 2px 0; */
@@ -237,6 +237,7 @@ img:hover {
   float: left;
   background: rgb(255, 118, 134);
   color: #fff;
+  outline: inherit;
 }
 
 
@@ -257,13 +258,14 @@ img:hover {
   background: rgb(255, 79, 100);
   color: #fff;
 }
-.addToCartBtn {
+.addToCartBtn, .addToCartBtn:focus {
   padding: 4px 6px;
   border-radius: 0px 5px 5px 0px;
   border: none;
   float: left;
   background: rgb(0, 196, 170);
   color: #fff;
+	outline: inherit;
 }
 .addToCartBtn:active {
   padding: 4px 6px;

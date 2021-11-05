@@ -120,7 +120,7 @@ input#inStock {
   padding: 20px;
 }
 
-#clearFilter {
+#clearFilter,#clearFilter:focus {
   padding: 5px;
   border-radius: 3px;
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
@@ -128,6 +128,7 @@ input#inStock {
   float: left;
   background: rgb(255, 133, 19);
   color: #fff;
+  outline: inherit;
 }
 
 
@@ -149,13 +150,14 @@ input#inStock {
   background: rgb(228, 120, 18);
   color: #fff;
 }
-.addToWishlistBtn {
+.addToWishlistBtn,.addToWishlistBtn:focus {
   padding: 4px 6px;
   border-radius: 5px 0px 0px 5px;
   border: none;
   float: left;
   background: rgb(255, 118, 134);
   color: #fff;
+  outline: inherit;
 }
 
 .addToWishlistBtn:active {
@@ -176,13 +178,14 @@ input#inStock {
   color: #fff;
 }
 
-.addToCartBtn {
+.addToCartBtn, .addToCartBtn:focus {
   padding: 4px 6px;
   border-radius: 0px 5px 5px 0px;
   border: none;
   float: left;
   background: rgb(0, 196, 170);
   color: #fff;
+  outline: inherit;
 }
 
 .addToCartBtn:active {
@@ -204,13 +207,14 @@ input#inStock {
   color: #fff;
 }
 
-#buyNowBtn {
+#buyNowBtn,#buyNowBtn:focus {
   padding: 4px 6px;
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
   border: none;
   float: left;
   background: rgb(2, 139, 180);
   color: #fff;
+  outline: inherit;
 }
 
 #buyNowBtn:active {

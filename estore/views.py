@@ -474,7 +474,7 @@ def adminBuyer(request):
     resAddData = UserAddress.objects.all()
     usersArr = []
     for data in resUserData:
-        if(data.deleted != 1):
+        if(data.deleted != 1 and data.is_seller != 1 ):
             userObj = {}
             userObj['id'] = data.user_id
             userObj['name'] = data.user_name
@@ -543,3 +543,32 @@ def wishlist(request):
 
         return render(request, 'estore/wishlist.html',
                       {'product_list': product_list, 'wishlist': wishlistid})
+def makeUserActive(request):
+    #Apply check for authenticated admin
+    if(request.POST):
+        userIdToActive = request.POST.get('user_id')
+        userData = Users.objects.get(user_id = userIdToActive) 
+        setattr(userData,'is_active',1)
+        setattr(userData,'active',1)
+        userData.save()
+    return HttpResponseRedirect('/admin-home/buyer-list')
+        
+def makeUserInactive(request):
+    #Apply check for authenticated admin
+    if(request.POST):
+        userIdToInactive = request.POST.get('user_id')
+        userData = Users.objects.get(user_id = userIdToInactive) 
+        setattr(userData,'is_active',0)
+        setattr(userData,'active',0)
+        userData.save()
+    return HttpResponseRedirect('/admin-home/buyer-list')
+
+
+def deleteUser(request):
+    #Apply check for authenticated admin
+    if(request.POST):
+        userIdToDelete = request.POST.get('user_id')
+        userData = Users.objects.get(user_id = userIdToDelete) 
+        setattr(userData,'deleted',1)
+        userData.save()
+    return HttpResponseRedirect('/admin-home/buyer-list')
