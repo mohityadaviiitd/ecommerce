@@ -16,7 +16,12 @@ from django.http.response import HttpResponse
 from django.http import HttpResponseRedirect
 import random
 from django.urls import resolve
-import re
+from .forms import BuyerGeneralProfileForm
+from .forms import BuyerAddressProfileForm
+from django.shortcuts import get_object_or_404
+from django.http import FileResponse
+import os
+
 
 def products(request,productCategory = "",searchQuery="",filterQuery="",sortBy=""):
     current_url = request.path_info
@@ -169,7 +174,7 @@ def items(request,item_id):
 def signin(request):
     page= 'signin'
     if request.user.is_authenticated:
-        return redirect("profile")
+        return redirect("profile",type="general")
     if request.method=='POST':
         email=request.POST['email']
         password=request.POST['password']
@@ -184,7 +189,7 @@ def signin(request):
 
         if user is not None:
             login(request, user)
-            return redirect('profile')
+            return redirect('profile',type="general")
         else:
             messages.error(request, "email or password incorrect")
         
@@ -388,11 +393,94 @@ def shop(request):
        
         return render(request, 'estore/shop.html', {'product_array': productsFeatured,'user': user})
 
+def clearMessages(request):
+    storage = messages.get_messages(request)
+    for _ in storage:
+        pass
+    for _ in list(storage._loaded_messages):
+        del storage._loaded_messages[0]
 
 @login_required(login_url="signin")
-def profile(request):
+def profile(request,type="general"):
     userId = request.user.user_id
-    return render(request, 'estore/profile.html')
+    if(type == "general"):
+        user_profile = get_object_or_404(Users, user_id=userId)
+        if (request.POST):
+            form = BuyerGeneralProfileForm(request.POST, instance=user_profile)
+            if form.is_valid():
+                user_profile = form.save(commit=False)
+                print(form)
+                user_profile.user_name = form['user_name'].value()
+                not_dig = False
+                i_s = 0
+                print(list(form['phone'].value()))
+                for i in list(form['phone'].value()):
+                    if(i.isdigit() or i=='+' and i_s<2):
+                        if(i == '+'):
+                            i_s += 1
+                        continue
+                    else:
+                        not_dig = True
+                        break
+                if(not_dig == True ):
+
+                    clearMessages(request)
+
+                    messages.error(request, "Phone number should only contain digits or +")
+                    return HttpResponseRedirect('')
+                else:
+                    if(len(form['phone'].value())>=6):
+                        user_profile.phone = form['phone'].value()
+                    else:
+                        clearMessages(request)
+
+                        messages.error(request, "Does not look like a real number!")
+                        return HttpResponseRedirect('')
+
+                user_profile.save()
+                return HttpResponseRedirect('')
+        else:
+            form = BuyerGeneralProfileForm(instance=user_profile)
+        return render(request, 'estore/profile.html',{'profile': form, 'address_profile':False})
+    elif(type=="address"):
+        try:
+            address_profile = get_object_or_404(UserAddress, user_id=userId)
+        except:
+            data = UserAddress.objects.filter(user_id=userId)
+            if(len(data) == 0):
+                address_profile_instance = UserAddress.objects.create(user_id = userId,address_line1 = '',
+                                                                      state='',pincode = 0,
+                                                                      city_village_name = '',house_no = '')
+
+                address_profile_instance.save()
+                address_profile_instance.refresh_from_db()
+                address_profile = get_object_or_404(UserAddress, user_id=userId)
+
+        if (request.POST):
+            form = BuyerAddressProfileForm(request.POST, instance=address_profile)
+            if form.is_valid():
+                address_profile = form.save(commit=False)
+                address_profile.house_no = form['house_no'].value()
+                address_profile.address_line1 = form['address_line1'].value()
+                address_profile.address_line2 = form['address_line1'].value()
+                address_profile.landmark = form['landmark'].value()
+                address_profile.city_village_name = form['city_village_name'].value()
+                address_profile.state = form['state'].value()
+
+                if(len(form['pincode'].value()) == 6 and form['pincode'].value().isdigit()):
+                    address_profile.pincode = form['pincode'].value()
+                else:
+                    clearMessages(request)
+                    messages.error(request, "Enter a 6 digit pin-code")
+                    return HttpResponseRedirect('')
+
+                address_profile.save()
+                return HttpResponseRedirect('')
+        else:
+            form = BuyerAddressProfileForm(instance=address_profile)
+        return render(request, 'estore/profile.html', {'general_profile':False,'profile': form})
+
+
 
 @login_required(login_url="signin")
 def checkout(request):
@@ -413,8 +501,8 @@ def cart(request):
                             product_id=product_id_form).delete()
         return HttpResponseRedirect('')
     else:
-        cartid = 1
-        data = Cart.objects.filter(cart_id=cartid)
+        cartid = request.user.user_id
+        data = Cart.objects.filter(cart_id=cartid.hex)
         product_id_list = []
         for i in range(len(data)):
             product_id_list.append(data[i].product_id)
@@ -424,7 +512,7 @@ def cart(request):
         for i in data:
             product_dict = {}
             for j in data2:
-                if(i.product_id == j.product_id):
+                if(i.product_id.int == j.product_id.int):
                     product_dict['product_id'] = i.product_id
                     product_dict['product_name'] = j.product_name
                     product_dict['price'] = j.price
@@ -443,13 +531,13 @@ def cart(request):
         data2 = ProductImages.objects.filter(product_id__in=product_id_list)
         for i in product_list:
             for j in data2:
-                if(i['product_id'] == j.product_id):
+                if(i['product_id'].int == j.product_id.int):
                     i['product_image'] = j.image
                     break
         data2 = Sellers.objects.filter(seller_id__in=seller_id_list)
         for i in product_list:
             for j in data2:
-                if(i['seller_id'] == j.seller_id):
+                if(i['seller_id'].int == j.seller_id):
                     i['product_seller_name'] = j.seller_name
         cart_total = 0
         for i in product_list:
@@ -495,7 +583,36 @@ def adminBuyer(request):
     return render(request, 'estore/adminBuyer.html',{'users':usersArr })
 
 def adminSeller(request):
-    return render(request, 'estore/adminSeller.html')
+    resUserData = Users.objects.all()
+    resAddData = UserAddress.objects.all()
+    resSellerData = Sellers.objects.all()
+    print(resSellerData)
+    usersArr = []
+    for data in resUserData:
+        if (data.deleted != 1 and data.is_seller == 1 and data.is_admin == 0):
+            userObj = {}
+            userObj['id'] = data.user_id
+            userObj['name'] = data.user_name
+            userObj['email'] = data.email
+            userObj['phone'] = data.phone
+            userObj['isPhoneVerified'] = data.is_phone_verified
+            userObj['isEmailVerified'] = data.is_email_verified
+            userObj['active'] = data.active  # need to be updated
+            for address in resAddData:
+                if (address.user_id == data.user_id):
+                    userObj["address_line"] = str(address.house_no) + ", " + str(address.address_line1) + ", " + str(
+                        address.address_line2) + ", " + str(address.landmark) + ", " + str(address.pincode)
+                    userObj["city"] = address.city_village_name
+                    userObj["state"] = address.state
+
+            for each in resSellerData:
+                if (each.user_id == data.user_id):
+                    userObj['seller_approval_status'] = each.approval_status
+            usersArr.append(userObj)
+    print('----user data----', usersArr)
+    return render(request, 'estore/adminSeller.html', {'users': usersArr})
+
+
 
 
 def wishlist(request):
@@ -506,7 +623,7 @@ def wishlist(request):
             wishlist_id=wishlist_id_form, product_id=product_id_form).delete()
         return HttpResponseRedirect('')
     else:
-        wishlistid = 1
+        wishlistid = request.user.user_id
         data = Wishlist.objects.filter(wishlist_id=wishlistid)
         product_id_list = []
         for i in range(len(data)):
@@ -562,6 +679,43 @@ def makeUserInactive(request):
         setattr(userData,'active',0)
         userData.save()
     return HttpResponseRedirect('/admin-home/buyer-list')
+
+
+def approveSeller(request):
+    # Apply check for authenticated admin
+    if(request.user.is_authenticated):
+        get_role = Users.objects.filter(user_id = request.user.user_id)
+        print("hello",get_role)
+        # check this -> if(get_role.is_admin == 1):
+        if(1):
+            if (request.POST):
+                userIdToActive = request.POST.get('user_id')
+                sellerData = Sellers.objects.get(user_id=userIdToActive)
+                setattr(sellerData, 'approval_status', 1)
+                sellerData.save()
+            return HttpResponseRedirect('/admin-home/seller-list')
+
+
+def disapproveSeller(request):
+    # Apply check for authenticated admin
+    if(request.user.is_authenticated):
+        get_role = Users.objects.filter(user_id = request.user.user_id)
+        #check this -> if(get_role.is_admin == 1):
+        if(1):
+            if (request.POST):
+                userIdToActive = request.POST.get('user_id')
+                sellerData = Sellers.objects.get(user_id=userIdToActive)
+                setattr(sellerData, 'approval_status',0)
+                sellerData.save()
+            return HttpResponseRedirect('/admin-home/seller-list')
+
+def viewPDF(request):
+
+    if(request.user.is_authenticated):
+        if (request.POST):
+            userIdToActive = request.POST.get('user_id')
+            filepath = os.path.join('static/media/pdf', userIdToActive,'proof.pdf')
+            return FileResponse(open(filepath, 'rb'), content_type='application/pdf')
 
 
 def deleteUser(request):
