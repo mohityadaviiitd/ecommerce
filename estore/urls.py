@@ -28,4 +28,7 @@ urlpatterns = [
     path('admin-home/', views.admin, name="admin"),
     path('admin-home/buyer-list', views.adminBuyer, name="buyerList"),
     path('admin-home/seller-list', views.adminSeller, name="sellerList"),
+    path('makeUserActive', views.makeUserActive, name='makeUserActive'),
+    path('makeUserInactive', views.makeUserInactive, name='makeUserInactive'),
+    path('deleteUser', views.deleteUser, name='deleteUser'),
 ]

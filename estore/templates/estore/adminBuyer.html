@@ -52,14 +52,36 @@
                     
                 </td>
                 <td class="text-style1 ">
-                    {% if user.active == 0 %}
-                    <img src="{% static 'media/person-check-fill.svg' %}">
+                    <div class="actions-box">
+                        {% if user.active == 0 %}
+                    <form action="/makeUserActive" method="POST" class="form">
+                        <input type="hidden" name="user_id" value="{{user.id}}" />
+                        {% csrf_token %}
+                        <button class="inactive-user-btn disable-css" type="submit">
+                            <img src="{% static 'media/person-check-fill.svg' %}">
+                        </button>
+                      </form>
+                    
                     {% elif user.active != 0 %}
-                    <img src="{% static 'media/person-x-fill.svg' %}">
+                    <form action="/makeUserInactive" method="POST" class="form">
+                        <input type="hidden" name="user_id" value="{{user.id}}" />
+                        {% csrf_token %}
+                        <button class="active-user-btn disable-css" type="submit">
+                            <img src="{% static 'media/person-x-fill.svg' %}">
+                        </button>
+                      </form>
+                    
                     {% endif %}
-                    <img src="{% static 'media/trash-fill.svg' %}">
+                    <form action="/deleteUser" method="POST" class="form">
+                        <input type="hidden" name="user_id" value="{{user.id}}" />
+                        {% csrf_token %}
+                        <button class="active-user-btn disable-css" type="submit">
+                            <img src="{% static 'media/trash-fill.svg' %}">
+                        </button>
+                    </form>
+                    </div>
+                    
                 </td>
-
             </tr>
             {% endfor %}
 

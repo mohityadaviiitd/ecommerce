@@ -79,7 +79,7 @@
     margin: 0px 10px;
 }
 
-.addToWishlistBtn {
+.addToWishlistBtn,.addToWishlistBtn:focus {
     padding: 8px;
     border-radius: 3px;
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
@@ -87,6 +87,7 @@
     float: left;
     background: rgb(255, 118, 134);
     color: #fff;
+    outline: inherit;
 }
 
 
@@ -110,7 +111,7 @@
     color: #fff;
 }
 
-#addToCartBtn {
+#addToCartBtn,#addToCartBtn:focus {
     padding: 8px;
     border-radius: 3px;
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
@@ -118,6 +119,7 @@
     float: left;
     background: rgb(0, 196, 170);
     color: #fff;
+    outline: inherit;
 }
 
 #addToCartBtn:active {
@@ -140,7 +142,7 @@
     color: #fff;
 }
 
-#buyNowBtn {
+#buyNowBtn,#buyNowBtn:focus {
     padding: 8px;
     border-radius: 3px;
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%);
@@ -148,6 +150,7 @@
     float: left;
     background: rgb(2, 139, 180);
     color: #fff;
+    outline: inherit;
 }
 
 #buyNowBtn:active {
