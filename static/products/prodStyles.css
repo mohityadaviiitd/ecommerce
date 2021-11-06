@@ -240,3 +240,13 @@ input#inStock {
   border-width: 1px;
   border-radius: 20px;
 }
+
+.img-wrapper{
+  height: 450px;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding:0px 20px;
+}

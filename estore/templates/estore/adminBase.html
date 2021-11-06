@@ -111,14 +111,19 @@
       <hr class="sidebar-line">
     </div>
     <div class="text-sidebar paddingLeft menu-logout">
-      <h6>Logout</h6>
+      <h6 style="cursor: pointer;" onclick="logoutAdmin()">Logout</h6>
     </div>
   </div>
 
   <div class="main">
-    <div id="content">{% block content %} {% endblock %}</div>
+    <div  id="content">{% block content %} {% endblock %}</div>
   </div>
 
 </body>
+<script type="text/javascript">
+  const logoutAdmin = () =>{
+    window.location.href =  '/signout'
+  }
 
+</script>
 </html>
