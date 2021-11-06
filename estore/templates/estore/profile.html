@@ -1,7 +1,7 @@
 {% extends "estore/base.html" %}
 
 {% block content %}
-
+<div style="margin-top: 5%; width: 100%;">
 
 
 
@@ -35,6 +35,8 @@
      <form method="POST" class="buyer-address-profile-form">{% csrf_token %}
         <p style="color: blueviolet; font-family: 'Calibri Light';">Address Profile</p>
     {% endif %}
+<img src="{{ pic }}" class="border" height="80px" width="80px">
+    <p>{{ email }}</p><br>
          {% for field in profile %}
             <p>
               <div style="width:80%; margin-right: auto; display: flex;">
@@ -56,7 +58,7 @@
 </div>
 
 
-
+</div>
 
 {% endblock %}
 <script>

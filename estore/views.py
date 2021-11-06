@@ -21,6 +21,7 @@ from .forms import BuyerAddressProfileForm
 from django.shortcuts import get_object_or_404
 from django.http import FileResponse
 import os
+from django.http import FileResponse, Http404
 
 
 def products(request,productCategory = "",searchQuery="",filterQuery="",sortBy=""):
@@ -397,12 +398,15 @@ def clearMessages(request):
     storage = messages.get_messages(request)
     for _ in storage:
         pass
+    print(storage._loaded_messages[0])
     for _ in list(storage._loaded_messages):
         del storage._loaded_messages[0]
 
 @login_required(login_url="signin")
 def profile(request,type="general"):
     userId = request.user.user_id
+    current_user_profile_pic = Users.objects.filter(user_id=userId)[0].profile_photo.url
+    current_user_email_id = Users.objects.filter(user_id=userId)[0].email
     if(type == "general"):
         user_profile = get_object_or_404(Users, user_id=userId)
         if (request.POST):
@@ -424,7 +428,10 @@ def profile(request,type="general"):
                         break
                 if(not_dig == True ):
 
-                    clearMessages(request)
+                    try:
+                        clearMessages(request)
+                    except:
+                        pass
 
                     messages.error(request, "Phone number should only contain digits or +")
                     return HttpResponseRedirect('')
@@ -432,8 +439,10 @@ def profile(request,type="general"):
                     if(len(form['phone'].value())>=6):
                         user_profile.phone = form['phone'].value()
                     else:
-                        clearMessages(request)
-
+                        try:
+                            clearMessages(request)
+                        except:
+                            pass
                         messages.error(request, "Does not look like a real number!")
                         return HttpResponseRedirect('')
 
@@ -441,7 +450,9 @@ def profile(request,type="general"):
                 return HttpResponseRedirect('')
         else:
             form = BuyerGeneralProfileForm(instance=user_profile)
-        return render(request, 'estore/profile.html',{'profile': form, 'address_profile':False})
+
+        return render(request, 'estore/profile.html',{'profile': form, 'address_profile':False,
+                                                      'pic':current_user_profile_pic, 'email':current_user_email_id})
     elif(type=="address"):
         try:
             address_profile = get_object_or_404(UserAddress, user_id=userId)
@@ -470,7 +481,10 @@ def profile(request,type="general"):
                 if(len(form['pincode'].value()) == 6 and form['pincode'].value().isdigit()):
                     address_profile.pincode = form['pincode'].value()
                 else:
-                    clearMessages(request)
+                    try:
+                        clearMessages(request)
+                    except:
+                        pass
                     messages.error(request, "Enter a 6 digit pin-code")
                     return HttpResponseRedirect('')
 
@@ -478,7 +492,8 @@ def profile(request,type="general"):
                 return HttpResponseRedirect('')
         else:
             form = BuyerAddressProfileForm(instance=address_profile)
-        return render(request, 'estore/profile.html', {'general_profile':False,'profile': form})
+        return render(request, 'estore/profile.html', {'general_profile':False,'profile': form,
+                                                       'pic':current_user_profile_pic,'email':current_user_email_id})
 
 
 
@@ -532,7 +547,7 @@ def cart(request):
         for i in product_list:
             for j in data2:
                 if(i['product_id'].int == j.product_id.int):
-                    i['product_image'] = j.image
+                    i['product_image'] = j.image.url
                     break
         data2 = Sellers.objects.filter(seller_id__in=seller_id_list)
         for i in product_list:
@@ -608,6 +623,10 @@ def adminSeller(request):
             for each in resSellerData:
                 if (each.user_id == data.user_id):
                     userObj['seller_approval_status'] = each.approval_status
+                    try:
+                        userObj['seller_pdf'] = each.pdf.url
+                    except:
+                        userObj['seller_pdf'] = False
             usersArr.append(userObj)
     print('----user data----', usersArr)
     return render(request, 'estore/adminSeller.html', {'users': usersArr})
@@ -650,7 +669,7 @@ def wishlist(request):
         for i in product_list:
             for j in data2:
                 if (i['product_id'] == j.product_id):
-                    i['product_image'] = j.image
+                    i['product_image'] = j.image.url
                     break
         data2 = Sellers.objects.filter(seller_id__in=seller_id_list)
         for i in product_list:
@@ -681,13 +700,34 @@ def makeUserInactive(request):
     return HttpResponseRedirect('/admin-home/buyer-list')
 
 
+def makeSellerUserActive(request):
+    # Apply check for authenticated admin
+    if (request.POST):
+        userIdToActive = request.POST.get('user_id')
+        userData = Users.objects.get(user_id=userIdToActive)
+        setattr(userData, 'is_active', 1)
+        setattr(userData, 'active', 1)
+        userData.save()
+    return HttpResponseRedirect('/admin-home/seller-list')
+
+
+def makeSellerUserInactive(request):
+    # Apply check for authenticated admin
+    if (request.POST):
+        userIdToInactive = request.POST.get('user_id')
+        userData = Users.objects.get(user_id=userIdToInactive)
+        setattr(userData, 'is_active', 0)
+        setattr(userData, 'active', 0)
+        userData.save()
+    return HttpResponseRedirect('/admin-home/seller-list')
+
+
 def approveSeller(request):
     # Apply check for authenticated admin
     if(request.user.is_authenticated):
-        get_role = Users.objects.filter(user_id = request.user.user_id)
+        get_role = Users.objects.filter(user_id = request.user.user_id)[0]
         print("hello",get_role)
-        # check this -> if(get_role.is_admin == 1):
-        if(1):
+        if(get_role.is_admin == 1):
             if (request.POST):
                 userIdToActive = request.POST.get('user_id')
                 sellerData = Sellers.objects.get(user_id=userIdToActive)
@@ -699,9 +739,8 @@ def approveSeller(request):
 def disapproveSeller(request):
     # Apply check for authenticated admin
     if(request.user.is_authenticated):
-        get_role = Users.objects.filter(user_id = request.user.user_id)
-        #check this -> if(get_role.is_admin == 1):
-        if(1):
+        get_role = Users.objects.filter(user_id = request.user.user_id)[0]
+        if(get_role.is_admin == 1):
             if (request.POST):
                 userIdToActive = request.POST.get('user_id')
                 sellerData = Sellers.objects.get(user_id=userIdToActive)
@@ -712,10 +751,17 @@ def disapproveSeller(request):
 def viewPDF(request):
 
     if(request.user.is_authenticated):
-        if (request.POST):
-            userIdToActive = request.POST.get('user_id')
-            filepath = os.path.join('static/media/pdf', userIdToActive,'proof.pdf')
-            return FileResponse(open(filepath, 'rb'), content_type='application/pdf')
+        get_role = Users.objects.filter(user_id=request.user.user_id)[0]
+        if (get_role.is_admin == 1):
+            if (request.POST):
+                userIdToActive = request.POST.get('user_id')
+                try:
+                    filepath = os.path.join('static/media/pdf', userIdToActive,'proof.pdf')
+                    return FileResponse(open(filepath, 'rb'), content_type='application/pdf')
+                except:
+                    raise Http404()
+    else:
+        redirect('signin')
 
 
 def deleteUser(request):
