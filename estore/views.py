@@ -538,6 +538,8 @@ def wishlist(request):
                       {'product_list': product_list, 'wishlist': wishlistid})
 def makeUserActive(request):
     #Apply check for authenticated admin
+    if(request.user.is_authenticated and request.user.is_admin == False):
+        return HttpResponseRedirect('/signin')
     if(request.POST):
         userIdToActive = request.POST.get('user_id')
         userData = Users.objects.get(user_id = userIdToActive) 
@@ -548,6 +550,8 @@ def makeUserActive(request):
         
 def makeUserInactive(request):
     #Apply check for authenticated admin
+    if(request.user.is_authenticated and request.user.is_admin == False):
+        return HttpResponseRedirect('/signin')
     if(request.POST):
         userIdToInactive = request.POST.get('user_id')
         userData = Users.objects.get(user_id = userIdToInactive) 
@@ -559,6 +563,8 @@ def makeUserInactive(request):
 
 def deleteUser(request):
     #Apply check for authenticated admin
+    if(request.user.is_authenticated and request.user.is_admin == False):
+        return HttpResponseRedirect('/signin')
     if(request.POST):
         userIdToDelete = request.POST.get('user_id')
         userData = Users.objects.get(user_id = userIdToDelete) 
