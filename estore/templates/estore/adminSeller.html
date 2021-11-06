@@ -19,8 +19,11 @@
                 <th class="text-style1">City</th>
                 <th class="text-style1">State</th>
                 <th class="text-style1">Phone</th>
+                <th class="text-style1">Seller PDF</th>
                 <th class="text-style1">Email Verified</th>
                 <th class="text-style1">Phone Verified</th>
+                <th class="text-style1">Is Seller Approved</th>
+                <th class="text-style1">Is Active</th>
                 <th class="text-style1">Action</th>
             </tr>
             {% for user in users %}
@@ -31,6 +34,17 @@
                 <td class="text-style1">{{user.city}}</td>
                 <td class="text-style1">{{user.state}}</td>
                 <td class="text-style1">{{user.phone}}</td>
+
+
+                    {% if user.seller_pdf != False %}
+                        <td class="text-style1">
+                 <a href="{{ user.seller_pdf }}" target="_blank" class="font-monospace">View pdf</a></td>
+                        {% else %}
+                        <td class="text-style1">No pdf</td>
+                    {% endif %}
+
+
+
                 <td class="text-style1">
                     <div class="cell-center">
                         {% if user.isEmailVerified == 0 %}
@@ -51,14 +65,76 @@
                     </div>
                     
                 </td>
-                <td class="text-style1 ">
-                    {% if user.active == 0 %}
-                    <img src="{% static 'media/person-check-fill.svg' %}">
-                    {% elif user.active != 0 %}
-                    <img src="{% static 'media/person-x-fill.svg' %}">
+            <td class="text-style1 ">
+                    {% if user.seller_approval_status == 0 %}
+                    -
+                    {% elif user.seller_approval_status != 0 %}
+                    <img src="{% static 'media/patch-check-fill.svg' %}">
                     {% endif %}
-                    <img src="{% static 'media/trash-fill.svg' %}">
                 </td>
+            <td class="text-style1">
+                    <div class="cell-center">
+                        {% if user.active == 0 %}
+                        -
+                        {% elif user.active != 0 %}
+                        <img src="{% static 'media/patch-check-fill.svg' %}">
+                        {% endif %}
+                    </div>
+
+
+
+
+            <td class="text-style1 ">
+                    <div class="actions-box">
+                    {% if user.active == 0 %}
+                    <form action="/makeSellerUserActive" method="POST" class="form">
+                        <input type="hidden" name="user_id" value="{{user.id}}" />
+                        {% csrf_token %}
+                        <button class="inactive-user-btn disable-css" type="submit">
+                            <img src="{% static 'media/person-check-fill.svg' %}">
+                        </button>
+                      </form>
+
+                    {% elif user.active != 0 %}
+                    <form action="/makeSellerUserInactive" method="POST" class="form">
+                        <input type="hidden" name="user_id" value="{{user.id}}" />
+                        {% csrf_token %}
+                        <button class="active-user-btn disable-css" type="submit">
+                            <img src="{% static 'media/person-x-fill.svg' %}">
+                        </button>
+                      </form>
+
+                    {% endif %}
+                        {% if user.seller_approval_status == 0 %}
+                    <form action="/approveSeller" method="POST" class="form">
+                        <input type="hidden" name="user_id" value="{{user.id}}" />
+                        {% csrf_token %}
+                        <button class="inactive-user-btn disable-css" type="submit">
+                            <img src="{% static 'media/person-check-fill.svg' %}">
+                        </button>
+                      </form>
+
+                    {% elif user.seller_approval_status != 0 %}
+                    <form action="/disapproveSeller" method="POST" class="form">
+                        <input type="hidden" name="user_id" value="{{user.id}}" />
+                        {% csrf_token %}
+                        <button class="active-user-btn disable-css" type="submit">
+                            <img src="{% static 'media/person-x-fill.svg' %}">
+                        </button>
+                      </form>
+
+                    {% endif %}
+                    <form action="/deleteSeller" method="POST" class="form">
+                        <input type="hidden" name="user_id" value="{{user.id}}" />
+                        {% csrf_token %}
+                        <button class="active-user-btn disable-css" type="submit">
+                            <img src="{% static 'media/trash-fill.svg' %}">
+                        </button>
+                    </form>
+                    </div>
+
+                </td>
+
 
             </tr>
             {% endfor %}

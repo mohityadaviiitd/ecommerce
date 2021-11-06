@@ -1,1 +1,74 @@
-<h1>this is profile page</h1>
+{% extends "estore/base.html" %}
+
+{% block content %}
+<div style="margin-top: 5%; width: 100%;">
+
+
+
+
+<div class="mt-5"></div>
+
+    <div class="card text-center w-50 mx-auto">
+  <div class="card-header">
+    <ul class="nav nav-tabs card-header-tabs">
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="true" href="{% url 'profile' type="general" %}">Profile</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="{% url 'profile' type="address" %}">Address</a>
+      </li>
+    </ul>
+  </div>
+  <div class="card-body">
+     {% if messages %}
+                {% for message in messages %}
+                    <p class="font-monospace">
+                        {{message}}</p>
+                {% endfor %}
+            {% endif %}
+<div class="mx-auto border rounded">
+<br>
+    {% if address_profile == False %}
+    <form method="POST" class="buyer-general-profile-form">{% csrf_token %}
+        <p style="color: blueviolet; font-family: 'Calibri Light';">General Profile</p>
+    {% elif general_profile == False %}
+     <form method="POST" class="buyer-address-profile-form">{% csrf_token %}
+        <p style="color: blueviolet; font-family: 'Calibri Light';">Address Profile</p>
+    {% endif %}
+<img src="{{ pic }}" class="border" height="80px" width="80px">
+    <p>{{ email }}</p><br>
+         {% for field in profile %}
+            <p>
+              <div style="width:80%; margin-right: auto; display: flex;">
+                  <p style="flex-basis: 100%;">{{ field.label_tag }}</p>
+                  <p style="flex-basis: 100%;">{{ field }}</p>
+              </div>
+
+              {% for error in field.errors %}
+                <p style="color: brown">{{ error }}</p>
+              {% endfor %}
+            </p>
+          {% endfor %}
+    <button type="submit" class="btn btn-warning btn-sm mb-2" style="width: 15%; margin: auto;">Save</button>
+    </form>
+
+</div>
+
+  </div>
+</div>
+
+
+</div>
+
+{% endblock %}
+<script>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            var scrollpos = sessionStorage.getItem('scrollpos');
+            if (scrollpos) window.scrollTo(0, scrollpos);
+        });
+
+        window.onbeforeunload = function(e) {
+            sessionStorage.setItem('scrollpos', window.scrollY);
+
+        };
+    </script>

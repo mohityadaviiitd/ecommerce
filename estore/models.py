@@ -52,9 +52,10 @@ class Checkouts(models.Model):
     checkout_id = models.CharField(primary_key=True, max_length=90)
     kart = models.ForeignKey('Users', models.DO_NOTHING)
     delivery_status = models.CharField(max_length=90)
-    shipping_address_id = models.CharField(max_length=90)
+    shipping_address_id = models.ForeignKey('UserAddress',models.DO_NOTHING)
     expected_date = models.DateTimeField()
     ordered_date = models.DateTimeField()
+    products_ordered = models.CharField(max_length=90000)
 
     class Meta:
         managed = True
@@ -169,7 +170,7 @@ class Users(AbstractBaseUser):
     user_name = models.CharField(max_length=90)
     # password = models.CharField( max_length=400)
     email = models.EmailField(verbose_name="email", unique=True, max_length=90)
-    phone = models.CharField(unique=True, max_length=90)
+    phone = models.CharField(unique=True, max_length=12)
     is_phone_verified = models.BooleanField(default=0)
     is_email_verified = models.BooleanField(default=False)
     cart_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
