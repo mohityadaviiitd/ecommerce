@@ -35,4 +35,5 @@ urlpatterns = [
     path('disapproveSeller', views.disapproveSeller, name='disapproveSeller'),
     path('viewPDF', views.viewPDF, name='viewPDF'),
     path('deleteUser', views.deleteUser, name='deleteUser'),
+    path('deleteSeller', views.deleteSeller, name='deleteSeller'),
 ]
