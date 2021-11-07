@@ -67,7 +67,7 @@
                 {% for product in products %}
                 <div class="product-featured-card card shadow-sm">
                     <div class="img-container">
-                        <img src="{{product.image}}" class="card-img-top" alt="web development" />
+                        <img src="../media/{{product.image}}" class="card-img-top" alt="product image" />
                     </div>
                     <div class="card-body">
                         <h5 style="cursor: pointer;" onclick="goToPage('/itemDetails/id/{{product.id}}')"
@@ -171,5 +171,5 @@
     }
 </script>
 
-<hr class="featurette-divider">
+<!-- <hr class="featurette-divider"> -->
 {% endblock %}

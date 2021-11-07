@@ -1,0 +1,37 @@
+{% extends "estore/sellerbase.html" %}
+{% load static %}
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/edit_product.css' %}" />
+{% endblock %}
+{% block title %}UserProfile{% endblock %}
+
+{% block content %}
+<body>
+<div class="auth">
+    <div class="card">
+        <form method="POST" action="#" class="sellerform" enctype='multipart/form-data'>
+            {% csrf_token %}
+            {% for hidden in form1.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+            {% for field in form1 %}
+            <div class="formfield">
+                <label>{{field.label}}</label>
+                {{field}}
+                {% for error in field.errors %}
+                <p style="color: red;">{{error}}</p>
+                {% endfor %}
+
+            
+
+            {% endfor %}
+            </div>
+
+            <div class="action">
+                <input id="btn1" class="btn" type="submit" value="SAVE CHANGES" />
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+{% endblock %}

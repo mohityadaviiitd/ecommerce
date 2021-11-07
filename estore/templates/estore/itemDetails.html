@@ -1,7 +1,7 @@
 {% extends "./base.html" %}
 {% load static %}
 {% block extrahead %}
-<link rel="stylesheet" type="text/css" href="{% static 'items/itemStyle.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/items.css' %}" />
 {% endblock %}
 {% block title %}items{% endblock %}
 {% block content %}
@@ -56,7 +56,7 @@
                             </button>
                         </form>
                     </div>
-                    <div class="product buyNow"><button id="buyNowBtn">Buy Now</button></div>
+                    <!-- <div class="product buyNow"><button id="buyNowBtn">Buy Now</button></div> -->
                 </div>
             </div>
         </div>
@@ -83,5 +83,5 @@
         setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
     }
 </script>
-<hr class="featurette-divider">
+<!-- <hr class="featurette-divider"> -->
 {% endblock %}

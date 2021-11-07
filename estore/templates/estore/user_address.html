@@ -1,0 +1,49 @@
+{% extends "./sellerbase.html" %} {% load static %}
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="{% static 'adminCss/buyer.css' %}" />
+{% endblock %}
+{% block title %}Address{% endblock %}
+{% block content %}
+
+<div>
+    <div class="header-container ">
+        <div id="pageTitle" class="main-padding">Your Addresses</div>
+        <hr class="border-line">
+    </div>
+    <div class="table-wrapper main-padding">
+        <table>
+            <tr>
+                <th class="text-style1">Address</th>
+                <th class="text-style1">City</th>
+                <th class="text-style1">State</th>
+                <th class="text-style1">Action</th>
+            </tr>
+            {% for user in users %}
+            <tr>
+                <td class="text-style1">{{user.address_line}}</td>
+                <td class="text-style1">{{user.city}}</td>
+                <td class="text-style1">{{user.state}}</td>
+                <td class="text-style1 ">
+                    <div class="actions-box">
+                        <form action="../deleteaddress/" method="POST" class="form">
+                            <input type="hidden" name="address_id" value="{{user.id}}">
+                            {% csrf_token %}
+                            <button class="active-user-btn disable-css" type="submit">
+                                <img src="{% static 'media/trash-fill.svg' %}">
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </table>
+    </div>
+
+
+</div>
+
+
+
+{% endblock %}

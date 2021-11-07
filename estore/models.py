@@ -55,7 +55,7 @@ class Checkouts(models.Model):
     shipping_address_id = models.ForeignKey('UserAddress',models.DO_NOTHING)
     expected_date = models.DateTimeField()
     ordered_date = models.DateTimeField()
-    products_ordered = models.CharField(max_length=90000)
+    products_ordered = models.CharField(max_length=9000)
 
     class Meta:
         managed = True
@@ -87,6 +87,12 @@ class ProductImages(models.Model):
     def get_product_photo(self):
         return str(self.pdf)[str(self.pdf).index(f'product_images/{self.pk}/'):]
 
+# CATEGORY_CHOICES = (
+#     ('M','Mobiles'),
+#     ('L','Laptops'),
+#     ('T','TV&Appliances'),
+#     ('C','Camera&Accessories'),
+# )
 
 class Products(models.Model):
     product_id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
@@ -96,7 +102,9 @@ class Products(models.Model):
     price = models.FloatField()
     stock = models.IntegerField()
     seller = models.ForeignKey('Sellers', models.DO_NOTHING)
-    status = models.CharField(max_length=90)
+    status = models.CharField(default='active',max_length=90)
+    date_created=models.DateTimeField(verbose_name="date created", auto_now_add=True)
+
 
     class Meta:
         managed = True
@@ -157,8 +165,8 @@ class UserAddress(models.Model):
     state = models.CharField(max_length=90)
     pincode = models.IntegerField()
 
-    def __str__(self):
-        return self.user
+    # def __str__(self):
+    #     return self.user
 
     class Meta:
         managed = True
@@ -170,8 +178,8 @@ class Users(AbstractBaseUser):
     user_name = models.CharField(max_length=90)
     # password = models.CharField( max_length=400)
     email = models.EmailField(verbose_name="email", unique=True, max_length=90)
-    phone = models.CharField(unique=True, max_length=12)
-    is_phone_verified = models.BooleanField(default=0)
+    phone = models.CharField(unique=True, max_length=90)
+    is_phone_verified = models.BooleanField(default=False)
     is_email_verified = models.BooleanField(default=False)
     cart_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     profile_photo = models.ImageField(null=True, blank=True,  upload_to=get_profile_photo, default=default_profile_photo)

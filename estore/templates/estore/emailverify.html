@@ -1,0 +1,15 @@
+
+{% load static %}
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/sellerproof.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="card">
+<p>An email has been sent to your email account. Click on the link to verify your email and then sign in.</p>
+<form action="/signin">
+    <input type="submit" value="Sign In" />
+</form>
+
+</div>
+{% endblock %}
