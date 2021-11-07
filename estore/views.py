@@ -901,7 +901,7 @@ def epayment(request):
 def base(request):
     return render(request, 'estore/base.html')
 
-
+login_required(login_url="signin")
 def admin(request):
     return render(request, 'estore/adminBase.html')
 
