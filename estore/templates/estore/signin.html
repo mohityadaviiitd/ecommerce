@@ -1,20 +1,50 @@
+{% extends "estore/loginbase.html" %}
+{% load static %}
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/signin.css' %}" />
+{% endblock %}
+{% block title %}BecomeSeller{% endblock %}
+
+{% block content %}
 {% if page == 'register' %}
-<form action ="{% url 'register' %}" method="POST" enctype='multipart/form-data'>
+<div  class="card">
+<form action ="{% url 'register' %}" method="POST" class="sellerform" enctype='multipart/form-data'>
     {% csrf_token %}
-    {{form.as_p}}
-    <input type="submit" name="Login"/>
+    {% for field in form %}
+        <label for="formInput#text">{{field.label}}</label>
+        {{field}}
+        {% for error in field.errors %}
+        <p style="color: red;">{{error}}</p>
+        {% endfor %}
+        {% endfor %}
+    <input id='btn2' type="submit" name="Login"/>
 </form>
+
+
 <p> Already registered. Signin here <a href="{% url 'signin' %}">Login</a></p>
+</div>
 
 {% else %}
-<form action ="{% url 'signin' %}" method="POST">
+<div class="card" id="mar">
+<form action ="{% url 'signin' %}" class="sellerform" method="POST">
     {% csrf_token %}
+    <img src="/media/login/loginman.png" alt="LOGIN" width="100" height="100">
+    <p></p>
     <input type="email" id="email" name="email" placeholder="Email"/>
     <input type="password" name="password" placeholder="Password"/>
-    <input type="submit" name="Login"/>
+    <input id='btn1' value="Login" type="submit" name="Login" />
     <p> Not Registered. Register here <a href="{% url 'register' %}">Register</a></p>
+    {% for message in messages %}
+    <div class="alert alert-danger">
+           {{ message }}
+    </div>  
+    {% endfor %}
 </form>
+</div>
 {% endif %}
+
+
+{% endblock %}
 
 
 

@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+
 from django.contrib.auth import login, authenticate, logout
-from .models import Users, Sellers, ProductImages, Products, Cart, UserAddress, Users, Wishlist
+from .models import Users, Sellers, ProductImages, Products, Cart, UserAddress, Users, Wishlist, DelliverablePincodes, UserAddress
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import RegisterForm, SellerForm, ProductForm, ProductImagesForm
+from .forms import RegisterForm, SellerForm, ProductForm, ProductImagesForm, PincodeForm, AddressForm, ProfileForm
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
@@ -15,6 +16,113 @@ from django.http.response import HttpResponse
 from django.http import HttpResponseRedirect
 import random
 import re
+from django.forms import modelformset_factory
+
+@login_required(login_url="signin")
+def user_profile(request):
+    
+    if(1==1):
+        initial_data={
+            'user_name':request.user.user_name,
+            'phone':request.user.phone,
+            'email':request.user.email,
+            'profile_photo':request.user.profile_photo,
+        }
+        em=request.user.email
+        ph=request.user.email
+        form1=ProfileForm(request.POST or None,request.FILES or None,initial=initial_data,instance=request.user)
+        if form1.is_valid():
+            sell=form1.save(commit=False)
+            if(sell.phone!=ph):
+                request.user.is_phone_verified=False
+            if(sell.email!=em):
+                request.user.is_email_verified=False
+                sell.save()
+                logout(request)
+                return redirect('emailverify')
+            
+            sell.save()
+            return HttpResponseRedirect(request.path_info)
+    context={'form1':form1,}
+    if(request.user.is_seller==False):
+        return render(request, 'estore/user_profile.html', context)
+    if(request.user.is_seller==True):
+        return render(request, 'estore/seller_profile.html', context)
+
+def deleteAddress(request):
+    if(request.POST):
+        addr = request.POST.get('address_id')
+        u = UserAddress.objects.get(address_id=addr)
+        u.delete()
+    return redirect('user_address')
+
+
+def inventory(request,productCategory = "",searchQuery="",filterQuery="",sortBy=""):
+    print('-data------------------------',productCategory,   searchQuery,filterQuery)
+    filterArr= []
+    finalArr = []
+    pageTitle = ''
+    s=Sellers.objects.get(user=request.user)
+    imgData = ProductImages.objects.all()
+    if productCategory=="" and searchQuery == "" :
+        pageTitle="Products"
+        # print('1--------------')
+        filterArr = Products.objects.filter(seller=s).order_by('-date_created')
+    elif productCategory != "" and searchQuery == ""  :
+         pageTitle = productCategory
+        #  print('2--------------')
+         filterArr = Products.objects.filter(seller=s, category=productCategory).order_by('-date_created')
+    elif productCategory == "" and searchQuery != "":
+        # print('3--------------')
+        pageTitle = "Search Results"
+        tempArr = Products.objects.filter(seller=s).order_by('-date_created')
+        for product in tempArr:
+            foundInName = re.search(searchQuery.lower(),product.product_name.lower())
+            foundInDes = re.search(searchQuery.lower(),product.details.lower())
+            foundInCategory = re.search(searchQuery.lower(),product.category.lower())
+            #print('41--------------',foundInName,foundInCategory,foundInDes)
+            if(foundInName != None or foundInDes != None or foundInCategory != None):
+                filterArr.append(product)
+    if filterQuery != "" : 
+        arrQueries = filterQuery.split('&')
+        inStock = arrQueries[2]
+        minPrice = arrQueries[4]
+        maxPrice = arrQueries[6]
+        print('mix---------------', type(filterArr))
+        tempArr = filterArr
+        for elem in tempArr:
+            if int(elem.price) >= int(minPrice) and int(elem.price) <= int(maxPrice) :
+                if inStock == 'true':
+                    if elem.stock > 0:
+                        finalArr.append(elem)
+                else:
+                    finalArr.append(elem)
+    else:
+        finalArr = filterArr        
+    if sortBy == "A-Z" :
+        finalArr.sort(key=lambda x: x.product_name, reverse=False)
+        print('-sorted arr alpla----',finalArr)
+    if sortBy == 'price' :
+        finalArr.sort(key=lambda x: x.price, reverse=False)
+    productArr = []
+    for i in finalArr:
+        product_dict = {}
+        product_dict['id'] = i.product_id
+        product_dict['name'] = i.product_name
+        product_dict['price'] = int(i.price)
+        product_dict['category'] = i.category
+        product_dict['description'] = i.details
+        product_dict['stock'] = i.stock
+        product_dict['status'] = i.status
+        productArr.append(product_dict)
+    # print('-------arr product=----------------------',productArr)
+    for i in productArr:
+            for j in imgData:
+                if (i['id'] == j.product_id):
+                    i['image'] = j.image
+                    # print("images ==============",j.image)
+                    break
+    return render(request, 'estore/inventory.html',{'products':productArr,'pageTitle':pageTitle})
 
 def products(request,productCategory = "",searchQuery="",filterQuery="",sortBy=""):
     print('-data------------------------',productCategory,   searchQuery,filterQuery)
@@ -85,7 +193,7 @@ def products(request,productCategory = "",searchQuery="",filterQuery="",sortBy="
 
 def items(request,item_id):
     productDetails = Products.objects.get(product_id=item_id)
-    imgDetails = ProductImages.objects.get(product_id=item_id)
+    imgDetails = ProductImages.objects.filter(product_id=item_id).first()
     
     setattr(productDetails,'image',imgDetails.image)
     # print("ietem id ========", item_id)
@@ -94,6 +202,7 @@ def items(request,item_id):
 
 def signin(request):
     page= 'signin'
+    list(messages.get_messages(request))
     if request.user.is_authenticated:
         return redirect("profile")
     if request.method=='POST':
@@ -102,19 +211,32 @@ def signin(request):
         try:
             user=Users.objects.get(email==email)
         except:
-            messages.error(request, "wrong email")
+            a=0
         user=authenticate(request, email=email, password=password)
-        # if not user.is_email.verified:
-        #     messages.add_message(request, messages.ERROR, "email not verified")
-        #     return redirect('register')
+        
 
         if user is not None:
+            if user.is_active==False or user.deleted==True or user.active==False:
+                return redirect('invalid')
+            if not user.is_email_verified:
+                return redirect('invalid')
             login(request, user)
-            return redirect('profile')
+            if(user.is_admin==True):
+                return redirect('admin')
+            if(user.is_seller==True):
+                sobj=Sellers.objects.get(user=user)
+                if(sobj.approval_status==True):
+                    return redirect('inventory')
+            return redirect('/')
         else:
             messages.error(request, "email or password incorrect")
         
     return render(request, 'estore/signin.html')
+
+def invalid(request):
+    return render(request, 'estore/invalid.html')
+def success(request):
+    return render(request, 'estore/success.html')
 def addToCart(request):
     print('req-------------',request)
     if(request.POST):
@@ -170,11 +292,13 @@ def addToCart(request):
 #             cart.save()   
 #     return HttpResponse(status=204)
 
+
+
 def registerUser(request):
     if request.user.is_authenticated:
         return redirect("profile")
     page='register'
-    form=RegisterForm(request.POST, request.FILES)
+    form=RegisterForm(request.POST or None, request.FILES or None)
     if request.method=='POST':
         # form=RegisterForm(request.POST)
         if form.is_valid():
@@ -204,18 +328,56 @@ def registerUser(request):
             messages.success(request, "User account created")
 
             # login(request, u)
-            # return redirect('profile')
+            return redirect('emailverify')
         else:
             messages.error(request, "Error while registration")
     context={'page': page, 'form':form}
     return render(request, 'estore/signin.html', context)
 
+def emailverify(request):
+    return render(request, 'estore/emailverify.html')
 
+
+@login_required(login_url="signin")
+def set_address(request):
+    form=AddressForm(request.POST or None, request.FILES or None)
+    if request.method=='POST':
+        if form.is_valid():
+            sell=form.save(commit=False)
+            sell.user=request.user
+            sell.save()
+            return redirect('set_address')
+    context={'form':form}
+
+    return render(request, 'estore/set_address.html', context)
+
+@login_required(login_url="signin")
+def set_pincodes(request):
+    if request.user.is_seller==False:
+        return redirect('Profile')
+    
+    sobject=Sellers.objects.get(user=request.user)
+
+    if sobject.approval_status==False:
+        return redirect('Profile')
+        
+    
+    form=PincodeForm(request.POST or None, request.FILES or None)
+    if request.method=='POST':
+        if form.is_valid():
+            sell=form.save(commit=False)
+            sell.seller=sobject
+            sell.save()
+            return redirect('set_pincodes')
+    context={'form':form}
+
+    return render(request, 'estore/set_pincodes.html', context)
 
 def activate_user(request, uidb64, token):
     try:
         uid=force_text(urlsafe_base64_decode(uidb64))
         user=Users.objects.get(pk=uid)
+        
 
     except Exception as e:
         user=None
@@ -228,10 +390,9 @@ def activate_user(request, uidb64, token):
 @login_required(login_url="signin")
 def become_seller(request):
     id_user=request.user.user_id
-    if request.user.is_seller==True:
-        print('from here')
-        return redirect('profile')
-    form=SellerForm(request.POST, request.FILES)
+    # if request.user.is_seller==True:
+    #     return redirect('profile')
+    form=SellerForm(request.POST or None, request.FILES or None)
     if request.method=='POST':
         if form.is_valid():
             sell=form.save(commit=False)
@@ -245,27 +406,153 @@ def become_seller(request):
     return render(request, 'estore/become_seller.html', context)
 
 @login_required(login_url="signin")
+def upload_product_images(request, pk):
+    # ImageFormSet = modelformset_factory(ProductImages,form=ProductImagesForm, extra=3)
+    # id_user=request.user.user_id
+    # uobject=Users.objects.get(user_id=id_user)
+    # sobject=Sellers.objects.get(user_id=id_user)
+    # form1=ProductForm(request.POST, request.FILES)
+    # formset = ImageFormSet(request.POST, request.FILES,queryset=ProductImages.objects.none())
+    # if uobject.is_seller==False or sobject.approval_status==False:
+    #     return redirect('signin')
+    # if request.method == 'POST':
+    #     if form1.is_valid() and formset.is_valid():
+    #         pro=form1.save(commit=False)
+    #         pro.seller=sobject
+    #         pro.save()
+    #         for form in formset.cleaned_data:
+    #             if form:
+    #                 image = form['image']
+    #                 photo = ProductImages(product=pro, image=image)
+    #         return redirect('profile')
+        
+    
+    
+    return render(request, 'estore/signin.html')
+
+
+@login_required(login_url="signin")
 def upload_product(request):
+    ImageFormSet = modelformset_factory(ProductImages,form=ProductImagesForm, extra=4)
     id_user=request.user.user_id
     uobject=Users.objects.get(user_id=id_user)
     sobject=Sellers.objects.get(user_id=id_user)
-    form=ProductForm(request.POST, request.FILES)
-    form2=ProductImagesForm(request.POST, request.FILES)
+    form1=ProductForm(request.POST, request.FILES)
+    formset = ImageFormSet(request.POST, request.FILES,queryset=ProductImages.objects.none())
     if uobject.is_seller==False or sobject.approval_status==False:
         return redirect('signin')
-    if request.method=='POST':
-        if form.is_valid() and form2.is_valid():
-            pro=form.save(commit=False)
-            pro.seller=sobject
-            ima=form.save(commit=False)
-            ima.product=Products.objects.get(seller=sobject)
-            pro.save()
-            ima.save()
-            return redirect('Profile')
-
-    context={'form':form, 'form2': form2}
+    if request.method == 'POST':
+        if form1.is_valid() and formset.is_valid():
+            proobj=Products()
+            proobj.product_name=form1.cleaned_data.get('product_name')
+            proobj.details=form1.cleaned_data.get('details')
+            proobj.price=form1.cleaned_data.get('price')
+            proobj.stock=form1.cleaned_data.get('stock')
+            proobj.category=form1.cleaned_data.get('category')
+            proobj.seller=sobject
+            proobj.save()
+            # pro=form1.save(commit=False)
+            # pro.seller=sobject
+            # pro.save()
+            for form in formset.cleaned_data:
+                if form:
+                    image = form['image']
+                    photo = ProductImages(product=proobj, image=image)
+                    photo.save()
+            return redirect('inventory')
+    # id_user=request.user.user_id
+    # uobject=Users.objects.get(user_id=id_user)
+    # sobject=Sellers.objects.get(user_id=id_user)
+    # form=ProductForm(request.POST, request.FILES)
+    # if uobject.is_seller==False or sobject.approval_status==False:
+    #     return redirect('signin')
+    # if request.method=='POST':
+    #     if form.is_valid():
+    #         pro=form.save(commit=False)
+    #         pro.seller=sobject
+    #         pro.save()
+    #         return redirect('/upload_product_images/%s/'%pro.product_id)
+    else:
+        form1 = ProductForm()
+        formset = ImageFormSet(queryset=ProductImages.objects.none())
+    context={'form1':form1, 'formset':formset}
     return render(request, 'estore/upload_product.html', context)
     
+@login_required(login_url="signin")
+def delete_product(request, proid):
+    s=Sellers.objects.get(user=request.user)
+    prod=Products.objects.get(product_id=proid)
+    ss=prod.seller
+    if(s==ss):
+        ProductImages.objects.filter(product=prod).delete()
+        instance = Products.objects.get(product_id=proid)
+        instance.delete()
+    return render(request, 'estore/upload_product.html')
+
+@login_required(login_url="signin")
+def user_address(request):
+    resAddData = UserAddress.objects.filter(user=request.user)
+    usersArr = []
+    for data in resAddData:
+        userObj = {}
+        userObj['id'] = data.address_id
+        userObj["address_line"] = str(data.house_no) + ", " + str(data.address_line1) +", " + str(data.address_line2) + ", " + str(data.landmark) + ", " + str(data.pincode)
+        userObj["city"] = data.city_village_name
+        userObj["state"] = data.state 
+        usersArr.append(userObj)
+    context={'users':usersArr,}
+    return render(request, 'estore/user_address.html', context)
+
+
+@login_required(login_url="signin")
+def edit_product(request, proid):
+    s=Sellers.objects.get(user=request.user)
+    prod=Products.objects.get(product_id=proid)
+    ss=prod.seller
+    
+    if(s==ss):
+        initial_data={
+            'product_name':prod.product_name,
+            'details':prod.details,
+            'price':prod.price,
+            'stock':prod.stock,
+            'category':prod.category,
+        }
+        imagearr=[]
+        allimages=ProductImages.objects.filter(product=prod)
+        for singleimage in allimages:
+            d={
+                'image':singleimage.image
+            }
+            imagearr.append(d)
+        instance = get_object_or_404(Products, product_id=proid)
+        form1=ProductForm(request.POST or None,request.FILES or None,initial=initial_data, instance=instance)
+        ImageFormSet = modelformset_factory(ProductImages,form=ProductImagesForm, extra=4)
+        formset = ImageFormSet(request.POST or None, request.FILES or None, initial=imagearr,queryset=ProductImages.objects.none())
+        
+        if form1.is_valid() and formset.is_valid():
+            form1.save()
+            images = formset.save(commit=False)
+            # for obj in formset.deleted_objects:
+            #     obj.delete()
+            for image in images:
+                image.product = prod
+                image.save()
+            return HttpResponseRedirect(request.path_info)
+    context={'form1':form1,
+            'formset':formset,
+            'proid':proid,
+            'product_name':prod.product_name,
+            'details':prod.details,
+            'price':prod.price,
+            'stock':prod.stock,
+            'category':prod.category,}
+    return render(request, 'estore/edit_product.html', context)
+
+
+
+
+
 
 
 @login_required(login_url="signin")
@@ -406,6 +693,8 @@ def base(request):
 
 def admin(request):
     return render(request, 'estore/adminBase.html')
+
+
 
 def adminBuyer(request):
     resUserData = Users.objects.all()

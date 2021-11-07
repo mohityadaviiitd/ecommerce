@@ -1,28 +1,87 @@
 {% extends "./base.html" %}
 {% load static %}
 {% block extrahead %}
-<link rel="stylesheet" type="text/css" href="{% static 'items/itemStyle.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/items.css' %}" />
 {% endblock %}
 {% block title %}items{% endblock %}
 {% block content %}
 <div class="main-container global-margin">
     <div class="sub-container">
         <div class="leftSideBar">
-            <div class="carasoul-container"><h3>carasoul here</h3></div>
-            
-            <div class="btn-container">
-                <div class="product addToCart"><button id="addToCartBtn">Add to cart</button></div>
-                <div class="product buyNow"><button id="buyNowBtn">Buy Now</button></div>
+            <div class="carasoul-container">
+                <div class="item-images">
+                    {% for image in product.images %}
+                    <div class="product-featured-card">
+                        <div class="img-container"><img class="card-img-top" src="{{image}}" alt="products" />
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
         <div class="rightSideBar">
-            <div class="product name">{{product.product_name}}</div>
-            <div class="product description">
-                <p>{{ product.details}}</p>
+            <div>
+                <div class="product name" id="productTitle">{{product.product_name}}</div>
+                <div class="product description" id="productDes">
+                    <p>{{ product.details}}</p>
+                </div>
+                <div class="product name" id="productPrice">Seller: {{product.sellerName}}</div>
             </div>
-            <div class="product price">{{product.price}}</div>
+            <div class="bottom-wrapper">
+                <div class="product price" id="productPrice">₹{{product.price}}</div>
+                <div class="btn-container">
+                    {% if product.inWishlist %}
+                    <button disabled class="addToWishlistBtn" type="button">
+                        Wishlisted
+                    </button>
+                    {% else %}
+                    <form action='{{currentUrl}}' method="POST" class="form">
+                        <input type="hidden" name="product_id" value="{{product.product_id}}" />
+                        <input type="hidden" name="wishlist_id" value="{{user.wishlist_id}}" />
+                        {% csrf_token %}
+                        <button id='{{product.id}}' class="addToWishlistBtn" type="submit">
+                            Wishlist
+                        </button>
+                    </form>
+                    {% endif %}
+
+                    <div class="product addToCart">
+                        <form action="/addToCart" method="POST" class="form">
+                            <input type="hidden" name="product_id" value="{{product.product_id}}" />
+                            <input type="hidden" name="cart_id" value="{{user.cart_id}}" />
+                            {% csrf_token %}
+                            <button onclick="showMessage('Product added to cart successfully!')" type="submit"
+                                id="addToCartBtn">
+                                Add to cart
+                            </button>
+                        </form>
+                    </div>
+                    <div class="product buyNow"><button id="buyNowBtn">Buy Now</button></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".item-images").slick({
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            autoplay: true,
+            autoplaySpeed: 2000,
+            dots: true,
+            touchMove: false,
+            pauseOnHover: true,
+            centerMode: false,
+            arrows: false,
+        });
+    });
+    function showMessage(mesg) {
+        var x = document.getElementById("snackbar");
+        x.innerHTML = mesg
+        x.className = "show";
+        setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
+    }
+</script>
 <hr class="featurette-divider">
 {% endblock %}

@@ -1,0 +1,49 @@
+label{
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-weight: bold;
+    font-size: 20px;
+}
+#btn1{
+    border:black;
+    background-color: rgb(190, 186, 186);
+    font-weight: bold;
+    font-size: 27px;
+    box-shadow: 0 15px 25px rgba(202, 195, 195, 0.6);
+    border-radius: 10px;
+}
+.card {
+    position: relative;
+    align-items: center;
+    margin:auto;
+    width: 60%;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.5);
+    box-sizing: border-box;
+    box-shadow: 0 10px 10px rgba(202, 195, 195, 0.6);
+    border-radius: 10px;
+  }
+  .card .sellerform input {
+      margin-left: 10% 10% 10% 10%;
+    width: 100%;
+    padding: 15px ;
+    font-size: 16px;
+    color: rgb(5, 5, 5);
+    margin-bottom: 30px;
+    border: none;
+    box-shadow: 0 15px 25px rgba(202, 195, 195, 0.6);
+    border-radius: 10px;
+  }
+ #editimage {
+    margin-left: 10% 10% 10% 10%;
+  width: 100%;
+  padding: 15px ;
+  margin-bottom: 0px;
+  font-size: 16px;
+  color: rgb(5, 5, 5);
+
+}
+#btn1:hover
+{
+background-image:none;
+background-color:#a180f0;
+}
