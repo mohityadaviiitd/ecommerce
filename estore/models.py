@@ -55,7 +55,7 @@ class Checkouts(models.Model):
     shipping_address_id = models.ForeignKey('UserAddress',models.DO_NOTHING)
     expected_date = models.DateTimeField()
     ordered_date = models.DateTimeField()
-    products_ordered = models.CharField(max_length=90000)
+    products_ordered = models.CharField(max_length=9000)
 
     class Meta:
         managed = True

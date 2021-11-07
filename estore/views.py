@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-from django.shortcuts import render, redirect, get_object_or_404
-
-from django.contrib.auth import login, authenticate, logout
-from .models import Users, Sellers, ProductImages, Products, Cart, UserAddress, Users, Wishlist, DelliverablePincodes, UserAddress
-from django.contrib.auth.decorators import login_required
-=======
 import uuid
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from .models import Users, Sellers, ProductImages, Products, Cart, UserAddress, Users, Wishlist
 from django.contrib.auth.decorators import login_required, user_passes_test
->>>>>>> 10e5e5de9868e1ccefc74964500e1a49c46ab0a2
 from django.contrib import messages
 from .forms import RegisterForm, SellerForm, ProductForm, ProductImagesForm, PincodeForm, AddressForm, ProfileForm
 from django.core.mail import send_mail
@@ -30,8 +22,8 @@ from django.shortcuts import get_object_or_404
 from django.http import FileResponse
 import os
 import re
-<<<<<<< HEAD
 from django.forms import modelformset_factory
+from django.http import FileResponse, Http404
 
 @login_required(login_url="signin")
 def user_profile(request):
@@ -138,9 +130,6 @@ def inventory(request,productCategory = "",searchQuery="",filterQuery="",sortBy=
                     # print("images ==============",j.image)
                     break
     return render(request, 'estore/inventory.html',{'products':productArr,'pageTitle':pageTitle})
-=======
-from django.http import FileResponse, Http404
->>>>>>> 10e5e5de9868e1ccefc74964500e1a49c46ab0a2
 
 
 def products(request, productCategory="", searchQuery="", filterQuery="", sortBy=""):
@@ -250,20 +239,6 @@ def products(request, productCategory="", searchQuery="", filterQuery="", sortBy
         return render(request, 'estore/productList.html', {'products': productArr, 'pageTitle': pageTitle, 'user': user, 'currentUrl': current_url})
 
 
-<<<<<<< HEAD
-def items(request,item_id):
-    productDetails = Products.objects.get(product_id=item_id)
-    imgDetails = ProductImages.objects.filter(product_id=item_id).first()
-    
-    setattr(productDetails,'image',imgDetails.image)
-    # print("ietem id ========", item_id)
-    return render(request, 'estore/itemDetails.html',{'product':productDetails})
-
-
-def signin(request):
-    page= 'signin'
-    list(messages.get_messages(request))
-=======
 def items(request, item_id):
     if(request.user.is_authenticated and request.user.is_admin == True):
         return HttpResponseRedirect('/admin-home')
@@ -318,7 +293,6 @@ def items(request, item_id):
 
 def signin(request):
     page = 'signin'
->>>>>>> 10e5e5de9868e1ccefc74964500e1a49c46ab0a2
     if request.user.is_authenticated:
         return redirect("profile", type="general")
     if request.method == 'POST':
@@ -327,17 +301,9 @@ def signin(request):
         try:
             user = Users.objects.get(email == email)
         except:
-<<<<<<< HEAD
             a=0
         user=authenticate(request, email=email, password=password)
         
-=======
-            messages.error(request, "wrong email")
-        user = authenticate(request, email=email, password=password)
-        # if not user.is_email.verified:
-        #     messages.add_message(request, messages.ERROR, "email not verified")
-        #     return redirect('register')
->>>>>>> 10e5e5de9868e1ccefc74964500e1a49c46ab0a2
 
         if user is not None:
             if user.is_active==False or user.deleted==True or user.active==False:
@@ -345,7 +311,6 @@ def signin(request):
             if not user.is_email_verified:
                 return redirect('invalid')
             login(request, user)
-<<<<<<< HEAD
             if(user.is_admin==True):
                 return redirect('admin')
             if(user.is_seller==True):
@@ -353,22 +318,15 @@ def signin(request):
                 if(sobj.approval_status==True):
                     return redirect('inventory')
             return redirect('/')
-=======
-            return redirect('profile', type="general")
->>>>>>> 10e5e5de9868e1ccefc74964500e1a49c46ab0a2
         else:
             messages.error(request, "email or password incorrect")
 
     return render(request, 'estore/signin.html')
 
-<<<<<<< HEAD
 def invalid(request):
     return render(request, 'estore/invalid.html')
 def success(request):
     return render(request, 'estore/success.html')
-=======
-
->>>>>>> 10e5e5de9868e1ccefc74964500e1a49c46ab0a2
 def addToCart(request):
     if(request.POST):
         if request.user.is_authenticated:
@@ -396,15 +354,9 @@ def addToCart(request):
 def registerUser(request):
     if request.user.is_authenticated:
         return redirect("profile")
-<<<<<<< HEAD
     page='register'
     form=RegisterForm(request.POST or None, request.FILES or None)
     if request.method=='POST':
-=======
-    page = 'register'
-    form = RegisterForm(request.POST, request.FILES)
-    if request.method == 'POST':
->>>>>>> 10e5e5de9868e1ccefc74964500e1a49c46ab0a2
         # form=RegisterForm(request.POST)
         if form.is_valid():
             u = form.save(commit=False)
@@ -453,7 +405,6 @@ def set_address(request):
             return redirect('set_address')
     context={'form':form}
 
-<<<<<<< HEAD
     return render(request, 'estore/set_address.html', context)
 
 @login_required(login_url="signin")
@@ -483,12 +434,6 @@ def activate_user(request, uidb64, token):
         uid=force_text(urlsafe_base64_decode(uidb64))
         user=Users.objects.get(pk=uid)
         
-=======
-def activate_user(request, uidb64, token):
-    try:
-        uid = force_text(urlsafe_base64_decode(uidb64))
-        user = Users.objects.get(pk=uid)
->>>>>>> 10e5e5de9868e1ccefc74964500e1a49c46ab0a2
 
     except Exception as e:
         user = None
@@ -501,20 +446,11 @@ def activate_user(request, uidb64, token):
 
 @login_required(login_url="signin")
 def become_seller(request):
-<<<<<<< HEAD
     id_user=request.user.user_id
     # if request.user.is_seller==True:
     #     return redirect('profile')
     form=SellerForm(request.POST or None, request.FILES or None)
     if request.method=='POST':
-=======
-    id_user = request.user.user_id
-    if request.user.is_seller == True:
-        print('from here')
-        return redirect('profile')
-    form = SellerForm(request.POST, request.FILES)
-    if request.method == 'POST':
->>>>>>> 10e5e5de9868e1ccefc74964500e1a49c46ab0a2
         if form.is_valid():
             sell = form.save(commit=False)
             sell.user_id = id_user
@@ -555,7 +491,6 @@ def upload_product_images(request, pk):
 
 @login_required(login_url="signin")
 def upload_product(request):
-<<<<<<< HEAD
     ImageFormSet = modelformset_factory(ProductImages,form=ProductImagesForm, extra=4)
     id_user=request.user.user_id
     uobject=Users.objects.get(user_id=id_user)
@@ -676,27 +611,6 @@ def edit_product(request, proid):
 
 
 
-=======
-    id_user = request.user.user_id
-    uobject = Users.objects.get(user_id=id_user)
-    sobject = Sellers.objects.get(user_id=id_user)
-    form = ProductForm(request.POST, request.FILES)
-    form2 = ProductImagesForm(request.POST, request.FILES)
-    if uobject.is_seller == False or sobject.approval_status == False:
-        return redirect('signin')
-    if request.method == 'POST':
-        if form.is_valid() and form2.is_valid():
-            pro = form.save(commit=False)
-            pro.seller = sobject
-            ima = form.save(commit=False)
-            ima.product = Products.objects.get(seller=sobject,status='active')
-            pro.save()
-            ima.save()
-            return redirect('Profile')
-
-    context = {'form': form, 'form2': form2}
-    return render(request, 'estore/upload_product.html', context)
->>>>>>> 10e5e5de9868e1ccefc74964500e1a49c46ab0a2
 
 
 @login_required(login_url="signin")
@@ -986,10 +900,6 @@ def admin(request):
     return render(request, 'estore/adminBase.html')
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 10e5e5de9868e1ccefc74964500e1a49c46ab0a2
 def adminBuyer(request):
     if(request.user.is_authenticated and request.user.is_admin == False):
         return HttpResponseRedirect('/signin')
