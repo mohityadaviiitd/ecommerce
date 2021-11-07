@@ -6,6 +6,8 @@
 {% block title %}Address{% endblock %}
 
 {% block content %}
+<br>
+<br>
 <div class="card">
 <form action ="{% url 'set_address' %}" method="POST" class="sellerform" enctype='multipart/form-data'>
     {% csrf_token %}

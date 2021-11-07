@@ -27,7 +27,10 @@ from django.http import FileResponse, Http404
 
 @login_required(login_url="signin")
 def user_profile(request):
-    
+    if(request.user.is_authenticated and request.user.is_admin == True):
+        return HttpResponseRedirect('/signin')
+    if(request.user.is_authenticated and request.user.is_seller == False):
+        return HttpResponseRedirect('/invalid') 
     if(1==1):
         initial_data={
             'user_name':request.user.user_name,
@@ -50,12 +53,16 @@ def user_profile(request):
             
             sell.save()
             return HttpResponseRedirect(request.path_info)
-    context={'form1':form1,}
+    user = {}
+    user['firstName'] = request.user.user_name.split(" ")[0]
+    user['isSeller'] = request.user.is_seller
+    context={'form1':form1,'user':user}
     if(request.user.is_seller==False):
         return render(request, 'estore/user_profile.html', context)
     if(request.user.is_seller==True):
         return render(request, 'estore/seller_profile.html', context)
 
+@login_required(login_url="signin")
 def deleteAddress(request):
     if(request.POST):
         addr = request.POST.get('address_id')
@@ -63,7 +70,7 @@ def deleteAddress(request):
         u.delete()
     return redirect('user_address')
 
-
+@login_required(login_url="signin")
 def inventory(request,productCategory = "",searchQuery="",filterQuery="",sortBy=""):
     print('-data------------------------',productCategory,   searchQuery,filterQuery)
     filterArr= []
@@ -71,6 +78,9 @@ def inventory(request,productCategory = "",searchQuery="",filterQuery="",sortBy=
     pageTitle = ''
     s=Sellers.objects.get(user=request.user)
     imgData = ProductImages.objects.all()
+    user = {}
+    user['firstName'] = request.user.user_name.split(" ")[0]
+    user['isSeller'] = request.user.is_seller
     if productCategory=="" and searchQuery == "" :
         pageTitle="Products"
         # print('1--------------')
@@ -129,7 +139,7 @@ def inventory(request,productCategory = "",searchQuery="",filterQuery="",sortBy=
                     i['image'] = j.image
                     # print("images ==============",j.image)
                     break
-    return render(request, 'estore/inventory.html',{'products':productArr,'pageTitle':pageTitle})
+    return render(request, 'estore/inventory.html',{'products':productArr,'pageTitle':pageTitle,'user':user})
 
 
 def products(request, productCategory="", searchQuery="", filterQuery="", sortBy=""):
@@ -164,6 +174,7 @@ def products(request, productCategory="", searchQuery="", filterQuery="", sortBy
             user['cart_id'] = request.user.user_id
             # Note sending userid as wishlist id,userid is matched with wishlist_id in CART model
             user['wishlist_id'] = request.user.user_id
+            user['isSeller'] = request.user.is_seller
             wishlistData = Wishlist.objects.filter(
                 wishlist_id=request.user.user_id)
         else:
@@ -265,6 +276,7 @@ def items(request, item_id):
             # Note sending userid as cart id,userid is matched with cart_id in CART model
             user['cart_id'] = request.user.user_id
             user['wishlist_id'] = request.user.user_id
+            user['isSeller'] = request.user.is_seller
             wishlistData = Wishlist.objects.filter(
                 wishlist_id=request.user.user_id)
         else:
@@ -312,11 +324,11 @@ def signin(request):
                 return redirect('invalid')
             login(request, user)
             if(user.is_admin==True):
-                return redirect('admin')
+                return redirect('buyerList')
             if(user.is_seller==True):
                 sobj=Sellers.objects.get(user=user)
                 if(sobj.approval_status==True):
-                    return redirect('inventory')
+                    return redirect('/')
             return redirect('/')
         else:
             messages.error(request, "email or password incorrect")
@@ -327,6 +339,8 @@ def invalid(request):
     return render(request, 'estore/invalid.html')
 def success(request):
     return render(request, 'estore/success.html')
+
+
 def addToCart(request):
     if(request.POST):
         if request.user.is_authenticated:
@@ -403,7 +417,10 @@ def set_address(request):
             sell.user=request.user
             sell.save()
             return redirect('set_address')
-    context={'form':form}
+    user = {}
+    user['firstName'] = request.user.user_name.split(" ")[0]
+    user['isSeller'] = request.user.is_seller
+    context={'form':form,'user':user}
 
     return render(request, 'estore/set_address.html', context)
 
@@ -428,6 +445,7 @@ def set_pincodes(request):
     context={'form':form}
 
     return render(request, 'estore/set_pincodes.html', context)
+
 
 def activate_user(request, uidb64, token):
     try:
@@ -459,7 +477,10 @@ def become_seller(request):
             u.is_seller = True
             u.save()
             return redirect('user_profile')
-    context = {'form': form}
+    user = {}
+    user['firstName'] = request.user.user_name.split(" ")[0]
+    user['isSeller'] = request.user.is_seller
+    context = {'form': form,'user':user}
     return render(request, 'estore/become_seller.html', context)
 
 
@@ -485,7 +506,7 @@ def upload_product_images(request, pk):
     #         return redirect('profile')
         
     
-    
+ 
     return render(request, 'estore/signin.html')
 
 
@@ -533,7 +554,10 @@ def upload_product(request):
     else:
         form1 = ProductForm()
         formset = ImageFormSet(queryset=ProductImages.objects.none())
-    context={'form1':form1, 'formset':formset}
+    user = {}
+    user['firstName'] = request.user.user_name.split(" ")[0]
+    user['isSeller'] = request.user.is_seller
+    context={'form1':form1, 'formset':formset,'user':user}
     return render(request, 'estore/upload_product.html', context)
     
 @login_required(login_url="signin")
@@ -558,7 +582,10 @@ def user_address(request):
         userObj["city"] = data.city_village_name
         userObj["state"] = data.state 
         usersArr.append(userObj)
-    context={'users':usersArr,}
+    user = {}
+    user['firstName'] = request.user.user_name.split(" ")[0]
+    user['isSeller'] = request.user.is_seller
+    context={'users':usersArr,'user':user}
     return render(request, 'estore/user_address.html', context)
 
 
@@ -644,6 +671,7 @@ def shop(request):
             user['cart_id'] = request.user.user_id
             # Note sending userid as wishlist id,userid is matched with wishlist_id in CART model
             user['wishlist_id'] = request.user.user_id
+            user['isSeller'] = request.user.is_seller
             wishlistData = Wishlist.objects.filter(
                 wishlist_id=request.user.user_id)
         else:
@@ -694,9 +722,12 @@ def clearMessages(request):
 def profile(request, type="general"):
     if(request.user.is_authenticated and request.user.is_admin == True):
         return HttpResponseRedirect('/admin-home')
+    if(request.user.is_authenticated and request.user.is_seller == True):
+        return HttpResponseRedirect('/invalid') 
     userId = request.user.user_id
     user = {}
     user['firstName'] = request.user.user_name.split(" ")[0]
+    user['isSeller'] = request.user.is_seller
     current_user_profile_pic = Users.objects.filter(user_id=userId)[
         0].profile_photo.url
     current_user_email_id = Users.objects.filter(user_id=userId)[0].email
@@ -825,6 +856,7 @@ def cart(request):
     else:
         user = {}
         user['firstName'] = request.user.user_name.split(" ")[0]
+        user['isSeller'] = request.user.is_seller
         cartid = request.user.user_id
         data = Cart.objects.filter(cart_id=cartid.hex)
         product_id_list = []
@@ -896,6 +928,7 @@ def base(request):
     return render(request, 'estore/base.html')
 
 
+@login_required(login_url="signin")
 def admin(request):
     return render(request, 'estore/adminBase.html')
 
@@ -929,6 +962,7 @@ def adminBuyer(request):
     return render(request, 'estore/adminBuyer.html', {'users': usersArr})
 
 
+@login_required(login_url="signin")
 def adminSeller(request):
     if(request.user.is_authenticated and request.user.is_admin == False):
         return HttpResponseRedirect('/signin')
@@ -979,6 +1013,7 @@ def wishlist(request):
     else:
         user = {}
         user['firstName'] = request.user.user_name.split(" ")[0]
+        user['isSeller'] = request.user.is_seller
         wishlistid = request.user.user_id
         data = Wishlist.objects.filter(wishlist_id=wishlistid)
         product_id_list = []
@@ -1037,6 +1072,7 @@ def wishlist(request):
                       {'product_list': product_list, 'wishlist': wishlistid, 'user': user})
 
 
+@login_required(login_url="signin")
 def makeUserActive(request):
     # Apply check for authenticated admin
     if(request.user.is_authenticated and request.user.is_admin == False):
@@ -1049,7 +1085,7 @@ def makeUserActive(request):
         userData.save()
     return HttpResponseRedirect('/admin-home/buyer-list')
 
-
+@login_required(login_url="signin")
 def makeUserInactive(request):
     # Apply check for authenticated admin
     if(request.user.is_authenticated and request.user.is_admin == False):
@@ -1062,7 +1098,7 @@ def makeUserInactive(request):
         userData.save()
     return HttpResponseRedirect('/admin-home/buyer-list')
 
-
+@login_required(login_url="signin")
 def makeSellerUserActive(request):
     # Apply check for authenticated admin
     if(request.user.is_authenticated and request.user.is_admin == False):
@@ -1075,7 +1111,7 @@ def makeSellerUserActive(request):
         userData.save()
     return HttpResponseRedirect('/admin-home/seller-list')
 
-
+@login_required(login_url="signin")
 def makeSellerUserInactive(request):
     # Apply check for authenticated admin
     if(request.user.is_authenticated and request.user.is_admin == False):
@@ -1088,7 +1124,7 @@ def makeSellerUserInactive(request):
         userData.save()
     return HttpResponseRedirect('/admin-home/seller-list')
 
-
+@login_required(login_url="signin")
 def approveSeller(request):
     # Apply check for authenticated admin
     if(request.user.is_authenticated and request.user.is_admin == False):
@@ -1104,7 +1140,7 @@ def approveSeller(request):
                 sellerData.save()
             return HttpResponseRedirect('/admin-home/seller-list')
 
-
+@login_required(login_url="signin")
 def disapproveSeller(request):
     # Apply check for authenticated admin
     if(request.user.is_authenticated and request.user.is_admin == False):
@@ -1119,7 +1155,7 @@ def disapproveSeller(request):
                 sellerData.save()
             return HttpResponseRedirect('/admin-home/seller-list')
 
-
+@login_required(login_url="signin")
 def viewPDF(request):
     if(request.user.is_authenticated and request.user.is_admin == False):
         return HttpResponseRedirect('/signin')
@@ -1137,7 +1173,7 @@ def viewPDF(request):
     else:
         redirect('signin')
 
-
+@login_required(login_url="signin")
 def deleteUser(request):
     # Apply check for authenticated admin
     if(request.user.is_authenticated and request.user.is_admin == False):
@@ -1149,6 +1185,7 @@ def deleteUser(request):
         userData.save()
     return HttpResponseRedirect('/admin-home/buyer-list')
 
+@login_required(login_url="signin")
 def deleteSeller(request):
     #Apply check for authenticated admin
     if(request.user.is_authenticated and request.user.is_admin == False):
