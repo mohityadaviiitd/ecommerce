@@ -52,9 +52,10 @@ class Checkouts(models.Model):
     checkout_id = models.CharField(primary_key=True, max_length=90)
     kart = models.ForeignKey('Users', models.DO_NOTHING)
     delivery_status = models.CharField(max_length=90)
-    shipping_address_id = models.CharField(max_length=90)
+    shipping_address_id = models.ForeignKey('UserAddress',models.DO_NOTHING)
     expected_date = models.DateTimeField()
     ordered_date = models.DateTimeField()
+    products_ordered = models.CharField(max_length=90000)
 
     class Meta:
         managed = True

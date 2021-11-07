@@ -63,6 +63,7 @@ img:hover {
 }
 
 #top {
+  margin-top: 50px;
   text-align: center;
   font-family: 'Arimo', sans-serif;
 
@@ -138,7 +139,7 @@ img:hover {
 
   /* border-style: solid; */
   border: solid rgba(0, 0, 0, .125);
-  border-width: 0px 1px 1px 1px;
+  border-width: 1px 1px 1px 1px;
   height: 350px;
   border-radius: 3px;
 }
@@ -155,7 +156,7 @@ img:hover {
 
   /* border-style: solid; */
   border: solid rgba(0, 0, 0, .125);
-  border-width: 0px 1px 1px 1px;
+  border-width: 1px 1px 1px 1px;
   height: 350px;
   border-radius: 3px;
 }
@@ -165,6 +166,7 @@ img:hover {
   height: auto;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
+  padding: 15px;
 }
 
 /* padding: -1px; */
@@ -176,12 +178,17 @@ img:hover {
 }
 
 .titleContainer {
-  align-items: center;
+  align-items: flex-end;
   align-content: center;
   display: flex;
-  height: 100%;
+  height: 50px;
+  margin-bottom: 10px;
 }
-
+.imgContainer{
+  display: flex;
+  height: 100%;
+  align-items: center;
+}
 .button-borderless {
   border: none;
   background-color: #fff !important;
@@ -220,49 +227,66 @@ img:hover {
   /* object-fit: contain; */
 }
 
-/* snackbar css */
-/* The snackbar - position it at the bottom and in the middle of the screen */
-#snackbar {
-  visibility: hidden; /* Hidden by default. Visible on click */
-  min-width: 250px; /* Set a default minimum width */
-  margin-left: -125px; /* Divide value of min-width by 2 */
-  background-color: #333; /* Black background color */
-  color: #fff; /* White text color */
-  text-align: center; /* Centered text */
-  border-radius: 2px; /* Rounded borders */
-  padding: 16px; /* Padding */
-  position: fixed; /* Sit on top of the screen */
-  z-index: 1; /* Add a z-index if needed */
-  left: 50%; /* Center the snackbar */
-  bottom: 30px; /* 30px from the bottom */
+
+.custom-jumbotron{
+  background: linear-gradient(to right, #ee9ca7, #ffdde1);
+  padding-top: 175px;
+  padding-bottom: 150px;
 }
 
-/* Show the snackbar when clicking on a button (class added with JavaScript) */
-#snackbar.show {
-  visibility: visible; /* Show the snackbar */
-  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
-  However, delay the fade out process for 2.5 seconds */
-  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
-  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+.addToWishlistBtn, .addToWishlistBtn:focus{
+  padding: 4px 6px;
+  border-radius: 5px 0px 0px 5px;
+  /* box-shadow: 0 1px 2px 0; */
+  border: none;
+  float: left;
+  background: rgb(255, 118, 134);
+  color: #fff;
+  outline: inherit;
 }
 
-/* Animations to fade the snackbar in and out */
-@-webkit-keyframes fadein {
-  from {bottom: 0; opacity: 0;}
-  to {bottom: 30px; opacity: 1;}
+
+.addToWishlistBtn:active {
+  padding: 4px 6px;
+  border-radius: 5px 0px 0px 5px;
+  border: none;
+  float: left;
+  background: rgb(255, 88, 108);
+  color: #fff;
 }
 
-@keyframes fadein {
-  from {bottom: 0; opacity: 0;}
-  to {bottom: 30px; opacity: 1;}
+.addToWishlistBtn:hover {
+  padding: 4px 6px;
+  border-radius: 5px 0px 0px 5px;
+  border: none;
+  float: left;
+  background: rgb(255, 79, 100);
+  color: #fff;
+}
+.addToCartBtn, .addToCartBtn:focus {
+  padding: 4px 6px;
+  border-radius: 0px 5px 5px 0px;
+  border: none;
+  float: left;
+  background: rgb(0, 196, 170);
+  color: #fff;
+	outline: inherit;
+}
+.addToCartBtn:active {
+  padding: 4px 6px;
+  border-radius: 0px 5px 5px 0px;
+  border: none;
+  float: left;
+  background: rgb(0, 160, 139);
+  color: #fff;
 }
 
-@-webkit-keyframes fadeout {
-  from {bottom: 30px; opacity: 1;}
-  to {bottom: 0; opacity: 0;}
-}
-
-@keyframes fadeout {
-  from {bottom: 30px; opacity: 1;}
-  to {bottom: 0; opacity: 0;}
+.addToCartBtn:hover {
+  padding: 4px 6px;
+  border-radius: 0px 5px 5px 0px;
+  box-shadow: 0 1px 2px 0;
+  border: none;
+  float: left;
+  background: rgb(0, 161, 140);
+  color: #fff;
 }

@@ -10,29 +10,24 @@ body {
   background-color: #e3f2fd;
 }
 
-/* carousel image hover effect*/
+
 img {
   opacity: 0.8;
   filter: alpha(opacity=50);
-  /* For IE8 and earlier */
 }
 
 img:hover {
   opacity: 1;
   filter: alpha(opacity=80);
-  /* For IE8 and earlier */
 }
 
 .featurette-divider {
   margin: 3rem 0;
-  /* Space out the Bootstrap <hr> more */
 }
 
-/* Thin out the marketing headings */
 .featurette-heading {
   font-weight: 300;
   line-height: 1;
-  /* rtl:remove */
   letter-spacing: -.05rem;
 }
 
@@ -44,24 +39,6 @@ img:hover {
 
 .searchIcon {
   color: #ffffff;
-}
-
-
-.carousel-caption {
-  bottom: 3rem;
-  z-index: 10;
-}
-
-.carousel-item {
-  height: 40rem;
-}
-
-.carousel-item>img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  min-width: 100%;
-  height: auto;
 }
 
 #search_icon {
@@ -78,3 +55,109 @@ img:hover {
   padding-right: 30px;
   width: 100%;
 }
+
+.nav-container{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding:0 6%;
+}
+.sub-nav{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+#navbar-hr{
+  margin:0px!important;
+}
+#nav-logout{
+  padding: 5px 1rem !important;
+}
+#nav-logout:hover{
+  background-color: rgba(255, 40, 75, 0.842);
+  border-radius: 0px 0px 3px 3px;
+  color: #fff;
+  padding: 5px 1rem!important;
+}
+#nav-profile{
+  padding: 5px 1rem !important;
+}
+#nav-profile:hover{
+  border-radius: 3px 3px 0px 0px;
+  color: #fff;
+  padding: 5px 1rem !important;
+}
+#nav-orders{
+  padding: 5px 1rem 8px 1rem !important;
+}
+#nav-orders:hover{
+  padding: 5px 1rem 8px 1rem !important;
+}
+
+#nav-camera:hover{
+  border-radius: 0px 0px 3px 3px;
+}
+.nav-dropdown-items{
+  padding: 5px 1rem !important;
+}
+.nav-dropdown-items:hover{
+  padding: 5px 1rem !important;
+  background-color: rgb(122, 106, 109) !important;
+  color: #fff !important ;
+}
+.dropdown-custom{
+  margin-top: 0px !important;
+  padding-top: 0px !important;
+  margin-bottom: 0px !important;
+  padding-bottom: 0px !important;
+  border:none !important;
+}
+
+
+/* snackbar css */
+#snackbar {
+  visibility: hidden; 
+  min-width: 250px; 
+  margin-left: -125px; 
+  background-color: #333; 
+  color: #fff; 
+  text-align: center; 
+  border-radius: 2px; 
+  padding: 16px; 
+  position: fixed; 
+  z-index: 1; 
+  left: 50%; 
+  bottom: 30px; 
+}
+
+
+#snackbar.show {
+  visibility: visible; 
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+

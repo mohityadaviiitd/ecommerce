@@ -10,15 +10,14 @@
     <div class="main-heading">
         <h3>{{pageTitle}}</h3>
     </div>
-
     <div class="sub-container">
         <div class="leftSideBar">
-            <div class="filter-container">
+            <div class="filter-container border-wrapper">
                 <h4>
                     Select Filter
                 </h4>
                 <div class="filter-wrapper">
-                    <label>Price Range</label>
+                    <label style="padding-bottom: 4px; font-size: 18px;">Price Range</label>
                     <div class="range-selector">
                         <select onchange="handleFilter()" name="minPrice" id="minPriceFilter" class="select-box">
                             <option value="1000">₹1000</option>
@@ -41,76 +40,81 @@
 
                         </select>
                     </div>
-
                     <div class="inStock-wrapper">
                         <input onchange="handleFilter()" type="checkbox" id="inStock" name="inStock" value="inStock">
                         <label style="padding-left: 5px;  padding-bottom: 4px; font-size: 16px;" for="inStock">In
                             Stock</label><br>
                     </div>
-
-
                     <div>
                         <button onclick="handleClearFilter()" id="clearFilter">Clear Filters</button>
                     </div>
-
-
-
                 </div>
-
             </div>
             <div style="margin-top: 50px;"></div>
-            <div class="sort-container">
+            <div class="sort-container border-wrapper">
                 <h4>Sort By</h4>
                 <div>
                     <input onchange="handleSortBy('A-Z')" type="radio" id="A-Z" name="sortBy" value="A-Z">
                     <label for="A-Z">A-Z</label><br>
                     <input onchange="handleSortBy('price')" type="radio" id="price" name="sortBy" value="price">
                     <label for="price">Price</label><br>
-
                 </div>
             </div>
-
-
         </div>
         <div class="rightSideBar">
             <div class="products-list">
                 {% if products|length > 0 %}
                 {% for product in products %}
-                <!-- <a class = "no-link" href="/item/{{product.id}}"> -->
-                <div onclick="goToPage('/itemDetails/id={{product.id}}')" class="product-featured-card card shadow-sm">
+                <div class="product-featured-card card shadow-sm">
                     <div class="img-container">
                         <img src="{{product.image}}" class="card-img-top" alt="web development" />
-
                     </div>
                     <div class="card-body">
-                        <p class="card-text">
-                            {{product.name}} {{product.description}}
+                        <h5 style="cursor: pointer;" onclick="goToPage('/itemDetails/id/{{product.id}}')"
+                            class="card-text">{{product.name}}</h5>
+                        <p style="cursor: pointer;" onclick="goToPage('/itemDetails/id/{{product.id}}')"
+                            class="card-text">
+                            {{product.description}}
                         </p>
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-outline-secondary">
-                                    Wishlist
+                                {% if product.inWishlist %}
+                                <button disabled class="addToWishlistBtn" type="button">
+                                    Wishlisted
                                 </button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary">
-                                    Add to cart
-                                </button>
+                                {% else %}
+                                <form action='{{currentUrl}}' method="POST" class="form">
+                                    <input type="hidden" name="product_id" value="{{product.id}}" />
+                                    <input type="hidden" name="wishlist_id" value="{{user.wishlist_id}}" />
+                                    {% csrf_token %}
+                                    <button id='{{product.id}}' class="addToWishlistBtn" type="submit">
+                                        Wishlist
+                                    </button>
+                                </form>
+                                {% endif %}
+                                <form action="/addToCart" method="POST" class="form">
+                                    <input type="hidden" name="product_id" value="{{product.id}}" />
+                                    <input type="hidden" name="cart_id" value="{{user.cart_id}}" />
+                                    {% csrf_token %}
+                                    <button onclick="showMessage('Product added to cart successfully!')" type="submit"
+                                        class="addToCartBtn">
+                                        Add to cart
+                                    </button>
+                                </form>
                             </div>
                             <small class="text-muted">₹{{product.price}}</small>
                         </div>
                     </div>
                 </div>
-                <!-- </a> -->
                 {% endfor %}
                 {% elif products|length == 0 %}
-                <div> No result found</div>
+                <div  class="img-wrapper" >
+                    <img style="object-fit: contain; height:100px;" src = "{% static 'media/404img.png' %}" >
+                </div>
                 {% endif %}
-
             </div>
-
         </div>
-
     </div>
-
 </div>
 </div>
 <script type="text/javascript">
@@ -159,8 +163,12 @@
         // console.log('type fitler----------------', urlnew)
         window.location.href = urlnew
     }
-
-
+    function showMessage(mesg) {
+        var x = document.getElementById("snackbar");
+        x.innerHTML = mesg
+        x.className = "show";
+        setTimeout(function () { x.className = x.className.replace("show", "") }, 3000);
+    }
 </script>
 
 <hr class="featurette-divider">

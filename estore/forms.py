@@ -124,5 +124,16 @@ class ProductImagesForm(ModelForm):
     image=ImageField(label='image')
     class Meta:
         model = ProductImages
-        fields = ['image', ]
-ImageFormSet = modelformset_factory(ProductImages, extra=4, exclude=(), form=ProductImagesForm)
+        fields = ['image']
+
+class BuyerGeneralProfileForm(ModelForm):
+
+    class Meta:
+        model = Users
+        fields = ('user_name', 'phone')
+
+class BuyerAddressProfileForm(ModelForm):
+
+    class Meta:
+        model = UserAddress
+        fields = ('house_no', 'address_line1','address_line2','landmark','city_village_name','state','pincode')

@@ -1,7 +1,14 @@
-{% extends "estore/basic.html" %}
+{% extends "estore/base.html" %}
 
 {% block content %}
+    <div style="margin-top: 5%; width: 100%;">
+    {% if product_list|length == 0 %}
+ <div class="w-full d-flex">
+    <p class="mx-auto font-monospace mt-5" style="font-size: 14px;">No items in your wishlist</p>
+        </div>
+{% endif %}
 <div class="d-flex flex-wrap mx-auto" style="width: 70%;">
+
 {% for product in product_list %}
     <div class="card m-auto rounded-3 bg-light shadow-sm" style="width: 14rem; height: 21rem;">
   <img class="card-img-top mx-auto pt-2" style="width: 10rem; height: 10rem;" src="{{ product.product_image }}" alt="{{ product.product_name }}">
@@ -30,7 +37,17 @@
     </div>
 
 
-
+</div>
 {% endblock content %}
 
+<script>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            var scrollpos = sessionStorage.getItem('scrollpos');
+            if (scrollpos) window.scrollTo(0, scrollpos);
+        });
 
+        window.onbeforeunload = function(e) {
+            sessionStorage.setItem('scrollpos', window.scrollY);
+            //sessionStorage.removeItem('scrollpos');
+        };
+    </script>

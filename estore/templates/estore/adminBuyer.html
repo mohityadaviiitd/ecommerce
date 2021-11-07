@@ -10,6 +10,11 @@
         <div id="pageTitle" class="main-padding">Buyer List</div>
         <hr class="border-line">
     </div>
+    {% if users|length == 0 %}
+    <div  class="img-wrapper" >
+        <img style="object-fit: contain; height:100px;" src = "{% static 'media/404img.png' %}" >
+    </div>
+    {% else %}
     <div class="table-wrapper main-padding">
         <table>
             <tr>
@@ -39,7 +44,6 @@
                         <img src="{% static 'media/patch-check-fill.svg' %}">
                         {% endif %}
                     </div>
-                    
                 </td>
                 <td class="text-style1">
                     <div class="cell-center">
@@ -49,22 +53,41 @@
                         <img src="{% static 'media/patch-check-fill.svg' %}">
                         {% endif %}
                     </div>
-                    
                 </td>
                 <td class="text-style1 ">
-                    {% if user.active == 0 %}
-                    <img src="{% static 'media/person-check-fill.svg' %}">
-                    {% elif user.active != 0 %}
-                    <img src="{% static 'media/person-x-fill.svg' %}">
-                    {% endif %}
-                    <img src="{% static 'media/trash-fill.svg' %}">
+                    <div class="actions-box">
+                        {% if user.active == 0 %}
+                        <form action="/makeUserActive" method="POST" class="form">
+                            <input type="hidden" name="user_id" value="{{user.id}}" />
+                            {% csrf_token %}
+                            <button class="inactive-user-btn disable-css" type="submit">
+                                <img src="{% static 'media/person-check-fill.svg' %}">
+                            </button>
+                        </form>
+                        {% elif user.active != 0 %}
+                        <form action="/makeUserInactive" method="POST" class="form">
+                            <input type="hidden" name="user_id" value="{{user.id}}" />
+                            {% csrf_token %}
+                            <button class="active-user-btn disable-css" type="submit">
+                                <img src="{% static 'media/person-x-fill.svg' %}">
+                            </button>
+                        </form>
+                        {% endif %}
+                        <form action="/deleteUser" method="POST" class="form">
+                            <input type="hidden" name="user_id" value="{{user.id}}" />
+                            {% csrf_token %}
+                            <button class="active-user-btn disable-css" type="submit">
+                                <img src="{% static 'media/trash-fill.svg' %}">
+                            </button>
+                        </form>
+                    </div>
                 </td>
-
             </tr>
             {% endfor %}
-
         </table>
     </div>
+    {% endif %}
+
 
 
 </div>
