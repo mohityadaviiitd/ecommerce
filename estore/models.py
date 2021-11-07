@@ -102,7 +102,7 @@ class Products(models.Model):
     price = models.FloatField()
     stock = models.IntegerField()
     seller = models.ForeignKey('Sellers', models.DO_NOTHING)
-    status = models.CharField(default=1,max_length=90)
+    status = models.CharField(default='active',max_length=90)
     date_created=models.DateTimeField(verbose_name="date created", auto_now_add=True)
 
 

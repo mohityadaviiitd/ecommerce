@@ -353,7 +353,7 @@ def addToCart(request):
 
 def registerUser(request):
     if request.user.is_authenticated:
-        return redirect("profile")
+        return redirect("user_profile")
     page='register'
     form=RegisterForm(request.POST or None, request.FILES or None)
     if request.method=='POST':
@@ -458,7 +458,7 @@ def become_seller(request):
             u = Users.objects.get(user_id=id_user)
             u.is_seller = True
             u.save()
-            return redirect('register')
+            return redirect('user_profile')
     context = {'form': form}
     return render(request, 'estore/become_seller.html', context)
 
@@ -899,7 +899,7 @@ def base(request):
 def admin(request):
     return render(request, 'estore/adminBase.html')
 
-
+@login_required(login_url="signin")
 def adminBuyer(request):
     if(request.user.is_authenticated and request.user.is_admin == False):
         return HttpResponseRedirect('/signin')
