@@ -1,0 +1,46 @@
+{% extends "estore/sellerbase.html" %}
+
+{% load static %}
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/edit_product.css' %}" />
+{% endblock %}
+{% block title %}BecomeSeller{% endblock %}
+
+{% block content %}
+<body>
+<div class="auth">
+    <div class="card">
+        <form method="POST" action="/edit_product/{{proid}}" class="sellerform" enctype='multipart/form-data'>
+            {% csrf_token %}
+            {% for hidden in form1.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+            {% for field in form1 %}
+            <div class="formfield">
+                <label>{{field.label}}</label>
+                {{field}}
+                {% for error in field.errors %}
+                <p style="color: red;">{{error}}</p>
+                {% endfor %}
+
+            {% endfor %}
+            <p></p>
+            <p>Upload minimum of 2 photos and max 4 photos. Each file size should not exceed 1MB.</p>
+
+            {% for hidden in formset.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+            {{ formset.management_form }}
+            {% for form in formset %}
+                {{ form.as_p }}
+            {% endfor %}
+            </div>
+
+            <div class="action">
+                <input id="btn1" class="btn" type="submit" value="EDIT PRODUCT" />
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+{% endblock %}

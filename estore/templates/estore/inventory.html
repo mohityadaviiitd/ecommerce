@@ -1,0 +1,169 @@
+{% extends "./sellerbase.html" %}
+{% load static %}
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="{% static 'products/prodStyles.css' %}" />
+{% endblock %}
+{% block title %}Inventory{% endblock %}
+
+{% block content %}
+<div class="main-container global-margin">
+    <div class="main-heading">
+        <h3>{{pageTitle}}</h3>
+    </div>
+
+    <div class="sub-container">
+        <div class="leftSideBar">
+            <div class="filter-container border-wrapper">
+                <h4>
+                    Select Filter
+                </h4>
+                <div class="filter-wrapper">
+                    <label style="padding-bottom: 4px; font-size: 18px;">Price Range</label>
+                    
+                    <div class="range-selector">
+                        <select onchange="handleFilter()" name="minPrice" id="minPriceFilter" class="select-box">
+                            <option value="1000">₹1000</option>
+                            <option value="2000">₹2000</option>
+                            <option value="3000">₹3000</option>
+                            <option value="4000">₹4000</option>
+                            <option value="5000">₹5000</option>
+                            <option value="10000">₹10000</option>
+
+                        </select>
+                        <div style="margin: 0px 12px;">to</div>
+                        <select onchange="handleFilter()" name="maxPrice" id="maxPriceFilter" class="select-box">
+                            <option value="100000" selected disabled hidden>Max</option>
+                            <option value="10000">₹10000</option>
+                            <option value="15000">₹15000</option>
+                            <option value="20000">₹20000</option>
+                            <option value="30000">₹30000</option>
+                            <option value="50000">₹50000</option>
+                            <option value="100000">₹100000</option>
+
+                        </select>
+                    </div>
+
+                    <div class="inStock-wrapper">
+                        <input onchange="handleFilter()" type="checkbox" id="inStock" name="inStock" value="inStock">
+                        <label style="padding-left: 5px;  padding-bottom: 4px; font-size: 16px;" for="inStock">In
+                            Stock</label><br>
+                    </div>
+
+
+                    <div>
+                        <button onclick="handleClearFilter()" id="clearFilter">Clear Filters</button>
+                    </div>
+
+
+
+                </div>
+
+            </div>
+            <div style="margin-top: 50px;"></div>
+            <div class="sort-container border-wrapper">
+                <h4>Sort By</h4>
+                <div>
+                    <input onchange="handleSortBy('A-Z')" type="radio" id="A-Z" name="sortBy" value="A-Z">
+                    <label for="A-Z">A-Z</label><br>
+                    <input onchange="handleSortBy('price')" type="radio" id="price" name="sortBy" value="price">
+                    <label for="price">Price</label><br>
+
+                </div>
+            </div>
+
+
+        </div>
+        <div class="rightSideBar">
+            <div class="products-list">
+                {% if products|length > 0 %}
+                {% for product in products %}
+                <!-- <a class = "no-link" href="/item/{{product.id}}"> -->
+                <div class="product-featured-card card shadow-sm">
+                    <div add style="cursor: pointer" onclick="goToPage('/itemDetails/id/{{product.id}}')" class="img-container">
+                        <img src="../media/{{product.image}}" class="card-img-top" alt="web development" />
+
+                    </div>
+                    <div class="card-body">
+                        <p add style="cursor: pointer" onclick="goToPage('/itemDetails/id={{product.id}}')" class="card-text">
+                            {{product.name}} {{product.description}}
+                        </p>
+                        <small class="text-muted">₹{{product.price}}</small>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group align-vertical">
+                                <button class="addToWishlistBtn"  onclick="goToPage('/edit_product/{{product.id}}')" type="button" class="btn btn-sm btn-outline-secondary">
+                                    Edit Product
+                                </button>
+                                <button class="addToCartBtn" onclick="goToPage('/delete_product/{{product.id}}')" type="button" class="btn btn-sm btn-outline-secondary">
+                                    Delete Product
+                                </button>
+                            </div>
+                           
+                        </div>
+                    </div>
+                </div>
+                <!-- </a> -->
+                {% endfor %}
+                {% elif products|length == 0 %}
+                <div> No result found</div>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        document.getElementById('A-Z').checked = !!(window.sessionStorage.getItem('sortByKey') === 'A-Z')
+        document.getElementById('price').checked = !!(window.sessionStorage.getItem('sortByKey') === 'price')
+        const { min = 1000, max = 100000, inStock = false } = JSON.parse(window.sessionStorage.getItem('filterKey'))
+        document.getElementById('minPriceFilter').value = min.toString()
+        document.getElementById('maxPriceFilter').value = max.toString()
+        document.getElementById('inStock').checked = inStock
+    });
+    function goToPage(web) {
+        window.location.href = web;
+    }
+    function handleSortBy(sortBy) {
+        window.sessionStorage.setItem('sortByKey', sortBy);
+        const searchQuery = window.sessionStorage.getItem('searchKey') || ''
+        const { min = 1000, max = 100000, inStock = false } = JSON.parse(window.sessionStorage.getItem('filterKey')) || {}
+        const filterStr = `&inStock&${inStock}&minValue&${min}&maxValue&${max}`
+        const urlnew = `/inventory${searchQuery !== '' ? '/search/' + searchQuery : ''}${min !== 0 ? '/filter/' + filterStr : ''}${sortBy !== '' ? '/sort/' + sortBy : ''}`
+        // console.log('type sorty----------------', filterStr, urlnew)
+        window.location.href = urlnew
+    }
+    function handleFilter() {
+        const min = parseInt(document.getElementById('minPriceFilter').value)
+        const max = parseInt(document.getElementById('maxPriceFilter').value)
+        const inStock = document.getElementById('inStock').checked
+        window.sessionStorage.setItem('filterKey', JSON.stringify({ min, max, inStock }));
+        // console.log('--------------------m,n,s,', min, max, inStock)
+        const filterStr = `&inStock&${inStock}&minValue&${min}&maxValue&${max}`
+        const searchQuery = window.sessionStorage.getItem('searchKey') || ''
+        const sortBy = window.sessionStorage.getItem('sortByKey') || ''
+        const urlnew = `/inventory${searchQuery !== '' ? '/search/' + searchQuery : ''}${filterStr !== '' ? '/filter/' + filterStr : ''}${sortBy !== '' ? '/sort/' + sortBy : ''}`
+        // console.log('type fitler----------------', urlnew)
+        window.location.href = urlnew
+    }
+    function handleClearFilter() {
+        const min = 1000
+        const max = 100000
+        const inStock = false
+        window.sessionStorage.setItem('filterKey', JSON.stringify({ min, max, inStock }));
+        const filterStr = `&inStock&${inStock}&minValue&${min}&maxValue&${max}`
+        const searchQuery = window.sessionStorage.getItem('searchKey') || ''
+        const sortBy = window.sessionStorage.getItem('sortByKey') || ''
+        const urlnew = `/inventory${searchQuery !== '' ? '/search/' + searchQuery : ''}${filterStr !== '' ? '/filter/' + filterStr : ''}${sortBy !== '' ? '/sort/' + sortBy : ''}`
+        // console.log('type fitler----------------', urlnew)
+        window.location.href = urlnew
+    }
+
+
+</script>
+
+<!-- <hr class="featurette-divider"> -->
+{% endblock %}

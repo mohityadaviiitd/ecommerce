@@ -1,5 +1,66 @@
-<form action ="{% url 'upload_product' %}" method="POST" enctype='multipart/form-data'>
+{% extends "estore/sellerbase.html" %}
+<!-- <form action ="{% url 'upload_product' %}" method="POST" enctype='multipart/form-data'>
     {% csrf_token %}
-    {{form.as_p}}
+    {% for hidden in form1.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
+    {{form1.as_p}}
+    {% for hidden in formset.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
+    {{ formset.management_form }}
+    {% for form in formset %}
+        {{ form.as_p }}
+    {% endfor %}
     <input type="submit" name="Submit"/>
-</form>
+</form> -->
+
+{% load static %}
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/sellerproof.css' %}" />
+{% endblock %}
+{% block title %}UploadProduct{% endblock %}
+
+{% block content %}
+
+<body>
+    <br>
+    <br>
+<div class="auth">
+    <div class="card">
+        <form method="POST" action="{% url 'upload_product' %}" class="sellerform" enctype='multipart/form-data'>
+            {% csrf_token %}
+            {% for hidden in form1.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+            {% for field in form1 %}
+            <div class="formfield">
+                <label>{{field.label}}</label>
+                {{field}}
+                {% for error in field.errors %}
+                <p style="color: red;">{{error}}</p>
+                {% endfor %}
+
+            
+
+            {% endfor %}
+            <p></p>
+            <p>Upload minimum of 2 photos and max 4 photos. Each file size should not exceed 1MB.</p>
+
+            {% for hidden in formset.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+            {{ formset.management_form }}
+            {% for form in formset %}
+                {{ form.as_p }}
+            {% endfor %}
+            </div>
+
+            <div class="action">
+                <input id="btn1" class="btn" type="submit" value="UPLOAD PRODUCT FOR SALE" />
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+{% endblock %}

@@ -4,7 +4,7 @@ from django.contrib.auth import login, authenticate, logout
 from .models import Users, Sellers, ProductImages, Products, Cart, UserAddress, Users, Wishlist
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from .forms import RegisterForm, SellerForm, ProductForm, ProductImagesForm
+from .forms import RegisterForm, SellerForm, ProductForm, ProductImagesForm, PincodeForm, AddressForm, ProfileForm
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
@@ -22,7 +22,131 @@ from django.shortcuts import get_object_or_404
 from django.http import FileResponse
 import os
 import re
+from django.forms import modelformset_factory
 from django.http import FileResponse, Http404
+
+@login_required(login_url="signin")
+def user_profile(request):
+    if(request.user.is_authenticated and request.user.is_admin == True):
+        return HttpResponseRedirect('/signin')
+    if(request.user.is_authenticated and request.user.is_seller == False):
+        return HttpResponseRedirect('/invalid') 
+    if(1==1):
+        initial_data={
+            'user_name':request.user.user_name,
+            'phone':request.user.phone,
+            'email':request.user.email,
+            'profile_photo':request.user.profile_photo,
+        }
+        em=request.user.email
+        ph=request.user.email
+        form1=ProfileForm(request.POST or None,request.FILES or None,initial=initial_data,instance=request.user)
+        if form1.is_valid():
+            sell=form1.save(commit=False)
+            if(sell.phone!=ph):
+                request.user.is_phone_verified=False
+            if(sell.email!=em):
+                request.user.is_email_verified=False
+                sell.save()
+                logout(request)
+                return redirect('emailverify')
+            
+            sell.save()
+            return HttpResponseRedirect(request.path_info)
+    user = {}
+    user['firstName'] = request.user.user_name.split(" ")[0]
+    user['isSeller'] = request.user.is_seller
+    context={'form1':form1,'user':user}
+    if(request.user.is_seller==False):
+        return render(request, 'estore/user_profile.html', context)
+    if(request.user.is_seller==True):
+        return render(request, 'estore/seller_profile.html', context)
+
+@login_required(login_url="signin")
+def deleteAddress(request):
+    if(request.POST):
+        try:
+            addr = request.POST.get('address_id')
+        except:
+            return redirect('invalid')
+        u = UserAddress.objects.get(address_id=addr)
+        if(request.user!=u.user):
+            print("here")
+            return redirect('invalid')
+        u.delete()
+    return redirect('user_address')
+
+@login_required(login_url="signin")
+def inventory(request,productCategory = "",searchQuery="",filterQuery="",sortBy=""):
+    filterArr= []
+    finalArr = []
+    pageTitle = ''
+    try:
+        s=Sellers.objects.get(user=request.user)
+    except:
+        return redirect('/')
+    
+    imgData = ProductImages.objects.all()
+    user = {}
+    user['firstName'] = request.user.user_name.split(" ")[0]
+    user['isSeller'] = request.user.is_seller
+    if productCategory=="" and searchQuery == "" :
+        pageTitle="Products"
+        # print('1--------------')
+        filterArr = Products.objects.filter(seller=s).order_by('-date_created')
+    elif productCategory != "" and searchQuery == ""  :
+         pageTitle = productCategory
+        #  print('2--------------')
+         filterArr = Products.objects.filter(seller=s, category=productCategory).order_by('-date_created')
+    elif productCategory == "" and searchQuery != "":
+        # print('3--------------')
+        pageTitle = "Search Results"
+        tempArr = Products.objects.filter(seller=s).order_by('-date_created')
+        for product in tempArr:
+            foundInName = re.search(searchQuery.lower(),product.product_name.lower())
+            foundInDes = re.search(searchQuery.lower(),product.details.lower())
+            foundInCategory = re.search(searchQuery.lower(),product.category.lower())
+            #print('41--------------',foundInName,foundInCategory,foundInDes)
+            if(foundInName != None or foundInDes != None or foundInCategory != None):
+                filterArr.append(product)
+    if filterQuery != "" : 
+        arrQueries = filterQuery.split('&')
+        inStock = arrQueries[2]
+        minPrice = arrQueries[4]
+        maxPrice = arrQueries[6]
+        tempArr = filterArr
+        for elem in tempArr:
+            if int(elem.price) >= int(minPrice) and int(elem.price) <= int(maxPrice) :
+                if inStock == 'true':
+                    if elem.stock > 0:
+                        finalArr.append(elem)
+                else:
+                    finalArr.append(elem)
+    else:
+        finalArr = filterArr        
+    if sortBy == "A-Z" :
+        finalArr.sort(key=lambda x: x.product_name, reverse=False)
+    if sortBy == 'price' :
+        finalArr.sort(key=lambda x: x.price, reverse=False)
+    productArr = []
+    for i in finalArr:
+        product_dict = {}
+        product_dict['id'] = i.product_id
+        product_dict['name'] = i.product_name
+        product_dict['price'] = int(i.price)
+        product_dict['category'] = i.category
+        product_dict['description'] = i.details
+        product_dict['stock'] = i.stock
+        product_dict['status'] = i.status
+        productArr.append(product_dict)
+    # print('-------arr product=----------------------',productArr)
+    for i in productArr:
+            for j in imgData:
+                if (i['id'] == j.product_id):
+                    i['image'] = j.image
+                    # print("images ==============",j.image)
+                    break
+    return render(request, 'estore/inventory.html',{'products':productArr,'pageTitle':pageTitle,'user':user})
 
 
 def products(request, productCategory="", searchQuery="", filterQuery="", sortBy=""):
@@ -57,6 +181,7 @@ def products(request, productCategory="", searchQuery="", filterQuery="", sortBy
             user['cart_id'] = request.user.user_id
             # Note sending userid as wishlist id,userid is matched with wishlist_id in CART model
             user['wishlist_id'] = request.user.user_id
+            user['isSeller'] = request.user.is_seller
             wishlistData = Wishlist.objects.filter(
                 wishlist_id=request.user.user_id)
         else:
@@ -158,6 +283,7 @@ def items(request, item_id):
             # Note sending userid as cart id,userid is matched with cart_id in CART model
             user['cart_id'] = request.user.user_id
             user['wishlist_id'] = request.user.user_id
+            user['isSeller'] = request.user.is_seller
             wishlistData = Wishlist.objects.filter(
                 wishlist_id=request.user.user_id)
         else:
@@ -187,26 +313,39 @@ def items(request, item_id):
 def signin(request):
     page = 'signin'
     if request.user.is_authenticated:
-        return redirect("profile", type="general")
+        return redirect("/", type="general")
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
         try:
             user = Users.objects.get(email == email)
         except:
-            messages.error(request, "wrong email")
-        user = authenticate(request, email=email, password=password)
-        # if not user.is_email.verified:
-        #     messages.add_message(request, messages.ERROR, "email not verified")
-        #     return redirect('register')
+            a=0
+        user=authenticate(request, email=email, password=password)
+        
 
         if user is not None:
+            if user.is_active==False or user.deleted==True or user.active==False:
+                return redirect('invalid')
+            if not user.is_email_verified:
+                return redirect('invalid')
             login(request, user)
-            return redirect('profile', type="general")
+            if(user.is_admin==True):
+                return redirect('buyerList')
+            if(user.is_seller==True):
+                sobj=Sellers.objects.get(user=user)
+                if(sobj.approval_status==True):
+                    return redirect('/')
+            return redirect('/')
         else:
             messages.error(request, "email or password incorrect")
 
     return render(request, 'estore/signin.html')
+
+def invalid(request):
+    return render(request, 'estore/invalid.html')
+def success(request):
+    return render(request, 'estore/success.html')
 
 
 def addToCart(request):
@@ -231,12 +370,14 @@ def addToCart(request):
             return HttpResponseRedirect('/signin')
 
 
+
+
 def registerUser(request):
     if request.user.is_authenticated:
-        return redirect("profile")
-    page = 'register'
-    form = RegisterForm(request.POST, request.FILES)
-    if request.method == 'POST':
+        return redirect("user_profile")
+    page='register'
+    form=RegisterForm(request.POST or None, request.FILES or None)
+    if request.method=='POST':
         # form=RegisterForm(request.POST)
         if form.is_valid():
             u = form.save(commit=False)
@@ -264,17 +405,63 @@ def registerUser(request):
             messages.success(request, "User account created")
 
             # login(request, u)
-            # return redirect('profile')
+            return redirect('emailverify')
         else:
             messages.error(request, "Error while registration")
     context = {'page': page, 'form': form}
     return render(request, 'estore/signin.html', context)
 
+def emailverify(request):
+    return render(request, 'estore/emailverify.html')
+
+
+@login_required(login_url="signin")
+def set_address(request):
+    form=AddressForm(request.POST or None, request.FILES or None)
+    if request.method=='POST':
+        if form.is_valid():
+            sell=form.save(commit=False)
+            sell.user=request.user
+            sell.save()
+            return redirect('set_address')
+    user = {}
+    user['firstName'] = request.user.user_name.split(" ")[0]
+    user['isSeller'] = request.user.is_seller
+    context={'form':form,'user':user}
+
+    return render(request, 'estore/set_address.html', context)
+
+@login_required(login_url="signin")
+def set_pincodes(request):
+    if request.user.is_seller==False:
+        return redirect('Profile')
+    
+    try:
+        sobject=Sellers.objects.get(user=request.user)
+    except :
+        return redirect('invalid')
+
+    if sobject.approval_status==False:
+        return redirect('Profile')
+        
+    
+    form=PincodeForm(request.POST or None, request.FILES or None)
+    if request.method=='POST':
+        if form.is_valid():
+            sell=form.save(commit=False)
+            sell.seller=sobject
+            sell.save()
+            return redirect('set_pincodes')
+    context={'form':form}
+
+    return render(request, 'estore/set_pincodes.html', context)
+
 
 def activate_user(request, uidb64, token):
     try:
-        uid = force_text(urlsafe_base64_decode(uidb64))
-        user = Users.objects.get(pk=uid)
+        uid=force_text(urlsafe_base64_decode(uidb64))
+        user=Users.objects.get(pk=uid)
+        
 
     except Exception as e:
         user = None
@@ -284,15 +471,17 @@ def activate_user(request, uidb64, token):
         return redirect('signin')
     return redirect('register')
 
+@login_required(login_url="signin")
+def alreadyseller(request):
+    return render(request, 'estore/alreadyseller.html')
 
 @login_required(login_url="signin")
 def become_seller(request):
-    id_user = request.user.user_id
-    if request.user.is_seller == True:
-        print('from here')
-        return redirect('profile')
-    form = SellerForm(request.POST, request.FILES)
-    if request.method == 'POST':
+    id_user=request.user.user_id
+    if request.user.is_seller==True:
+        return redirect('alreadyseller')
+    form=SellerForm(request.POST or None, request.FILES or None)
+    if request.method=='POST':
         if form.is_valid():
             sell = form.save(commit=False)
             sell.user_id = id_user
@@ -300,32 +489,159 @@ def become_seller(request):
             u = Users.objects.get(user_id=id_user)
             u.is_seller = True
             u.save()
-            return redirect('register')
-    context = {'form': form}
+            return redirect('user_profile')
+    user = {}
+    user['firstName'] = request.user.user_name.split(" ")[0]
+    user['isSeller'] = request.user.is_seller
+    context = {'form': form,'user':user}
     return render(request, 'estore/become_seller.html', context)
 
 
 @login_required(login_url="signin")
 def upload_product(request):
-    id_user = request.user.user_id
-    uobject = Users.objects.get(user_id=id_user)
-    sobject = Sellers.objects.get(user_id=id_user)
-    form = ProductForm(request.POST, request.FILES)
-    form2 = ProductImagesForm(request.POST, request.FILES)
-    if uobject.is_seller == False or sobject.approval_status == False:
+    if(request.user.is_seller==False):
+        return redirect("/")
+    ImageFormSet = modelformset_factory(ProductImages,form=ProductImagesForm, extra=4)
+    id_user=request.user.user_id
+    uobject=Users.objects.get(user_id=id_user)
+    sobject=Sellers.objects.get(user_id=id_user)
+    form1=ProductForm(request.POST, request.FILES)
+    formset = ImageFormSet(request.POST, request.FILES,queryset=ProductImages.objects.none())
+    if uobject.is_seller==False or sobject.approval_status==False:
         return redirect('signin')
     if request.method == 'POST':
-        if form.is_valid() and form2.is_valid():
-            pro = form.save(commit=False)
-            pro.seller = sobject
-            ima = form.save(commit=False)
-            ima.product = Products.objects.get(seller=sobject,status='active')
-            pro.save()
-            ima.save()
-            return redirect('Profile')
-
-    context = {'form': form, 'form2': form2}
+        if form1.is_valid() and formset.is_valid():
+            proobj=Products()
+            proobj.product_name=form1.cleaned_data.get('product_name')
+            proobj.details=form1.cleaned_data.get('details')
+            proobj.price=form1.cleaned_data.get('price')
+            proobj.stock=form1.cleaned_data.get('stock')
+            proobj.category=form1.cleaned_data.get('category')
+            proobj.seller=sobject
+            proobj.save()
+            # pro=form1.save(commit=False)
+            # pro.seller=sobject
+            # pro.save()
+            for form in formset.cleaned_data:
+                if form:
+                    image = form['image']
+                    photo = ProductImages(product=proobj, image=image)
+                    photo.save()
+            return redirect('inventory')
+    # id_user=request.user.user_id
+    # uobject=Users.objects.get(user_id=id_user)
+    # sobject=Sellers.objects.get(user_id=id_user)
+    # form=ProductForm(request.POST, request.FILES)
+    # if uobject.is_seller==False or sobject.approval_status==False:
+    #     return redirect('signin')
+    # if request.method=='POST':
+    #     if form.is_valid():
+    #         pro=form.save(commit=False)
+    #         pro.seller=sobject
+    #         pro.save()
+    #         return redirect('/upload_product_images/%s/'%pro.product_id)
+    else:
+        form1 = ProductForm()
+        formset = ImageFormSet(queryset=ProductImages.objects.none())
+    user = {}
+    user['firstName'] = request.user.user_name.split(" ")[0]
+    user['isSeller'] = request.user.is_seller
+    context={'form1':form1, 'formset':formset,'user':user}
     return render(request, 'estore/upload_product.html', context)
+    
+@login_required(login_url="signin")
+def delete_product(request, proid):
+    try:
+        s=Sellers.objects.get(user=request.user)
+    except :
+        return redirect('invalid')
+
+    try:
+        prod=Products.objects.get(product_id=proid)
+    except :
+        return redirect('invalid')
+    ss=prod.seller
+    if(s==ss and s!=None and prod!=None):
+        ProductImages.objects.filter(product=prod).delete()
+        instance = Products.objects.get(product_id=proid)
+        instance.delete()
+        return redirect('inventory')
+    return render(request, 'estore/invalid.html')
+
+@login_required(login_url="signin")
+def user_address(request):
+    resAddData = UserAddress.objects.filter(user=request.user)
+    usersArr = []
+    for data in resAddData:
+        userObj = {}
+        userObj['id'] = data.address_id
+        userObj["address_line"] = str(data.house_no) + ", " + str(data.address_line1) +", " + str(data.address_line2) + ", " + str(data.landmark) + ", " + str(data.pincode)
+        userObj["city"] = data.city_village_name
+        userObj["state"] = data.state 
+        usersArr.append(userObj)
+    user = {}
+    user['firstName'] = request.user.user_name.split(" ")[0]
+    user['isSeller'] = request.user.is_seller
+    context={'users':usersArr,'user':user}
+    return render(request, 'estore/user_address.html', context)
+
+
+@login_required(login_url="signin")
+def edit_product(request, proid):
+    try:
+        s=Sellers.objects.get(user=request.user)
+    except :
+        return redirect('invalid')
+    try:
+        prod=Products.objects.get(product_id=proid)
+    except :
+        return redirect('invalid')
+    
+    ss=prod.seller
+    
+    if(s==ss):
+        initial_data={
+            'product_name':prod.product_name,
+            'details':prod.details,
+            'price':prod.price,
+            'stock':prod.stock,
+            'category':prod.category,
+        }
+        imagearr=[]
+        allimages=ProductImages.objects.filter(product=prod)
+        for singleimage in allimages:
+            d={
+                'image':singleimage.image
+            }
+            imagearr.append(d)
+        instance = get_object_or_404(Products, product_id=proid)
+        form1=ProductForm(request.POST or None,request.FILES or None,initial=initial_data, instance=instance)
+        ImageFormSet = modelformset_factory(ProductImages,form=ProductImagesForm, extra=4)
+        formset = ImageFormSet(request.POST or None, request.FILES or None, initial=imagearr,queryset=ProductImages.objects.none())
+        
+        if form1.is_valid() and formset.is_valid():
+            form1.save()
+            images = formset.save(commit=False)
+            # for obj in formset.deleted_objects:
+            #     obj.delete()
+            for image in images:
+                image.product = prod
+                image.save()
+            return HttpResponseRedirect(request.path_info)
+    context={'form1':form1,
+            'formset':formset,
+            'proid':proid,
+            'product_name':prod.product_name,
+            'details':prod.details,
+            'price':prod.price,
+            'stock':prod.stock,
+            'category':prod.category,}
+    return render(request, 'estore/edit_product.html', context)
+
+
+
+
+
 
 
 @login_required(login_url="signin")
@@ -359,6 +675,7 @@ def shop(request):
             user['cart_id'] = request.user.user_id
             # Note sending userid as wishlist id,userid is matched with wishlist_id in CART model
             user['wishlist_id'] = request.user.user_id
+            user['isSeller'] = request.user.is_seller
             wishlistData = Wishlist.objects.filter(
                 wishlist_id=request.user.user_id)
         else:
@@ -409,9 +726,12 @@ def clearMessages(request):
 def profile(request, type="general"):
     if(request.user.is_authenticated and request.user.is_admin == True):
         return HttpResponseRedirect('/admin-home')
+    if(request.user.is_authenticated and request.user.is_seller == True):
+        return HttpResponseRedirect('/invalid') 
     userId = request.user.user_id
     user = {}
     user['firstName'] = request.user.user_name.split(" ")[0]
+    user['isSeller'] = request.user.is_seller
     current_user_profile_pic = Users.objects.filter(user_id=userId)[
         0].profile_photo.url
     current_user_email_id = Users.objects.filter(user_id=userId)[0].email
@@ -521,9 +841,6 @@ def checkout(request):
     return render(request, 'estore/checkout.html')
 
 
-@login_required(login_url="signin")
-def checkout(request):
-    return render(request, 'estore/checkout.html')
 
 
 @login_required(login_url="signin")
@@ -540,6 +857,7 @@ def cart(request):
     else:
         user = {}
         user['firstName'] = request.user.user_name.split(" ")[0]
+        user['isSeller'] = request.user.is_seller
         cartid = request.user.user_id
         data = Cart.objects.filter(cart_id=cartid.hex)
         product_id_list = []
@@ -611,10 +929,11 @@ def base(request):
     return render(request, 'estore/base.html')
 
 
+@login_required(login_url="signin")
 def admin(request):
     return render(request, 'estore/adminBase.html')
 
-
+@login_required(login_url="signin")
 def adminBuyer(request):
     if(request.user.is_authenticated and request.user.is_admin == False):
         return HttpResponseRedirect('/signin')
@@ -644,6 +963,7 @@ def adminBuyer(request):
     return render(request, 'estore/adminBuyer.html', {'users': usersArr})
 
 
+@login_required(login_url="signin")
 def adminSeller(request):
     if(request.user.is_authenticated and request.user.is_admin == False):
         return HttpResponseRedirect('/signin')
@@ -694,6 +1014,7 @@ def wishlist(request):
     else:
         user = {}
         user['firstName'] = request.user.user_name.split(" ")[0]
+        user['isSeller'] = request.user.is_seller
         wishlistid = request.user.user_id
         data = Wishlist.objects.filter(wishlist_id=wishlistid)
         product_id_list = []
@@ -752,6 +1073,7 @@ def wishlist(request):
                       {'product_list': product_list, 'wishlist': wishlistid, 'user': user})
 
 
+@login_required(login_url="signin")
 def makeUserActive(request):
     # Apply check for authenticated admin
     if(request.user.is_authenticated and request.user.is_admin == False):
@@ -764,7 +1086,7 @@ def makeUserActive(request):
         userData.save()
     return HttpResponseRedirect('/admin-home/buyer-list')
 
-
+@login_required(login_url="signin")
 def makeUserInactive(request):
     # Apply check for authenticated admin
     if(request.user.is_authenticated and request.user.is_admin == False):
@@ -777,7 +1099,7 @@ def makeUserInactive(request):
         userData.save()
     return HttpResponseRedirect('/admin-home/buyer-list')
 
-
+@login_required(login_url="signin")
 def makeSellerUserActive(request):
     # Apply check for authenticated admin
     if(request.user.is_authenticated and request.user.is_admin == False):
@@ -790,7 +1112,7 @@ def makeSellerUserActive(request):
         userData.save()
     return HttpResponseRedirect('/admin-home/seller-list')
 
-
+@login_required(login_url="signin")
 def makeSellerUserInactive(request):
     # Apply check for authenticated admin
     if(request.user.is_authenticated and request.user.is_admin == False):
@@ -803,7 +1125,7 @@ def makeSellerUserInactive(request):
         userData.save()
     return HttpResponseRedirect('/admin-home/seller-list')
 
-
+@login_required(login_url="signin")
 def approveSeller(request):
     # Apply check for authenticated admin
     if(request.user.is_authenticated and request.user.is_admin == False):
@@ -819,7 +1141,7 @@ def approveSeller(request):
                 sellerData.save()
             return HttpResponseRedirect('/admin-home/seller-list')
 
-
+@login_required(login_url="signin")
 def disapproveSeller(request):
     # Apply check for authenticated admin
     if(request.user.is_authenticated and request.user.is_admin == False):
@@ -834,7 +1156,7 @@ def disapproveSeller(request):
                 sellerData.save()
             return HttpResponseRedirect('/admin-home/seller-list')
 
-
+@login_required(login_url="signin")
 def viewPDF(request):
     if(request.user.is_authenticated and request.user.is_admin == False):
         return HttpResponseRedirect('/signin')
@@ -852,7 +1174,7 @@ def viewPDF(request):
     else:
         redirect('signin')
 
-
+@login_required(login_url="signin")
 def deleteUser(request):
     # Apply check for authenticated admin
     if(request.user.is_authenticated and request.user.is_admin == False):
@@ -864,6 +1186,7 @@ def deleteUser(request):
         userData.save()
     return HttpResponseRedirect('/admin-home/buyer-list')
 
+@login_required(login_url="signin")
 def deleteSeller(request):
     #Apply check for authenticated admin
     if(request.user.is_authenticated and request.user.is_admin == False):
