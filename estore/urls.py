@@ -36,7 +36,6 @@ urlpatterns = [
     path('viewPDF', views.viewPDF, name='viewPDF'),
     path('deleteUser', views.deleteUser, name='deleteUser'),
     path('deleteSeller', views.deleteSeller, name='deleteSeller'),
-    path('upload_product_images/<str:pk>/', views.upload_product_images, name="upload_product_images"),
     path('inventory/', views.inventory, name="inventory"),
     path('inventory/<str:productCategory>', views.inventory, name="inventory"),
     path('inventory/search/<str:searchQuery>', views.inventory, name="inventory"),
@@ -55,6 +54,7 @@ urlpatterns = [
     path('user_address/', views.user_address, name="user_address"),
     path('success/', views.success, name="success"),
     path('invalid/', views.invalid, name="invalid"),
+    path('alreadyseller/', views.alreadyseller, name="alreadyseller"),
     
     path('deleteaddress/', views.deleteAddress, name="deleteaddress"),
 ]
