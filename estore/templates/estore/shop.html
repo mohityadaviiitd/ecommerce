@@ -59,7 +59,7 @@
 <div class="auto-play global-margin" id="productLocation">
   {% for product in product_array %}
   <div class="product-featured-card card shadow-sm">
-    <div class="img-container"><img class="card-img-top" src="{{product.image}}" alt="products" />
+    <div class="img-container"><img class="card-img-top" src="../media/{{product.image}}" alt="products" />
     </div>
     <div class="card-body">
       <h5 style="cursor: pointer;" onclick="goToPage('/itemDetails/id/{{product.id}}')">{{product.name}}</h5>
