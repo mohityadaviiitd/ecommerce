@@ -27,7 +27,7 @@ from django.http import FileResponse, Http404, JsonResponse
 import stripe
 from django.db.models import Sum
 stripe.api_key = settings.STRIPEKEY
-from .utils import send_sms
+#from .utils import send_sms
 
 
 @login_required(login_url="signin")
