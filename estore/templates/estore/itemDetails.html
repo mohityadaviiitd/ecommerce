@@ -12,7 +12,7 @@
                 <div class="item-images">
                     {% for image in product.images %}
                     <div class="product-featured-card">
-                        <div class="img-container"><img class="card-img-top" src="../media/{{image}}" alt="products" />
+                        <div class="img-container"><img class="card-img-top" src="../../media/{{image}}" alt="products" />
                         </div>
                     </div>
                     {% endfor %}
@@ -67,7 +67,7 @@
         $(".item-images").slick({
             slidesToShow: 1,
             slidesToScroll: 1,
-            autoplay: true,
+            autoplay: false,
             autoplaySpeed: 2000,
             dots: true,
             touchMove: false,

@@ -17,7 +17,6 @@ urlpatterns = [
     path('register/', views.registerUser, name="register"),
     path('signout/', views.signout, name="signout"),
 	path('checkout/', views.checkout, name="checkout"),
-    
 	path('epayment/', views.epayment, name="epayment"),
     path('cart/', views.cart, name="cart"),
     path('activate/<uidb64>/<token>', views.activate_user, name="activate"),
@@ -63,4 +62,5 @@ urlpatterns = [
     path('deactivate_product/', views.deactivate_product, name="deactivate_product"),
     path('dropProduct', views.dropProduct, name='dropProduct'),
     path('addProduct', views.addProduct, name='addProduct'),
+    path('privacy-policy/', views.privacyPolicy, name="privacy-policy"),
 ]

@@ -8,7 +8,7 @@ from .models import Sellers, Products, ProductImages, DelliverablePincodes, User
 from django.forms.widgets import FileInput
 
 CATEGORY_CHOICES = (
-    ('moblie','Mobiles'),
+    ('mobile','Mobiles'),
     ('laptop','Laptops'),
     ('tv','TV&Appliances'),
     ('Camera','Camera&Accessories'),
