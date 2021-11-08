@@ -14,6 +14,7 @@ SECRET_KEY = 'django-insecure-4s(348yu5$j^)^(gop&=p2=ah2acc%1(74f6$7%3t@l0g^+q@t
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1']
+# ALLOWED_HOSTS = ['192.168.2.248']
 
 AUTH_USER_MODEL= "estore.Users"
 

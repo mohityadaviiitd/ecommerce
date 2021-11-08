@@ -90,8 +90,18 @@ def index(request):
 
 @login_required(login_url="signin")
 def success_msg(request, args):
-	amount = args
-	return render(request, 'estore/success_msg.html', {'amount':amount})
+    amount = args
+    s=False
+    if(request.user.is_seller==True):
+        sobj=Sellers.objects.get(user=request.user)
+        if(sobj.approval_status==True):
+            s=True
+    else:
+        s=False
+    user = {}
+    user['firstName'] = request.user.user_name.split(" ")[0]
+    user['isSeller'] = s
+    return render(request, 'estore/success_msg.html', {'amount':amount, 'user':user})
 
 
 @login_required(login_url="signin")
@@ -119,8 +129,6 @@ def charge(request):
 def user_profile(request):
     if(request.user.is_authenticated and request.user.is_admin == True):
         return HttpResponseRedirect('/signin')
-    if(request.user.is_authenticated and request.user.is_seller == False):
-        return HttpResponseRedirect('/invalid') 
     if(1==1):
         initial_data={
             'user_name':request.user.user_name,
@@ -922,118 +930,118 @@ def clearMessages(request):
         del storage._loaded_messages[0]
 
 
-@login_required(login_url="signin")
-def profile(request, type="general"):
-    if(request.user.is_authenticated and request.user.is_admin == True):
-        return HttpResponseRedirect('/admin-home')
-    if(request.user.is_authenticated and request.user.is_seller == True):
-        return HttpResponseRedirect('/invalid') 
-    userId = request.user.user_id
-    user = {}
-    user['firstName'] = request.user.user_name.split(" ")[0]
-    user['isSeller'] = request.user.is_seller
-    current_user_profile_pic = Users.objects.filter(user_id=userId)[
-        0].profile_photo.url
-    current_user_email_id = Users.objects.filter(user_id=userId)[0].email
-    if(type == "general"):
-        user_profile = get_object_or_404(Users, user_id=userId)
-        if (request.POST):
-            form = BuyerGeneralProfileForm(request.POST, instance=user_profile)
-            if form.is_valid():
-                user_profile = form.save(commit=False)
-                print(form)
-                user_profile.user_name = form['user_name'].value()
-                not_dig = False
-                i_s = 0
-                print(list(form['phone'].value()))
-                for i in list(form['phone'].value()):
-                    if(i.isdigit() or i == '+' and i_s < 2):
-                        if(i == '+'):
-                            i_s += 1
-                        continue
-                    else:
-                        not_dig = True
-                        break
-                if(not_dig == True):
+# @login_required(login_url="signin")
+# def profile(request, type="general"):
+#     if(request.user.is_authenticated and request.user.is_admin == True):
+#         return HttpResponseRedirect('/admin-home')
+#     if(request.user.is_authenticated and request.user.is_seller == True):
+#         return HttpResponseRedirect('/invalid') 
+#     userId = request.user.user_id
+#     user = {}
+#     user['firstName'] = request.user.user_name.split(" ")[0]
+#     user['isSeller'] = request.user.is_seller
+#     current_user_profile_pic = Users.objects.filter(user_id=userId)[
+#         0].profile_photo.url
+#     current_user_email_id = Users.objects.filter(user_id=userId)[0].email
+#     if(type == "general"):
+#         user_profile = get_object_or_404(Users, user_id=userId)
+#         if (request.POST):
+#             form = BuyerGeneralProfileForm(request.POST, instance=user_profile)
+#             if form.is_valid():
+#                 user_profile = form.save(commit=False)
+#                 print(form)
+#                 user_profile.user_name = form['user_name'].value()
+#                 not_dig = False
+#                 i_s = 0
+#                 print(list(form['phone'].value()))
+#                 for i in list(form['phone'].value()):
+#                     if(i.isdigit() or i == '+' and i_s < 2):
+#                         if(i == '+'):
+#                             i_s += 1
+#                         continue
+#                     else:
+#                         not_dig = True
+#                         break
+#                 if(not_dig == True):
 
-                    try:
-                        clearMessages(request)
-                    except:
-                        pass
+#                     try:
+#                         clearMessages(request)
+#                     except:
+#                         pass
 
-                    messages.error(
-                        request, "Phone number should only contain digits or +")
-                    # return HttpResponseRedirect('/profile/general')
-                    # return redirect('profile',type = 'general')
-                else:
-                    if(len(form['phone'].value()) >= 10 and len(form['phone'].value()) <= 12):
-                        user_profile.phone = form['phone'].value()
-                    else:
-                        try:
-                            clearMessages(request)
-                        except:
-                            pass
-                        messages.error(
-                            request, "Does not look like a real number!")
-                        # return HttpResponseRedirect('')
-                        return redirect('profile', type='general')
+#                     messages.error(
+#                         request, "Phone number should only contain digits or +")
+#                     # return HttpResponseRedirect('/profile/general')
+#                     # return redirect('profile',type = 'general')
+#                 else:
+#                     if(len(form['phone'].value()) >= 10 and len(form['phone'].value()) <= 12):
+#                         user_profile.phone = form['phone'].value()
+#                     else:
+#                         try:
+#                             clearMessages(request)
+#                         except:
+#                             pass
+#                         messages.error(
+#                             request, "Does not look like a real number!")
+#                         # return HttpResponseRedirect('')
+#                         return redirect('profile', type='general')
 
-                user_profile.save()
-                # return HttpResponseRedirect('')
-                # return redirect('profile',type = 'general')
-        else:
-            form = BuyerGeneralProfileForm(instance=user_profile)
+#                 user_profile.save()
+#                 # return HttpResponseRedirect('')
+#                 # return redirect('profile',type = 'general')
+#         else:
+#             form = BuyerGeneralProfileForm(instance=user_profile)
 
-        return render(request, 'estore/profile.html', {
-            'profile': form, 'address_profile': False,
-            'pic': current_user_profile_pic,
-            'email': current_user_email_id,
-            'user': user})
-    elif(type == "address"):
-        try:
-            address_profile = get_object_or_404(UserAddress, user_id=userId)
-        except:
-            data = UserAddress.objects.filter(user_id=userId)
-            if(len(data) == 0):
-                address_profile_instance = UserAddress.objects.create(user_id=userId, address_line1='',
-                                                                      state='', pincode=0,
-                                                                      city_village_name='', house_no='')
+#         return render(request, 'estore/profile.html', {
+#             'profile': form, 'address_profile': False,
+#             'pic': current_user_profile_pic,
+#             'email': current_user_email_id,
+#             'user': user})
+#     elif(type == "address"):
+#         try:
+#             address_profile = get_object_or_404(UserAddress, user_id=userId)
+#         except:
+#             data = UserAddress.objects.filter(user_id=userId)
+#             if(len(data) == 0):
+#                 address_profile_instance = UserAddress.objects.create(user_id=userId, address_line1='',
+#                                                                       state='', pincode=0,
+#                                                                       city_village_name='', house_no='')
 
-                address_profile_instance.save()
-                address_profile_instance.refresh_from_db()
-                address_profile = get_object_or_404(
-                    UserAddress, user_id=userId)
+#                 address_profile_instance.save()
+#                 address_profile_instance.refresh_from_db()
+#                 address_profile = get_object_or_404(
+#                     UserAddress, user_id=userId)
 
-        if (request.POST):
-            form = BuyerAddressProfileForm(
-                request.POST, instance=address_profile)
-            if form.is_valid():
-                address_profile = form.save(commit=False)
-                address_profile.house_no = form['house_no'].value()
-                address_profile.address_line1 = form['address_line1'].value()
-                address_profile.address_line2 = form['address_line1'].value()
-                address_profile.landmark = form['landmark'].value()
-                address_profile.city_village_name = form['city_village_name'].value(
-                )
-                address_profile.state = form['state'].value()
+#         if (request.POST):
+#             form = BuyerAddressProfileForm(
+#                 request.POST, instance=address_profile)
+#             if form.is_valid():
+#                 address_profile = form.save(commit=False)
+#                 address_profile.house_no = form['house_no'].value()
+#                 address_profile.address_line1 = form['address_line1'].value()
+#                 address_profile.address_line2 = form['address_line1'].value()
+#                 address_profile.landmark = form['landmark'].value()
+#                 address_profile.city_village_name = form['city_village_name'].value(
+#                 )
+#                 address_profile.state = form['state'].value()
 
-                if(len(form['pincode'].value()) == 6 and form['pincode'].value().isdigit()):
-                    address_profile.pincode = form['pincode'].value()
-                else:
-                    try:
-                        clearMessages(request)
-                    except:
-                        pass
-                    messages.error(request, "Enter a 6 digit pin-code")
-                    # return HttpResponseRedirect('')
-                    # return HttpResponseRedirect('%s' % '')
+#                 if(len(form['pincode'].value()) == 6 and form['pincode'].value().isdigit()):
+#                     address_profile.pincode = form['pincode'].value()
+#                 else:
+#                     try:
+#                         clearMessages(request)
+#                     except:
+#                         pass
+#                     messages.error(request, "Enter a 6 digit pin-code")
+#                     # return HttpResponseRedirect('')
+#                     # return HttpResponseRedirect('%s' % '')
 
-                address_profile.save()
-                # return HttpResponseRedirect('%s' % '')
-        else:
-            form = BuyerAddressProfileForm(instance=address_profile)
-        return render(request, 'estore/profile.html', {'general_profile': False, 'profile': form,
-                                                       'pic': current_user_profile_pic, 'email': current_user_email_id, 'user': user})
+#                 address_profile.save()
+#                 # return HttpResponseRedirect('%s' % '')
+#         else:
+#             form = BuyerAddressProfileForm(instance=address_profile)
+#         return render(request, 'estore/profile.html', {'general_profile': False, 'profile': form,
+#                                                        'pic': current_user_profile_pic, 'email': current_user_email_id, 'user': user})
 
 
 @login_required(login_url="signin")
@@ -1139,6 +1147,8 @@ def base(request):
 
 @login_required(login_url="signin")
 def admin(request):
+    if(request.user.is_authenticated and request.user.is_admin == False):
+        return HttpResponseRedirect('/signin')
     return render(request, 'estore/adminBase.html')
 
 @login_required(login_url="signin")

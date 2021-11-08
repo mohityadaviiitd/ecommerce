@@ -17,7 +17,7 @@ urlpatterns = [
     path('register/', views.registerUser, name="register"),
     path('signout/', views.signout, name="signout"),
 	path('checkout/', views.checkout, name="checkout"),
-    path('profile/<str:type>/', views.profile, name="profile"),
+    
 	path('epayment/', views.epayment, name="epayment"),
     path('cart/', views.cart, name="cart"),
     path('activate/<uidb64>/<token>', views.activate_user, name="activate"),
