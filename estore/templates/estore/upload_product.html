@@ -1,4 +1,4 @@
-{% extends "estore/sellerbase.html" %}
+{% extends "estore/base.html" %}
 <!-- <form action ="{% url 'upload_product' %}" method="POST" enctype='multipart/form-data'>
     {% csrf_token %}
     {% for hidden in form1.hidden_fields %}
@@ -22,7 +22,10 @@
 {% block title %}UploadProduct{% endblock %}
 
 {% block content %}
+
 <body>
+    <br>
+    <br>
 <div class="auth">
     <div class="card">
         <form method="POST" action="{% url 'upload_product' %}" class="sellerform" enctype='multipart/form-data'>

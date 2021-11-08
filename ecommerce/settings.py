@@ -9,6 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-4s(348yu5$j^)^(gop&=p2=ah2acc%1(74f6$7%3t@l0g^+q@t'
 
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -125,6 +126,4 @@ EMAIL_USE_TLS=True
 DEFAULT_FROM_EMAIL='noreplyfcs100@gmail.com'
 EMAIL_PORT=587
 EMAIL_HOST_PASSWORD='Auth@g13'
-
-# RAZOR_KEY_ID = YOUR_KEY_ID
-# RAZOR_KEY_SECRET = YOUR_KEY_SECRET
+STRIPEKEY='sk_test_51JtKjcSFn4l96PCtU9s69d7r7TJrGrWauTNZRtMNVaWNVCW2LA3Hp8Jo7CxVOSY3zEnwyoRLPI3pEJHflOyHoBFY00Avxe6WAn'

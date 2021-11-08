@@ -55,6 +55,12 @@ urlpatterns = [
     path('success/', views.success, name="success"),
     path('invalid/', views.invalid, name="invalid"),
     path('alreadyseller/', views.alreadyseller, name="alreadyseller"),
-    
     path('deleteaddress/', views.deleteAddress, name="deleteaddress"),
+    path('charge/', views.charge, name="charge"),
+    path('success_msg/<str:args>/', views.success_msg, name="success_msg"),
+    path('index/', views.index, name="index"),
+    path('activate_product/', views.activate_product, name="activate_product"),
+    path('deactivate_product/', views.deactivate_product, name="deactivate_product"),
+    path('dropProduct', views.dropProduct, name='dropProduct'),
+    path('addProduct', views.addProduct, name='addProduct'),
 ]

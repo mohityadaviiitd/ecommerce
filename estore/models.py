@@ -31,8 +31,8 @@ def get_product_photo(self, filename):
     return f'profile_images/{self.pk}/{"profile_photo.png"}'
 
 class Cart(models.Model):
-    cart = models.ForeignKey('Users', models.DO_NOTHING)
-    product = models.ForeignKey('Products', models.DO_NOTHING)
+    cart = models.ForeignKey('Users', on_delete=models.CASCADE)
+    product = models.ForeignKey('Products', on_delete=models.CASCADE)
     quantity = models.IntegerField()
 
     class Meta:
@@ -40,8 +40,8 @@ class Cart(models.Model):
         db_table = 'cart'
 
 class Wishlist(models.Model):
-    wishlist = models.ForeignKey('Users', models.DO_NOTHING)
-    product = models.ForeignKey('Products', models.DO_NOTHING)
+    wishlist = models.ForeignKey('Users', on_delete=models.CASCADE)
+    product = models.ForeignKey('Products', on_delete=models.CASCADE)
 
     class Meta:
         managed = True
@@ -52,7 +52,7 @@ class Checkouts(models.Model):
     checkout_id = models.CharField(primary_key=True, max_length=90)
     kart = models.ForeignKey('Users', models.DO_NOTHING)
     delivery_status = models.CharField(max_length=90)
-    shipping_address_id = models.ForeignKey('UserAddress',models.DO_NOTHING)
+    shipping_address_id = models.ForeignKey('UserAddress',on_delete=models.CASCADE)
     expected_date = models.DateTimeField()
     ordered_date = models.DateTimeField()
     products_ordered = models.CharField(max_length=9000)
@@ -63,7 +63,7 @@ class Checkouts(models.Model):
 
 
 class DelliverablePincodes(models.Model):
-    seller = models.ForeignKey('Sellers', models.DO_NOTHING)
+    seller = models.ForeignKey('Sellers', on_delete=models.CASCADE)
     pincode = models.IntegerField()
     no_of_days_to_deliver = models.IntegerField()
 
@@ -77,7 +77,7 @@ def get_product_photo(self, filename):
 
 class ProductImages(models.Model):
     image_id =  models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-    product = models.ForeignKey('Products', models.DO_NOTHING)
+    product = models.ForeignKey('Products', on_delete=models.CASCADE)
     image = models.ImageField(null=True, blank=True,  upload_to=get_product_photo)
 
     class Meta:
@@ -101,7 +101,7 @@ class Products(models.Model):
     category = models.CharField(max_length=90)
     price = models.FloatField()
     stock = models.IntegerField()
-    seller = models.ForeignKey('Sellers', models.DO_NOTHING)
+    seller = models.ForeignKey('Sellers', on_delete=models.CASCADE)
     status = models.CharField(default='active',max_length=90)
     date_created=models.DateTimeField(verbose_name="date created", auto_now_add=True)
 
@@ -109,6 +109,22 @@ class Products(models.Model):
     class Meta:
         managed = True
         db_table = 'products'
+
+class deactivatedProducts(models.Model):
+    product_id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
+    product_name = models.CharField(max_length=1000)
+    details = models.CharField(max_length=4000, blank=True, null=True)
+    category = models.CharField(max_length=90)
+    price = models.FloatField()
+    stock = models.IntegerField()
+    seller = models.ForeignKey('Sellers', on_delete=models.CASCADE)
+    status = models.CharField(default='active',max_length=90)
+    date_created=models.DateTimeField(verbose_name="date created", auto_now_add=True)
+
+
+    class Meta:
+        managed = True
+        db_table = 'deactivatedproducts'
 
 
 class Returns(models.Model):
@@ -129,11 +145,13 @@ def default_profile_photo():
 
 def get_pdf(self, filename):
     return f'pdf/{self.pk}/{"proof.pdf"}'
+def default_pdf():
+    return "defaultlogo/proof.pdf"
 
 class Sellers(models.Model):
     seller_id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
     user = models.ForeignKey('Users', on_delete=models.CASCADE)
-    pdf = models.FileField(upload_to=get_pdf, null=True, blank=True)
+    pdf = models.FileField(upload_to=get_pdf, default=default_pdf)
     approval_status = models.BooleanField(default=False)
     gst_number = models.CharField(unique=True, max_length=90)
 

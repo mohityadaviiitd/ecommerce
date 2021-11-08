@@ -1,4 +1,4 @@
-{% extends "./sellerbase.html" %}
+{% extends "estore/sellerbase.html" %}
 {% load static %}
 {% block extrahead %}
 <link rel="stylesheet" type="text/css" href="{% static 'products/prodStyles.css' %}" />
@@ -13,12 +13,13 @@
 
     <div class="sub-container">
         <div class="leftSideBar">
-            <div class="filter-container">
+            <div class="filter-container border-wrapper">
                 <h4>
                     Select Filter
                 </h4>
                 <div class="filter-wrapper">
-                    <label>Price Range</label>
+                    <label style="padding-bottom: 4px; font-size: 18px;">Price Range</label>
+                    
                     <div class="range-selector">
                         <select onchange="handleFilter()" name="minPrice" id="minPriceFilter" class="select-box">
                             <option value="1000">₹1000</option>
@@ -59,7 +60,7 @@
 
             </div>
             <div style="margin-top: 50px;"></div>
-            <div class="sort-container">
+            <div class="sort-container border-wrapper">
                 <h4>Sort By</h4>
                 <div>
                     <input onchange="handleSortBy('A-Z')" type="radio" id="A-Z" name="sortBy" value="A-Z">
@@ -86,16 +87,17 @@
                         <p add style="cursor: pointer" onclick="goToPage('/itemDetails/id={{product.id}}')" class="card-text">
                             {{product.name}} {{product.description}}
                         </p>
+                        <small class="text-muted">₹{{product.price}}</small>
                         <div class="d-flex justify-content-between align-items-center">
-                            <div class="btn-group">
-                                <button onclick="goToPage('/edit_product/{{product.id}}')" type="button" class="btn btn-sm btn-outline-secondary">
+                            <div class="btn-group align-vertical">
+                                <button class="addToWishlistBtn"  onclick="goToPage('/edit_product/{{product.id}}')" type="button" class="btn btn-sm btn-outline-secondary">
                                     Edit Product
                                 </button>
-                                <button onclick="goToPage('/delete_product/{{product.id}}')" type="button" class="btn btn-sm btn-outline-secondary">
+                                <button class="addToCartBtn" onclick="goToPage('/delete_product/{{product.id}}')" type="button" class="btn btn-sm btn-outline-secondary">
                                     Delete Product
                                 </button>
                             </div>
-                            <small class="text-muted">₹{{product.price}}</small>
+                           
                         </div>
                     </div>
                 </div>
@@ -163,5 +165,5 @@
 
 </script>
 
-<hr class="featurette-divider">
+<!-- <hr class="featurette-divider"> -->
 {% endblock %}

@@ -6,7 +6,7 @@
 
 <div class="jumbotron jumbotron-fluid custom-jumbotron">
   <div class="container">
-    <h1 class="display-4">OUR LOGO</h1>
+    <h1 class="display-4">ESHOP</h1>
     <p class="lead">Anything but ordinary. An exciting place for the whole family to shop.</p>
   </div>
 </div>
@@ -36,7 +36,7 @@
     <div class="imgContainer"><img src="{% static 'media/tv.jpg' %}" class="cat-img" /></div>
     <div class="titleContainer">
       <h5 class="cat-title">
-        <button class="button-borderless">TV</button>
+        <button class="button-borderless">TV&Appliances</button>
       </h5>
     </div>
   </div>
@@ -44,7 +44,7 @@
     <div class="imgContainer"><img src="{% static 'media/camera.jpg' %}" class="cat-img" /></div>
     <div class="titleContainer">
       <h5 class="cat-title">
-        <button class="button-borderless">Camera</button>
+        <button class="button-borderless">Camera&Accessories</button>
       </h5>
     </div>
   </div>
@@ -59,7 +59,7 @@
 <div class="auto-play global-margin" id="productLocation">
   {% for product in product_array %}
   <div class="product-featured-card card shadow-sm">
-    <div class="img-container"><img class="card-img-top" src="{{product.image}}" alt="products" />
+    <div class="img-container"><img class="card-img-top" src="../media/{{product.image}}" alt="products" />
     </div>
     <div class="card-body">
       <h5 style="cursor: pointer;" onclick="goToPage('/itemDetails/id/{{product.id}}')">{{product.name}}</h5>
@@ -140,5 +140,5 @@
     setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
   }
 </script>
-<hr class="featurette-divider" />
+<!-- <hr class="featurette-divider" /> -->
 {% endblock %}
