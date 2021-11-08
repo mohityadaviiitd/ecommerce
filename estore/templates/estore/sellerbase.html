@@ -2,35 +2,33 @@
 <!DOCTYPE html>
 <html>
 
-  <head>
-    <meta charset="utf-8" />
-    <title>{% block title %}My shop{% endblock %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css?family=Arimo|Merienda" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Fresca|Josefin+Sans" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Cabin" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
-    {% block extrahead %}{% endblock %}
-    <!-- Add the slick-theme.css if you want default styling -->
-    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
-    <!-- Add the slick-theme.css if you want default styling -->
-    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
-      integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous">
-      </script>
-  </head>
+<head>
+  <meta charset="utf-8" />
+  <title>{% block title %}My shop{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Arimo|Merienda" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Fresca|Josefin+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cabin" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+  {% block extrahead %}{% endblock %}
+  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous">
+    </script>
+</head>
 
 <body>
   <main class="main-container">
     <div>
       <header>
-        {% if user.isSeller == 1 %}
-          <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark" id="nav">
-            <div class="container-xl main-header">
-              <a class="navbar-brand" href="/"><u>ESHOP</u></a>
+        <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark" id="nav">
+          <div class="nav-container main-header">
+            <div class="sub-nav">
+              <span class="navbar-brand mb-0 h1"><u>ESHOP</u></span>
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
                 aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -38,27 +36,8 @@
               <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav me-auto mb-2 mb-md-0">
                   <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/inventory">Inventory</a>
+                    <a class="nav-link active" aria-current="page" href="/">Home</a>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/user_profile">Profile</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/upload_product">Upload Product</a>
-                  </li>
-
-                  <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                      data-bs-toggle="dropdown" aria-expanded="false">
-                      Settings
-                    </a>
-                    <ul class="dropdown-menu dropdown-custom" aria-labelledby="navbarDropdown">
-                      <li><a class="dropdown-item nav-dropdown-items" id='nav-profile' href="/user_address">Your Addresses</a></li>
-                      <li><a class="dropdown-item nav-dropdown-items" id='nav-orders' href="/set_address">Add Addresses</a></li>
-                    </ul>
-                  </li>
-            
-
                   <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                       data-bs-toggle="dropdown" aria-expanded="false">
@@ -71,94 +50,72 @@
                       <li><a class="dropdown-item nav-dropdown-items" id='nav-orders' href="/inventory/Camera">Camera&Accessories</a></li>
                     </ul>
                   </li>
+
+
+
                 </ul>
-
-
-                <div class="centerSearch">
-                  <input onchange="clearSearch()" class="form-control mr-sm-2" type="text" id="searchValue" placeholder="Search"
-                    aria-label="Search" >
-                    <img  src="{% static 'media/search.svg' %}" id="search_icon">
-            
-                </div>
-
+              </div>
+            </div>
+            <div class="sub-nav">
+              <div class="centerSearch">
+                <input onchange="clearSearch()" class="form-control mr-sm-2" type="text" id="searchValue"
+                  placeholder="Search" aria-label="Search">
+                <img src="{% static 'media/search.svg' %}" id="search_icon">
               </div>
               <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                  <a class="nav-link active" aria-current="page" href="/signout">Logout</a>
+                  {% if user.firstName != '' and user.isSeller != 1 %}
+                  <div class="nav-link active" aria-current="page" href="/user_profile">
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Hi, {{user.firstName}} !
+                      </a>
+                      <ul class="dropdown-menu dropdown-custom" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item nav-dropdown-items" id='nav-profile' href="/user_profile">My Profile</a></li>
+                        <li><a class="dropdown-item nav-dropdown-items"  href="/cart">Cart</a></li>
+                        <li><a class="dropdown-item nav-dropdown-items"  href="/wishlist">Wishlist</a></li>
+                        <li><a class="dropdown-item nav-dropdown-items" id='nav-orders' href="/become_seller">Become Seller</a></li>
+                        <li><a class="dropdown-item nav-dropdown-items"  href="/user_address">Your Addresses</a></li>
+                        <li><a class="dropdown-item nav-dropdown-items"  href="/set_address">Add Addresses</a></li>
+                        <hr id = "navbar-hr">
+                        <li><a class="dropdown-item" href="/signout" id="nav-logout">Logout</a></li>
+                      </ul>
+                    </li>                    
+                  </div>
+                  {% elif user.firstName != '' and user.isSeller == 1 %}
+                  <div class="nav-link active" aria-current="page" href="/profile">
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Hi, {{user.firstName}} !
+                      </a>
+                      <ul class="dropdown-menu dropdown-custom" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item nav-dropdown-items" id='nav-profile' href="/user_profile">My Profile</a></li>
+                        <li><a class="dropdown-item nav-dropdown-items"  href="/cart">Cart</a></li>
+                        <li><a class="dropdown-item nav-dropdown-items"  href="/wishlist">Wishlist</a></li>
+                        <li><a class="dropdown-item nav-dropdown-items"  href="/upload_product">Upload Product</a></li>
+                        <li><a class="dropdown-item nav-dropdown-items"  href="/inventory">Your Products(Inventory)</a></li>
+                        <li><a class="dropdown-item nav-dropdown-items"  href="/user_address">Your Addresses</a></li>
+                        <li><a class="dropdown-item nav-dropdown-items"  href="/set_address">Add Addresses</a></li>
+                        
+                        <hr id = "navbar-hr">
+                        <li><a class="dropdown-item" href="/signout" id="nav-logout">Logout</a></li>
+                      </ul>
+                    </li>                    
+                  </div>
+                  {% else %}
+                  <a class="nav-link active" aria-current="page" href="/signin">Login</a>
+                  {% endif %}
                 </li>
-              </ul>
-
+              </ul>             
             </div>
+          </div>
     </div>
     </nav>
-    {% else %}
-    <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark" id="nav">
-      <div class="nav-container main-header">
-        <div class="sub-nav">
-          <span class="navbar-brand mb-0 h1"><u>ESHOP</u></span>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
-            aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav me-auto mb-2 mb-md-0">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/">Home</a>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                  data-bs-toggle="dropdown" aria-expanded="false">
-                  Categories
-                </a>
-                <ul class="dropdown-menu dropdown-custom" aria-labelledby="navbarDropdown">
-                  <li><a class="dropdown-item nav-dropdown-items"  id='nav-profile' href="/products/Mobile">Mobiles</a></li>
-                  <li><a class="dropdown-item nav-dropdown-items" href="/products/Laptop">Laptops</a></li>
-                  <li><a class="dropdown-item nav-dropdown-items" href="/products/TV">TV</a></li>
-                  <li><a class="dropdown-item nav-dropdown-items" id='nav-camera' href="/products/Camera">Camera</a></li>
-                </ul>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div class="sub-nav">
-          <div class="centerSearch">
-            <input onchange="clearSearch()" class="form-control mr-sm-2" type="text" id="searchValue"
-              placeholder="Search" aria-label="Search">
-            <img src="{% static 'media/search.svg' %}" id="search_icon">
-          </div>
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-              {% if user.firstName != ''  %}
-              <div class="nav-link active" aria-current="page" href="/profile">
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    Hi, {{user.firstName}} !
-                  </a>
-                  <ul class="dropdown-menu dropdown-custom" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item nav-dropdown-items" id='nav-profile' href="/profile/general">My Profile</a></li>
-                    <li><a class="dropdown-item nav-dropdown-items"  href="/cart">Cart</a></li>
-                    <li><a class="dropdown-item nav-dropdown-items"  href="/wishlist">Wishlist</a></li>
-                    <li><a class="dropdown-item nav-dropdown-items" id='nav-orders' href="/become_seller">Become Seller</a></li>
-                    <hr id = "navbar-hr">
-                    <li><a class="dropdown-item" href="/signout" id="nav-logout">Logout</a></li>
-                  </ul>
-                </li>                    
-              </div>
-              {% else %}
-              <a class="nav-link active" aria-current="page" href="/signin">Login</a>
-              {% endif %}
-            </li>
-          </ul>             
-        </div>
-      </div>
-</div>
-</nav>
-    
-    {% endif %}
 
     </header>
-
+    <div id="snackbar"></div>
     </div>
     <div id="content">{% block content %} {% endblock %}</div>
     <!-- <div>
@@ -176,10 +133,10 @@
     $(document).ready(function () {
       document.getElementById('searchValue').value = window.sessionStorage.getItem('searchKey')
     });
-    
+
     function handleSearch() {
       searchQuery = document.getElementById('searchValue').value;
-      if(!!searchQuery){
+      if (!!searchQuery) {
         window.sessionStorage.setItem('searchKey', searchQuery)
         const { min = 1000, max = 100000, inStock = false } = JSON.parse(window.sessionStorage.getItem('filterKey')) || {}
         const sortBy = window.sessionStorage.getItem('sortByKey') || ''
@@ -187,25 +144,24 @@
         const urlnew = `/inventory${searchQuery !== '' ? '/search/' + searchQuery : ''}${filterStr !== '' ? '/filter/' + filterStr : ''}${sortBy !== '' ? '/sort/' + sortBy : ''}`
         window.location.href = urlnew
       }
-      
+
 
     };
     function clearSearch() {
       searchQuery = document.getElementById('searchValue').value;
       // console.log('clr-----------', searchQuery)
-      if(searchQuery === ''){
-        window.sessionStorage.setItem('searchKey','')
+      if (searchQuery === '') {
+        window.sessionStorage.setItem('searchKey', '')
         const { min = 1000, max = 100000, inStock = false } = JSON.parse(window.sessionStorage.getItem('filterKey')) || {}
         const sortBy = window.sessionStorage.getItem('sortByKey') || ''
         const filterStr = `&inStock&${inStock}&minValue&${min}&maxValue&${max}`
         const urlnew = `/inventory${searchQuery !== '' ? '/search/' + searchQuery : ''}${filterStr !== '' ? '/filter/' + filterStr : ''}${sortBy !== '' ? '/sort/' + sortBy : ''}`
         window.location.href = urlnew
       }
-      else{
+      else {
         handleSearch()
       }
     };
   </script>
 </body>
-
 </html>

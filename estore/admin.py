@@ -10,6 +10,7 @@ from .models import ProductImages
 from .models import DelliverablePincodes
 from .models import Checkouts
 from .models import Cart
+from .models import deactivatedProducts
 
 admin.site.register(Users)
 admin.site.register(UserAddress)
@@ -20,4 +21,5 @@ admin.site.register(ProductImages)
 admin.site.register(DelliverablePincodes)
 admin.site.register(Checkouts)
 admin.site.register(Cart)
+admin.site.register(deactivatedProducts)
 

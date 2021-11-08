@@ -1,0 +1,85 @@
+{% extends 'estore/base.html' %}
+{% load static %}
+
+{% block content %}
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/payment.css' %}" />
+{% endblock %}
+<script src="https://js.stripe.com/v3/"></script>
+
+<div id="mar" class="card">
+<form action="{% url 'charge' %}" method="post" id="payment-form">
+    {% csrf_token %}
+    <div class="form-row">
+        <label for="card-element">
+            Buy Your Products in Cart:
+        </label>
+        <div id="card-element">
+        </div>
+        <div id="card-errors" role="alert">
+
+        </div>
+    </div>
+    <p>Test Card No:  4242424242424242, date: any future date, cvc: any three digit cvc, zip:any five digit zip</p>
+    <input  class="myButton" type="submit" value="Submit Payment" name="">
+</form>
+	
+</div>
+<script>
+    var stripe = Stripe('pk_test_51JtKjcSFn4l96PCtzBJZak78m0JRgLcw3AvpDCkkmNfxXopCMapOXIVJaDqctWKIFMwtgkzq1SW19nUMiSXSkSZS00y0zcQQww');
+
+    var elements = stripe.elements();
+
+    var style = {
+      base: {
+        color: '#32325d',
+        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+        fontSmoothing: 'antialiased',
+        fontSize: '16px',
+        '::placeholder': {
+        color: '#aab7c4'
+        }
+      },
+      invalid: {
+        color: '#fa755a',
+        iconColor: '#fa755a'
+      }
+    };
+
+    var card = elements.create('card', {style: style});
+
+    card.mount('#card-element');
+
+    card.addEventListener('change', function(event) {
+      var displayError = document.getElementById('card-errors');
+      if (event.error) {
+        displayError.textContent = event.error.message;
+      } else {
+        displayError.textContent = '';
+      }
+    });
+    var form = document.getElementById('payment-form');
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      stripe.createToken(card).then(function(result) {
+        if (result.error) {
+          var errorElement = document.getElementById('card-errors');
+          errorElement.textContent = result.error.message;
+        } else {
+          stripeTokenHandler(result.token);
+        }
+      });
+    });
+
+    function stripeTokenHandler(token) {
+      var form = document.getElementById('payment-form');
+      var hiddenInput = document.createElement('input');
+      hiddenInput.setAttribute('type', 'hidden');
+      hiddenInput.setAttribute('name', 'stripeToken');
+      hiddenInput.setAttribute('value', token.id);
+      form.appendChild(hiddenInput);
+      form.submit();
+    }
+</script>
+{% endblock content %}s
