@@ -1,0 +1,60 @@
+{% extends "./adminBase.html" %} {% load static %}
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="{% static 'adminCss/buyer.css' %}" />
+{% endblock %}
+{% block title %}Admin-Buyer{% endblock %}
+{% block content %}
+
+<div>
+    <div class="header-container ">
+        <div id="pageTitle" class="main-padding">Active Products</div>
+        <hr class="border-line">
+    </div>
+    {% if users|length == 0 %}
+    <div  class="img-wrapper" >
+        <img style="object-fit: contain; height:100px;" src = "{% static 'media/404img.png' %}" >
+    </div>
+    {% else %}
+    <div class="table-wrapper main-padding">
+        <table>
+            <tr>
+                <th class="text-style1">Name</th>
+                <th class="text-style1">Price</th>
+                <th class="text-style1">Stock</th>
+                <th class="text-style1">Date Uploaded</th>
+                <th class="text-style1">Seller</th>
+                <th class="text-style1">Action</th>
+            </tr>
+            {% for user in users %}
+            <tr>
+                <td class="text-style1">{{user.name}}</td>
+                <td class="text-style1">{{user.price}}</td>
+                <td class="text-style1">{{user.stock}}</td>
+                <td class="text-style1">{{user.dateCreated}}</td>
+                <td class="text-style1">{{user.seller}}</td>
+                
+                <td class="text-style1 ">
+                    <div class="actions-box">
+                        
+                        <form action="/dropProduct" method="POST" class="form">
+                            {% csrf_token %}
+                            <input type="hidden" name="pro_id" value="{{user.id}}" />
+                            <button class="active-user-btn disable-css" type="submit">
+                                <img src="{% static 'media/trash-fill.svg' %}">
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+
+
+
+</div>
+
+
+
+{% endblock %}

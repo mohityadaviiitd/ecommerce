@@ -1,0 +1,17 @@
+{% extends 'estore/base.html' %}
+{% load static %}
+
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/payment.css' %}" />
+{% endblock %}
+{% block content %}
+
+<br>
+<br>
+<br>
+<div id="mar" class="card">
+		
+		<h4>Your payment of Rs. {{amount}} is successfull. Your order has been placed. It will be deliverd within 5 working days.</h4>
+	</div>
+
+{% endblock content %}

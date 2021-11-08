@@ -6,16 +6,9 @@
     {% if product_list|length != 0 %}
     <div style="position: fixed; right: 5%;">
         <p class="fw-lighter text-center">Total: Rs {{ cart_total }}</p>
-
-    <div class="razorpay-embed-btn" data-url="https://pages.razorpay.com/pl_IHumAea6lvnO0F/view" data-text="Pay Now" data-color="#528FF0" data-size="large">
-  <script>
-    (function(){
-      var d=document; var x=!d.getElementById('razorpay-embed-btn-js')
-      if(x){ var s=d.createElement('script'); s.defer=!0;s.id='razorpay-embed-btn-js';
-      s.src='https://cdn.razorpay.com/static/embed_btn/bundle.js';d.body.appendChild(s);} else{var rzp=window['_rzp_'];
-      rzp && rzp.init && rzp.init()}})();
-  </script>
-</div>
+        <form action="/index">
+            <input type="submit" value="Proceed to Pay" />
+        </form>
     </div>
 
     {% else  %}
@@ -27,7 +20,7 @@
         <div class="d-flex border m-auto rounded-3 mb-3 justify-content-between bg-light text-dark shadow-sm" style="width: 50%;">
         <div class="p-2" style="width: 30%;">
             <img class="py-2 px-2" height="210px" width="200px"
-                 src="../media/{{ product.product_image }}" alt="{{ product.product_name }}">
+                 src="{{ product.product_image }}" alt="{{ product.product_name }}">
         </div>
         <div class="p-2 lh-1" style="width: 40%;" >
              <ul class="list-group">

@@ -9,10 +9,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-4s(348yu5$j^)^(gop&=p2=ah2acc%1(74f6$7%3t@l0g^+q@t'
 
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1']
+# ALLOWED_HOSTS = ['192.168.2.248']
 
 AUTH_USER_MODEL= "estore.Users"
 
@@ -120,8 +122,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_HOST='smtp.gmail.com'
-EMAIL_HOST_USER=''
+EMAIL_HOST_USER='noreplyfcs100@gmail.com'
 EMAIL_USE_TLS=True
-DEFAULT_FROM_EMAIL=''
+DEFAULT_FROM_EMAIL='noreplyfcs100@gmail.com'
 EMAIL_PORT=587
-EMAIL_HOST_PASSWORD=''
+EMAIL_HOST_PASSWORD='Auth@g13'
+STRIPEKEY='sk_test_51JtKjcSFn4l96PCtU9s69d7r7TJrGrWauTNZRtMNVaWNVCW2LA3Hp8Jo7CxVOSY3zEnwyoRLPI3pEJHflOyHoBFY00Avxe6WAn'

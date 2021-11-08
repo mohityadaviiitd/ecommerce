@@ -1,0 +1,22 @@
+
+#mar{
+    margin-top: 6%;
+    text-align: center;
+}
+.card {
+    /* text-align: center; */
+    position: relative;
+    /* align-items: center; */
+    margin:auto;
+    width: 80%;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.5);
+    box-sizing: border-box;
+    box-shadow: 0 10px 10px rgba(202, 195, 195, 0.6);
+    border-radius: 10px;
+  }
+  label{
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-weight: bold;
+    font-size: 20px;
+}
