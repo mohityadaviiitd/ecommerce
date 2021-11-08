@@ -39,9 +39,12 @@
                         <form action="/addProduct" method="POST" class="form">
                             {% csrf_token %}
                             <input type="hidden" name="pro_id" value="{{user.id}}" />
-                            <button class="active-user-btn disable-css" type="submit">
-                                <img src="{% static 'media/add.png' %}">
-                            </button>
+                            <div class="tooltip-eshop">
+                                <button class="active-user-btn disable-css" type="submit">
+                                    <img src="{% static 'media/check2-circle.svg' %}">
+                                </button>
+                                <span class="tooltiptext-eshop">Add</span>
+                            </div>
                         </form>
                     </div>
                 </td>

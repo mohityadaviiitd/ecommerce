@@ -60,25 +60,43 @@
                         <form action="/makeUserActive" method="POST" class="form">
                             <input type="hidden" name="user_id" value="{{user.id}}" />
                             {% csrf_token %}
-                            <button class="inactive-user-btn disable-css" type="submit">
+                            <div class="tooltip-eshop">
+                                <button class="inactive-user-btn disable-css" type="submit">
+                                    <img src="{% static 'media/person-check-fill-faded.svg' %}">
+                                </button>
+                                <span class="tooltiptext-eshop">Active</span>
+                              </div>
+                            <!-- <button class="inactive-user-btn disable-css" type="submit">
                                 <img src="{% static 'media/person-check-fill.svg' %}">
-                            </button>
+                            </button> -->
                         </form>
                         {% elif user.active != 0 %}
                         <form action="/makeUserInactive" method="POST" class="form">
                             <input type="hidden" name="user_id" value="{{user.id}}" />
                             {% csrf_token %}
-                            <button class="active-user-btn disable-css" type="submit">
+                            <div class="tooltip-eshop">
+                                <button class="active-user-btn disable-css" type="submit">
+                                    <img src="{% static 'media/person-check-fill.svg' %}">
+                                </button>
+                                <span class="tooltiptext-eshop">Inactive</span>
+                              </div>
+                            <!-- <button class="active-user-btn disable-css" type="submit">
                                 <img src="{% static 'media/person-x-fill.svg' %}">
-                            </button>
+                            </button> -->
                         </form>
                         {% endif %}
                         <form action="/deleteUser" method="POST" class="form">
                             <input type="hidden" name="user_id" value="{{user.id}}" />
                             {% csrf_token %}
-                            <button class="active-user-btn disable-css" type="submit">
+                            <div class="tooltip-eshop">
+                                <button class="active-user-btn disable-css" type="submit">
+                                    <img src="{% static 'media/trash-fill.svg' %}">
+                                </button>
+                                <span class="tooltiptext-eshop">Delete</span>
+                              </div>
+                            <!-- <button class="active-user-btn disable-css" type="submit">
                                 <img src="{% static 'media/trash-fill.svg' %}">
-                            </button>
+                            </button> -->
                         </form>
                     </div>
                 </td>

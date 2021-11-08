@@ -39,9 +39,12 @@
                         <form action="/dropProduct" method="POST" class="form">
                             {% csrf_token %}
                             <input type="hidden" name="pro_id" value="{{user.id}}" />
-                            <button class="active-user-btn disable-css" type="submit">
-                                <img src="{% static 'media/trash-fill.svg' %}">
-                            </button>
+                            <div class="tooltip-eshop">
+                                <button class="active-user-btn disable-css" type="submit">
+                                    <img src="{% static 'media/trash-fill.svg' %}">
+                                </button>
+                                <span class="tooltiptext-eshop">Delete</span>
+                              </div>
                         </form>
                     </div>
                 </td>

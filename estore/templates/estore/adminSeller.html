@@ -11,8 +11,8 @@
         <hr class="border-line">
     </div>
     {% if users|length == 0 %}
-    <div  class="img-wrapper" >
-        <img style="object-fit: contain; height:100px;" src = "{% static 'media/404img.png' %}" >
+    <div class="img-wrapper">
+        <img style="object-fit: contain; height:100px;" src="{% static 'media/404img.png' %}">
     </div>
     {% else %}
     <div class="table-wrapper main-padding">
@@ -98,18 +98,28 @@
                         <form action="/makeSellerUserActive" method="POST" class="form">
                             <input type="hidden" name="user_id" value="{{user.id}}" />
                             {% csrf_token %}
-                            <button class="inactive-user-btn disable-css" type="submit">
+                            <div class="tooltip-eshop">
+                                <button class="inactive-user-btn disable-css" type="submit">
+                                    <img src="{% static 'media/person-check-fill-faded.svg' %}">
+                                </button>
+                                <span class="tooltiptext-eshop">Active</span>
+                              </div>
+                            <!-- <button class="inactive-user-btn disable-css" type="submit">
                                 <img src="{% static 'media/person-check-fill.svg' %}">
-                            </button>
+                            </button> -->
                         </form>
 
                         {% elif user.active != 0 %}
                         <form action="/makeSellerUserInactive" method="POST" class="form">
                             <input type="hidden" name="user_id" value="{{user.id}}" />
                             {% csrf_token %}
-                            <button class="active-user-btn disable-css" type="submit">
-                                <img src="{% static 'media/person-x-fill.svg' %}">
-                            </button>
+                            <div class="tooltip-eshop">
+                                <button class="active-user-btn disable-css" type="submit">
+                                    <img src="{% static 'media/person-check-fill.svg' %}">
+                                </button>
+                                <span class="tooltiptext-eshop">Inactive</span>
+                              </div>
+
                         </form>
 
                         {% endif %}
@@ -117,27 +127,48 @@
                         <form action="/approveSeller" method="POST" class="form">
                             <input type="hidden" name="user_id" value="{{user.id}}" />
                             {% csrf_token %}
-                            <button class="inactive-user-btn disable-css" type="submit">
-                                <img src="{% static 'media/person-check-fill.svg' %}">
-                            </button>
+                            <div class="tooltip-eshop">
+                                <button class="inactive-user-btn disable-css" type="submit">
+                                    <img src="{% static 'media/check2-circle-faded.svg' %}">
+                                </button>
+                                <span class="tooltiptext-eshop">Approve</span>
+                              </div>
+                            <!-- <button class="inactive-user-btn disable-css" type="submit">
+                                <img src="{% static 'media/x-lg.svg' %}">
+
+                            </button> -->
                         </form>
 
                         {% elif user.seller_approval_status != 0 %}
                         <form action="/disapproveSeller" method="POST" class="form">
                             <input type="hidden" name="user_id" value="{{user.id}}" />
                             {% csrf_token %}
-                            <button class="active-user-btn disable-css" type="submit">
-                                <img src="{% static 'media/person-x-fill.svg' %}">
-                            </button>
+                            <div class="tooltip-eshop">
+                                <button class="active-user-btn disable-css" type="submit">
+                                    <img src="{% static 'media/check2-circle.svg' %}">
+                                </button>
+                                <span class="tooltiptext-eshop">Disapprove</span>
+                              </div>
+                            <!-- <button class="active-user-btn disable-css" type="submit">
+                                <img src="{% static 'media/check2-circle.svg' %}">
+
+                            </button> -->
                         </form>
 
                         {% endif %}
                         <form action="/deleteSeller" method="POST" class="form">
                             <input type="hidden" name="user_id" value="{{user.id}}" />
                             {% csrf_token %}
-                            <button class="active-user-btn disable-css" type="submit">
+                            <div class="tooltip-eshop">
+                                <button class="active-user-btn disable-css" type="submit">
+                                    <img src="{% static 'media/trash-fill.svg' %}">
+                                </button>
+                                <span class="tooltiptext-eshop">Delete</span>
+                              </div>
+                            <!-- <button class="active-user-btn disable-css" type="submit">
                                 <img src="{% static 'media/trash-fill.svg' %}">
-                            </button>
+
+                            </button> -->
                         </form>
                     </div>
 
