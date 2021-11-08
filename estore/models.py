@@ -1,7 +1,7 @@
 from django.db import models
 from django import forms
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-import uuid
+import uuid, random
 class usermanager(BaseUserManager):
     def create_user(self, user_name, email,phone, password=None):
         if not email:
@@ -93,6 +93,18 @@ class ProductImages(models.Model):
 #     ('T','TV&Appliances'),
 #     ('C','Camera&Accessories'),
 # )
+class Code(models.Model):
+    number = models.CharField(max_length=5, blank=True)
+    user=models.ForeignKey('Users', on_delete=models.CASCADE)
+    def __str__(self):
+        return str(self.number)
+    def save(self, *args, **kwargs):
+        ans=""
+        for i in range(0,5):
+            r=random.randint(0,9)
+            ans=ans+str(r)
+        self.number=ans
+        super().save(*args, **kwargs)
 
 class Products(models.Model):
     product_id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
@@ -110,31 +122,16 @@ class Products(models.Model):
         managed = True
         db_table = 'products'
 
-class deactivatedProducts(models.Model):
-    product_id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-    product_name = models.CharField(max_length=1000)
-    details = models.CharField(max_length=4000, blank=True, null=True)
-    category = models.CharField(max_length=90)
-    price = models.FloatField()
-    stock = models.IntegerField()
-    seller = models.ForeignKey('Sellers', on_delete=models.CASCADE)
-    status = models.CharField(default='active',max_length=90)
-    date_created=models.DateTimeField(verbose_name="date created", auto_now_add=True)
 
 
-    class Meta:
-        managed = True
-        db_table = 'deactivatedproducts'
+# class Returns(models.Model):
+#     return_id = models.IntegerField(primary_key=True)
+#     user = models.ForeignKey('Users', models.DO_NOTHING)
+#     product = models.ForeignKey(Products, models.DO_NOTHING)
 
-
-class Returns(models.Model):
-    return_id = models.IntegerField(primary_key=True)
-    user = models.ForeignKey('Users', models.DO_NOTHING)
-    product = models.ForeignKey(Products, models.DO_NOTHING)
-
-    class Meta:
-        managed = True
-        db_table = 'returns'
+#     class Meta:
+#         managed = True
+#         db_table = 'returns'
 
 
 

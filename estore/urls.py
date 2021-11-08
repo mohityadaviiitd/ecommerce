@@ -63,4 +63,5 @@ urlpatterns = [
     path('dropProduct', views.dropProduct, name='dropProduct'),
     path('addProduct', views.addProduct, name='addProduct'),
     path('privacy-policy/', views.privacyPolicy, name="privacy-policy"),
+    path('verifyphone/', views.verifyphone, name="verifyphone"),
 ]

@@ -1,10 +1,10 @@
 import uuid
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
-from .models import Users, Sellers, ProductImages, Products, Cart, UserAddress, Users, Wishlist, deactivatedProducts
+from .models import Users, Sellers, ProductImages, Products, Cart, UserAddress, Users, Wishlist, Code
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from .forms import RegisterForm, SellerForm, ProductForm, ProductImagesForm, PincodeForm, AddressForm, ProfileForm
+from .forms import RegisterForm, SellerForm, ProductForm, ProductImagesForm, PincodeForm, AddressForm, ProfileForm, CodeForm
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
@@ -27,6 +27,7 @@ from django.http import FileResponse, Http404, JsonResponse
 import stripe
 from django.db.models import Sum
 stripe.api_key = settings.STRIPEKEY
+from .utils import send_sms
 
 
 @login_required(login_url="signin")
@@ -34,7 +35,7 @@ def activate_product(request):
     if(request.user.is_authenticated and request.user.is_admin == False):
         return HttpResponseRedirect('/signin')
     try:
-        resUserData = deactivatedProducts.objects.all()
+        resUserData = Products.objects.filter(status='inactive')
     except:
         return redirect('/')
     usersArr = []
@@ -56,7 +57,7 @@ def deactivate_product(request):
     if(request.user.is_authenticated and request.user.is_admin == False):
         return HttpResponseRedirect('/signin')
     try:
-        resUserData = Products.objects.all()
+        resUserData = Products.objects.filter(status='active')
     except:
         return redirect('/')
     usersArr = []
@@ -223,16 +224,16 @@ def inventory(request, productCategory="", searchQuery="", filterQuery="", sortB
     if productCategory == "" and searchQuery == "":
         pageTitle = "Products"
         # print('1--------------')
-        filterArr = Products.objects.filter(seller=s).order_by('-date_created')
+        filterArr = Products.objects.filter(seller=s, status='active').order_by('-date_created')
     elif productCategory != "" and searchQuery == "":
         pageTitle = productCategory
         #  print('2--------------')
         filterArr = Products.objects.filter(
-            seller=s, category=productCategory).order_by('-date_created')
+            seller=s, category=productCategory,status='active').order_by('-date_created')
     elif productCategory == "" and searchQuery != "":
         # print('3--------------')
         pageTitle = "Search Results"
-        tempArr = Products.objects.filter(seller=s).order_by('-date_created')
+        tempArr = Products.objects.filter(seller=s,status='active').order_by('-date_created')
         for product in tempArr:
             foundInName = re.search(
                 searchQuery.lower(), product.product_name.lower())
@@ -488,9 +489,12 @@ def signin(request):
         if user is not None:
             if user.is_active == False or user.deleted == True or user.active == False:
                 return redirect('invalid')
-            if not user.is_email_verified:
-                return redirect('invalid')
-            login(request, user)
+            request.session['pk']=user.email
+            # if not user.is_email_verified:
+            #     return redirect('invalid')
+            # if not user.is_phone_verified:
+            return redirect('verifyphone')
+            
             if(user.is_admin == True):
                 return redirect('buyerList')
             if(user.is_seller == True):
@@ -501,6 +505,39 @@ def signin(request):
         else:
             messages.error(request, "email or password incorrect")
     return render(request, 'estore/signin.html', )
+
+
+def verifyphone(request):
+    if request.user.is_authenticated:
+        return redirect("/", type="general")
+    form=CodeForm(request.POST or None)
+    pk=request.session.get('pk')
+    if pk:
+        user=Users.objects.get(email=pk)
+        code=Code.objects.get(user=user)
+        cu=f"{user.email}:{code}"
+        if not request.POST:
+            a=1
+            # send_sms(code, user.phone)
+        if form.is_valid():
+            num=request.POST.get('number')
+            if str(code)==num:
+                code.save()
+                login(request, user)
+                if(user.is_admin == True):
+                    return redirect('buyerList')
+                if(user.is_seller == True):
+                    sobj = Sellers.objects.get(user=user)
+                    if(sobj.approval_status == True):
+                        return redirect('/')
+                return redirect('/')
+            else:
+                return redirect('signin')
+    context={'form':form}
+    return render(request, 'estore/verifyphone.html', context)
+
+
+
 
 
 def invalid(request):
@@ -806,7 +843,7 @@ def edit_product(request, proid):
     except:
         return redirect('invalid')
     try:
-        prod = Products.objects.get(product_id=proid)
+        prod = Products.objects.filter(product_id=proid, status='active')
     except:
         return redirect('invalid')
 
@@ -1471,10 +1508,8 @@ def dropProduct(request):
     if(request.POST and request.user.is_authenticated and request.user.is_admin == 1):
         userIdToDelete = request.POST.get('pro_id')
         proobj = Products.objects.get(product_id=userIdToDelete)
-        pro2 = deactivatedProducts(product_name=proobj.product_name, details=proobj.details, category=proobj.category,
-                                   price=proobj.price, stock=proobj.stock, seller=proobj.seller, status='active')
-        pro2.save()
-        Products.objects.get(product_id=userIdToDelete).delete()
+        proobj.status='inactive'
+        proobj.save()
 
     return HttpResponseRedirect('deactivate_product')
 
@@ -1486,10 +1521,8 @@ def addProduct(request):
         return HttpResponseRedirect('/signin')
     if(request.POST and request.user.is_authenticated and request.user.is_admin == 1):
         userIdToDelete = request.POST.get('pro_id')
-        proobj = deactivatedProducts.objects.get(product_id=userIdToDelete)
-        pro2 = Products(product_name=proobj.product_name, details=proobj.details, category=proobj.category,
-                        price=proobj.price, stock=proobj.stock, seller=proobj.seller, status='active')
-        pro2.save()
-        deactivatedProducts.objects.get(product_id=userIdToDelete).delete()
+        proobj=Products.objects.get(product_id=userIdToDelete)
+        proobj.status='active'
+        proobj.save()
 
     return HttpResponseRedirect('activate_product')

@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.forms.fields import ImageField
-from .models import Users
+from .models import Code, Users
 from .models import Sellers, Products, ProductImages, DelliverablePincodes, UserAddress
 from django.forms.widgets import FileInput
 
@@ -101,7 +101,11 @@ class SellerForm(ModelForm):
         fields = ['pdf', 'gst_number']
     
     
-    
+class CodeForm(ModelForm):
+    number=forms.CharField(label="OTP")
+    class Meta:
+        model=Code
+        fields=['number',]
 
 class ProductForm(ModelForm):
     product_name = forms.CharField(label='Product Name',max_length=200)
