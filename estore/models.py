@@ -150,7 +150,7 @@ class Sellers(models.Model):
     user = models.ForeignKey('Users', on_delete=models.CASCADE)
     pdf = models.FileField(upload_to=get_pdf, default=default_pdf)
     approval_status = models.BooleanField(default=False)
-    gst_number = models.CharField(unique=True, max_length=90)
+    gst_number = models.CharField(unique=True, max_length=15)
 
     def has_perm(self, perm, obj=None):
         return self.is_admin

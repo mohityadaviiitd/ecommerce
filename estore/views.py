@@ -493,8 +493,8 @@ def signin(request):
             # if not user.is_email_verified:
             #     return redirect('invalid')
             # if not user.is_phone_verified:
-            return redirect('verifyphone')
-            
+            # return redirect('verifyphone')
+            login(request, user)
             if(user.is_admin == True):
                 return redirect('buyerList')
             if(user.is_seller == True):
@@ -524,6 +524,8 @@ def verifyphone(request):
             if str(code)==num:
                 code.save()
                 login(request, user)
+                user.is_phone_verified=True
+                user.save()
                 if(user.is_admin == True):
                     return redirect('buyerList')
                 if(user.is_seller == True):
@@ -585,22 +587,22 @@ def registerUser(request):
             u.email = u.email.lower()
             u.save()
 
-            # currenturl=get_current_site(request)
+            currenturl=get_current_site(request)
 
-            # subject='Verify your Email'
-            # body=render_to_string('estore/activate.html',{
-            #     'user':u,
-            #     'domain':currenturl,
-            #     'uid':urlsafe_base64_encode(force_bytes(u.pk)),
-            #     'token': maketoken.make_token(u)
-            # })
+            subject='Verify your Email'
+            body=render_to_string('estore/activate.html',{
+                'user':u,
+                'domain':currenturl,
+                'uid':urlsafe_base64_encode(force_bytes(u.pk)),
+                'token': maketoken.make_token(u)
+            })
 
-            # send_mail(subject,
-            #         body,
-            #         settings.EMAIL_HOST_USER,
-            #         [email],
-            #         fail_silently=False,
-            #         )
+            send_mail(subject,
+                    body,
+                    settings.EMAIL_HOST_USER,
+                    [email],
+                    fail_silently=False,
+                    )
 
             messages.success(request, "User account created")
 
@@ -667,17 +669,20 @@ def set_pincodes(request):
 
 
 def activate_user(request, uidb64, token):
+    
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
         user = Users.objects.get(pk=uid)
 
     except Exception as e:
         user = None
-    if user and maketoken.check_token(user, token):
+    if(user.is_email_verified==True):
+        return redirect('invalid')
+    if user!=None and maketoken.check_token(user, token):
         user.is_email_verified = True
         user.save()
         return redirect('signin')
-    return redirect('register')
+    return redirect('invalid')
 
 
 @login_required(login_url="signin")
@@ -731,7 +736,7 @@ def upload_product(request):
     if(request.user.is_seller == False):
         return redirect("/")
     ImageFormSet = modelformset_factory(
-        ProductImages, form=ProductImagesForm, extra=4)
+        ProductImages, form=ProductImagesForm, min_num=2, extra=2)
     id_user = request.user.user_id
     uobject = Users.objects.get(user_id=id_user)
     sobject = Sellers.objects.get(user_id=id_user)
@@ -843,11 +848,11 @@ def edit_product(request, proid):
     except:
         return redirect('invalid')
     try:
-        prod = Products.objects.filter(product_id=proid, status='active')
+        prod = Products.objects.get(product_id=proid, status='active')
     except:
         return redirect('invalid')
-
-    ss = prod.seller
+    print(prod)
+    ss =prod.seller
 
     if(s == ss):
         initial_data = {
