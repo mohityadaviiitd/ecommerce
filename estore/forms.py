@@ -7,6 +7,7 @@ from .models import Code, Users
 from .models import Sellers, Products, ProductImages, DelliverablePincodes, UserAddress
 from django.forms.widgets import FileInput
 
+
 CATEGORY_CHOICES = (
     ('mobile','Mobiles'),
     ('laptop','Laptops'),
@@ -19,6 +20,9 @@ def only_int(value):
 def fsize(value):
     if value.size > 2000001.4336:
         raise ValidationError('Size should be less than 2MB')
+def ext(value):
+    if not value.name.endswith('.pdf'):
+        raise ValidationError('Only pdf files are allowed')
 
 
 class AddressForm(ModelForm):
@@ -95,10 +99,9 @@ class PincodeForm(ModelForm):
         self.fields['pincode'].widget.attrs['placeholder'] = '6 digit Pincode*'
         self.fields['no_of_days_to_deliver'].widget.attrs['placeholder'] = 'max= 28 days*'
 
-
-
+ 
 class SellerForm(ModelForm):
-    pdf=forms.FileField(label='Document', validators=[fsize])
+    pdf=forms.FileField(label='Document', validators=[fsize, ext])
     gst_number=forms.CharField(label='GST Number',min_length=1, max_length=15, validators=[only_int])
     class Meta:
         model = Sellers

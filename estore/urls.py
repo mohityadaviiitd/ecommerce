@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 urlpatterns = [
     path('', views.shop, name="shop"),
@@ -64,4 +64,14 @@ urlpatterns = [
     path('addProduct', views.addProduct, name='addProduct'),
     path('privacy-policy/', views.privacyPolicy, name="privacy-policy"),
     path('verifyphone/', views.verifyphone, name="verifyphone"),
+    path('share/', views.share, name="share"),
+    path('sendlink/', views.sendlink, name="sendlink"),
+    path("password_reset", views.password_reset_request, name="password_reset"),
+    path('accounts/login/',views.signin, name="signin" ),
+    path('logs/',views.logs, name="logs" ),
+    
+    
+    
+    
+    
 ]
