@@ -220,7 +220,7 @@ def deleteAddress(request):
             return redirect('invalid')
         u = UserAddress.objects.get(address_id=addr)
         if(request.user != u.user):
-            print("here")
+            
             return redirect('invalid')
         u.delete()
     return redirect('user_address')
@@ -378,7 +378,7 @@ def products(request, productCategory="", searchQuery="", filterQuery="", sortBy
 
             filterArr = Products.objects.filter(
                 category=productCategory, status='active')
-            print('2--------------', filterArr, productCategory)
+            # print('2--------------', filterArr, productCategory)
         elif productCategory == "" and searchQuery != "":
             # print('3--------------')
             pageTitle = "Search Results"
@@ -398,7 +398,7 @@ def products(request, productCategory="", searchQuery="", filterQuery="", sortBy
             inStock = arrQueries[2]
             minPrice = arrQueries[4]
             maxPrice = arrQueries[6]
-            print('mix---------------', type(filterArr))
+            # print('mix---------------', type(filterArr))
             tempArr = filterArr
             for elem in tempArr:
                 if int(elem.price) >= int(minPrice) and int(elem.price) <= int(maxPrice):
@@ -411,7 +411,7 @@ def products(request, productCategory="", searchQuery="", filterQuery="", sortBy
             finalArr = filterArr
         if sortBy == "A-Z":
             finalArr.sort(key=lambda x: x.product_name, reverse=False)
-            print('-sorted arr alpla----', finalArr)
+            # print('-sorted arr alpla----', finalArr)
         if sortBy == 'price':
             finalArr.sort(key=lambda x: x.price, reverse=False)
         productArr = []
@@ -429,7 +429,7 @@ def products(request, productCategory="", searchQuery="", filterQuery="", sortBy
             product_dict['inWishlist'] = any(
                 obj.product_id == i.product_id for obj in wishlistData)
             productArr.append(product_dict)
-        print('-------arr product=----------------------', productArr)
+        # print('-------arr product=----------------------', productArr)
 
         for i in productArr:
             for j in imgData:
@@ -484,7 +484,7 @@ def items(request, item_id):
             user['cart_id'] = ''
             user['wishlist_id'] = ''
 
-        print("id------", item_id)
+        # print("id------", item_id)
         productDetails = Products.objects.get(
             product_id=item_id, status='active')
         imgRes = ProductImages.objects.all()
@@ -521,10 +521,10 @@ def signin(request):
             if user.is_active == False or user.deleted == True or user.active == False:
                 return redirect('invalid')
             request.session['pk']=user.email
-            # if not user.is_email_verified:
-            #     return redirect('invalid')
+            if not user.is_email_verified:
+                return redirect('invalid')
             # # if not user.is_phone_verified:
-            # return redirect('verifyphone')
+            return redirect('verifyphone')
             login(request, user)
             if(user.is_admin == True):
                 return redirect('buyerList')
@@ -921,7 +921,7 @@ def edit_product(request, proid):
         prod = Products.objects.get(product_id=proid, status='active')
     except:
         return redirect('invalid')
-    print(prod)
+    # print(prod)
     ss =prod.seller
 
     if(s == ss):
@@ -995,7 +995,7 @@ def shop(request):
         if request.user.is_authenticated:
             wishlist_id_form = request.POST.get('wishlist_id')
             product_id_form = request.POST.get('product_id')
-            print('-wish---------------', wishlist_id_form, product_id_form)
+            # print('-wish---------------', wishlist_id_form, product_id_form)
             wishlistObj = Wishlist(wishlist_id=wishlist_id_form,
                                    product_id=product_id_form)
             wishlistObj.save()
@@ -1030,7 +1030,7 @@ def shop(request):
         imgData = ProductImages.objects.all()
         productArr = []
         for i in resData:
-            print('-------------pid-----', i, i.product_id)
+            # print('-------------pid-----', i, i.product_id)
             product_dict = {}
             product_dict['id'] = i.product_id
             product_dict['name'] = i.product_name
@@ -1043,7 +1043,7 @@ def shop(request):
             product_dict['inWishlist'] = any(
                 obj.product_id == i.product_id for obj in wishlistData)
             productArr.append(product_dict)
-        print("data =========", productArr)
+        # print("data =========", productArr)
         for i in productArr:
             for j in imgData:
                 if (i['id'] == j.product_id):
@@ -1061,7 +1061,7 @@ def clearMessages(request):
     storage = messages.get_messages(request)
     for _ in storage:
         pass
-    print(storage._loaded_messages[0])
+    # print(storage._loaded_messages[0])
     for _ in list(storage._loaded_messages):
         del storage._loaded_messages[0]
 
@@ -1325,7 +1325,7 @@ def adminSeller(request):
     resUserData = Users.objects.all()
     resAddData = UserAddress.objects.all()
     resSellerData = Sellers.objects.all()
-    print(resSellerData)
+    # print(resSellerData)
     usersArr = []
     for data in resUserData:
         if (data.deleted != 1 and data.is_seller == 1 and data.is_admin == 0):
@@ -1521,7 +1521,7 @@ def approveSeller(request):
         return HttpResponseRedirect('/signin')
     if(request.user.is_authenticated):
         get_role = Users.objects.filter(user_id=request.user.user_id)[0]
-        print("hello", get_role)
+        # print("hello", get_role)
         if(get_role.is_admin == 1):
             if (request.POST):
                 userIdToActive = request.POST.get('user_id')

@@ -120,7 +120,7 @@ class CodeForm(ModelForm):
 class ProductForm(ModelForm):
     product_name = forms.CharField(label='Product Name',max_length=200)
     details=forms.CharField(max_length=1000,label='Details and Specifications')
-    price=forms.FloatField(max_value=10000000, min_value=1, label='Price')
+    price=forms.FloatField(max_value=100000, min_value=1, label='Price(0>price>100000)')
     stock=forms.IntegerField(label='Stock')
     category=forms.CharField(label='Category',widget=forms.Select(choices=CATEGORY_CHOICES),)
     class Meta:
@@ -130,7 +130,7 @@ class ProductForm(ModelForm):
         super(ProductForm, self).__init__(*args, **kwargs)
         self.fields['product_name'].widget.attrs['placeholder'] = 'Brand Name, Model Name(200 characters max)'
         self.fields['details'].widget.attrs['placeholder'] = 'Eg. RAM=8GB, Processor=i5 10th Gen(1000 characters max)'
-        self.fields['price'].widget.attrs['placeholder'] = 'Price of one quantity of the product(in Rs.)'
+        self.fields['price'].widget.attrs['placeholder'] = 'Price(should be between 1 and 100000)'
         self.fields['stock'].widget.attrs['placeholder'] = 'Quantity you have for sale'
         self.fields['category'].widget.attrs['placeholder'] = ''
 
