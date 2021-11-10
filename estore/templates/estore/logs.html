@@ -1,0 +1,56 @@
+{% extends "./adminBase.html" %} {% load static %} {% block extrahead %}
+<link rel="stylesheet" type="text/css" href="{% static 'adminCss/seller.css' %}" />
+{% endblock %}
+{% block title %}Logs{% endblock %}
+{% block content %}
+
+
+<div>
+    <div class="header-container ">
+        <div id="pageTitle" class="main-padding">Logs</div>
+        <hr class="border-line">
+    </div>
+    {% if users|length == 0 %}
+    <div class="img-wrapper">
+        <img style="object-fit: contain; height:100px;" src="{% static 'media/404img.png' %}">
+    </div>
+    {% else %}
+    <div class="table-wrapper main-padding">
+        <table>
+            <tr>
+                <th class="text-style1">email</th>
+                <th class="text-style1">desc</th>
+                <th class="text-style1">date</th>
+                <th class="text-style1">amount(Rs)</th>
+                <th class="text-style1">token</th>
+            </tr>
+            {% for user in users %}
+            <tr>
+                <td class="text-style1">{{user.email}}</td>
+                <td class="text-style1">{{user.desc}}</td>
+                <td class="text-style1">{{user.date}}</td>
+                <td class="text-style1">{{user.amount}}</td>
+                <td class="text-style1">{{user.token}}</td>
+
+
+                
+                
+
+
+
+
+                
+            </tr>
+            {% endfor %}
+
+        </table>
+    </div>
+    {% endif %}
+
+
+</div>
+
+
+
+
+{% endblock %}

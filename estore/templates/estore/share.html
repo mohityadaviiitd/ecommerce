@@ -1,0 +1,19 @@
+{% extends "estore/base.html" %}
+{% load static %}
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/signin.css' %}" />
+{% endblock %}
+{% block title %}Email{% endblock %}
+
+{% block content %}
+<div id="mar" class="card">
+<form action ="{% url 'sendlink' %}" method="POST" class="sellerform" enctype='multipart/form-data'>
+    {% csrf_token %}
+    <input type="hidden" name="link" value="{{link}}" />
+    <input type="email" id="email" name="email" placeholder="Enter Email Address to whom you want to share the product"/>
+    <input id='btn2' type="submit" name="Submit" value="Share"/>
+</form>
+
+</div>
+
+{% endblock %}
