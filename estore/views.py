@@ -186,6 +186,24 @@ def user_profile(request):
             if(sell.email != em):
                 request.user.is_email_verified = False
                 sell.save()
+                
+
+                currenturl=get_current_site(request)
+
+                subject='Verify your Email'
+                body=render_to_string('estore/activate.html',{
+                    'user':request.user,
+                    'domain':currenturl,
+                    'uid':urlsafe_base64_encode(force_bytes(request.user.pk)),
+                    'token': maketoken.make_token(request.user)
+                })
+
+                send_mail(subject,
+                        body,
+                        settings.EMAIL_HOST_USER,
+                        [sell.email],
+                        fail_silently=False,
+                        )
                 logout(request)
                 return redirect('emailverify')
 
@@ -545,16 +563,16 @@ def verifyphone(request):
     pk=request.session.get('pk')
     if pk:
         user=Users.objects.get(email=pk)
-        # code=Code.objects.get(user=user)
-        ans=""
-        for i in range(0,6):
-            r=random.randint(0,9)
-            ans=ans+str(r)
+        code=Code.objects.get(user=user)
+        # ans=""
+        # for i in range(0,6):
+        #     r=random.randint(0,9)
+        #     ans=ans+str(r)
 
-        # cu=f"{user.email}:{code}"
+        cu=f"{user.email}:{code}"
         if not request.POST:
             subject='OTP for login to Eshop'
-            body="Your OTP for login to Eshop is: "+ans
+            body="Your OTP for login to Eshop is: "+code.number
             email=user.email
             send_mail(subject,
                         body,
@@ -565,7 +583,8 @@ def verifyphone(request):
             # send_sms(code, user.phone)
         if form.is_valid():
             num=request.POST.get('number')
-            if ans==num:
+            if code.number==num:
+                code.save()
                 login(request, user)
                 if(user.is_admin == True):
                     return redirect('buyerList')

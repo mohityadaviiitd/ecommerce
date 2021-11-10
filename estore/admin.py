@@ -10,7 +10,7 @@ from .models import DelliverablePincodes
 from .models import Logs
 # from .models import Checkouts
 from .models import Cart
-# from .models import Code
+from .models import Code
 admin.site.register(Logs)
 admin.site.register(Users)
 admin.site.register(UserAddress)
@@ -20,5 +20,5 @@ admin.site.register(ProductImages)
 admin.site.register(DelliverablePincodes)
 # admin.site.register(Checkouts)
 admin.site.register(Cart)
-# admin.site.register(Code)
+admin.site.register(Code)
 

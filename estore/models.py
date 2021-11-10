@@ -112,9 +112,15 @@ class Logs(models.Model):
 class Code(models.Model):
     number = models.CharField(max_length=6, blank=True)
     user=models.ForeignKey('Users', on_delete=models.CASCADE)
-    class Meta:
-        managed = True
-        db_table = 'code'
+    def __str__(self):
+        return str(self.number)
+    def save(self, *args, **kwargs):
+        ans=""
+        for i in range(0,6):
+            r=random.randint(0,9)
+            ans=ans+str(r)
+        self.number=ans
+        super().save(*args, **kwargs)
     
 class Products(models.Model):
     product_id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
