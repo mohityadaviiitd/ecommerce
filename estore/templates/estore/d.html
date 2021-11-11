@@ -1,0 +1,23 @@
+
+{% extends "estore/base.html" %}
+{% load static %}
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/signin.css' %}" />
+{% endblock %}
+{% block title %}BecomeSeller{% endblock %}
+
+{% block content %}
+<br>
+<br>
+<br>
+	<div class="card">
+		
+        <p>Enter your registered email id.</p>
+        <form method="POST">
+            {% csrf_token %}
+            {{form}}                   
+            <button class="btn btn-primary" type="submit">Send email</button>
+        </form>
+    </div>
+
+    {% endblock %}

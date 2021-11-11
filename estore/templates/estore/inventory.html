@@ -22,6 +22,7 @@
                     
                     <div class="range-selector">
                         <select onchange="handleFilter()" name="minPrice" id="minPriceFilter" class="select-box">
+                            <option value="1">₹1</option>
                             <option value="1000">₹1000</option>
                             <option value="2000">₹2000</option>
                             <option value="3000">₹3000</option>
@@ -119,7 +120,7 @@
     $(document).ready(function () {
         document.getElementById('A-Z').checked = !!(window.sessionStorage.getItem('sortByKey') === 'A-Z')
         document.getElementById('price').checked = !!(window.sessionStorage.getItem('sortByKey') === 'price')
-        const { min = 1000, max = 100000, inStock = false } = JSON.parse(window.sessionStorage.getItem('filterKey'))
+        const { min = 1, max = 100000, inStock = false } = JSON.parse(window.sessionStorage.getItem('filterKey'))
         document.getElementById('minPriceFilter').value = min.toString()
         document.getElementById('maxPriceFilter').value = max.toString()
         document.getElementById('inStock').checked = inStock
@@ -130,7 +131,7 @@
     function handleSortBy(sortBy) {
         window.sessionStorage.setItem('sortByKey', sortBy);
         const searchQuery = window.sessionStorage.getItem('searchKey') || ''
-        const { min = 1000, max = 100000, inStock = false } = JSON.parse(window.sessionStorage.getItem('filterKey')) || {}
+        const { min = 1, max = 100000, inStock = false } = JSON.parse(window.sessionStorage.getItem('filterKey')) || {}
         const filterStr = `&inStock&${inStock}&minValue&${min}&maxValue&${max}`
         const urlnew = `/inventory${searchQuery !== '' ? '/search/' + searchQuery : ''}${min !== 0 ? '/filter/' + filterStr : ''}${sortBy !== '' ? '/sort/' + sortBy : ''}`
         // console.log('type sorty----------------', filterStr, urlnew)
@@ -150,7 +151,7 @@
         window.location.href = urlnew
     }
     function handleClearFilter() {
-        const min = 1000
+        const min = 1
         const max = 100000
         const inStock = false
         window.sessionStorage.setItem('filterKey', JSON.stringify({ min, max, inStock }));

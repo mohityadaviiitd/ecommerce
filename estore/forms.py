@@ -3,9 +3,10 @@ from django.core.exceptions import ValidationError
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.forms.fields import ImageField
-from .models import Users
+from .models import Code, Users
 from .models import Sellers, Products, ProductImages, DelliverablePincodes, UserAddress
 from django.forms.widgets import FileInput
+
 
 CATEGORY_CHOICES = (
     ('mobile','Mobiles'),
@@ -15,8 +16,13 @@ CATEGORY_CHOICES = (
 )
 def only_int(value): 
     if value.isdigit()==False:
-        raise ValidationError('ID contains characters')
-
+        raise ValidationError('Field should be a number')
+def fsize(value):
+    if value.size > 2000001.4336:
+        raise ValidationError('Size should be less than 2MB')
+def ext(value):
+    if not value.name.endswith('.pdf'):
+        raise ValidationError('Only pdf files are allowed')
 
 
 class AddressForm(ModelForm):
@@ -47,7 +53,7 @@ class RegisterForm(UserCreationForm):
     email=forms.EmailField(label='Email', max_length=100)
     user_name=forms.CharField(label='Your Name',max_length=100)
     phone=forms.CharField(label='Phone Number',max_length=10,min_length=10, validators=[only_int])
-    profile_photo=ImageField(label='Profile Photo')
+    profile_photo=ImageField(label='Profile Photo', validators=[fsize])
     class Meta:
         model = Users
         fields= ['email', 'user_name', 'phone', 'profile_photo', ]
@@ -67,7 +73,7 @@ class ProfileForm(ModelForm):
     email=forms.EmailField(label='Email', max_length=100)
     user_name=forms.CharField(label='Your Name',max_length=100)
     phone=forms.CharField(label='Phone Number',max_length=10,min_length=10, validators=[only_int])
-    profile_photo=ImageField(label='Profile Photo')
+    profile_photo=ImageField(label='Profile Photo', validators=[fsize])
     class Meta:
         model = Users
         fields= ['email', 'user_name', 'phone', 'profile_photo', ]
@@ -93,20 +99,28 @@ class PincodeForm(ModelForm):
         self.fields['pincode'].widget.attrs['placeholder'] = '6 digit Pincode*'
         self.fields['no_of_days_to_deliver'].widget.attrs['placeholder'] = 'max= 28 days*'
 
-
-
+ 
 class SellerForm(ModelForm):
+    pdf=forms.FileField(label='Document', validators=[fsize, ext])
+    gst_number=forms.CharField(label='GST Number',min_length=1, max_length=15, validators=[only_int])
     class Meta:
         model = Sellers
         fields = ['pdf', 'gst_number']
+    def __init__(self, *args, **kwargs):
+        super(SellerForm, self).__init__(*args, **kwargs)
+        self.fields['pdf'].widget.attrs['placeholder'] = 'Upload a pdf containing your ID and GST Form.(Max Size: 2MB)'
+        self.fields['pdf'].widget.attrs['placeholder'] = 'Your GST Number'
     
-    
-    
+class CodeForm(ModelForm):
+    number=forms.CharField(label="OTP",validators=[only_int])
+    class Meta:
+        model=Code
+        fields=['number',]
 
 class ProductForm(ModelForm):
     product_name = forms.CharField(label='Product Name',max_length=200)
     details=forms.CharField(max_length=1000,label='Details and Specifications')
-    price=forms.FloatField(max_value=10000000, min_value=0, label='Price')
+    price=forms.FloatField(max_value=100000, min_value=1, label='Price(0>price>100000)')
     stock=forms.IntegerField(label='Stock')
     category=forms.CharField(label='Category',widget=forms.Select(choices=CATEGORY_CHOICES),)
     class Meta:
@@ -116,12 +130,12 @@ class ProductForm(ModelForm):
         super(ProductForm, self).__init__(*args, **kwargs)
         self.fields['product_name'].widget.attrs['placeholder'] = 'Brand Name, Model Name(200 characters max)'
         self.fields['details'].widget.attrs['placeholder'] = 'Eg. RAM=8GB, Processor=i5 10th Gen(1000 characters max)'
-        self.fields['price'].widget.attrs['placeholder'] = 'Price of one quantity of the product(in Rs.)'
+        self.fields['price'].widget.attrs['placeholder'] = 'Price(should be between 1 and 100000)'
         self.fields['stock'].widget.attrs['placeholder'] = 'Quantity you have for sale'
         self.fields['category'].widget.attrs['placeholder'] = ''
 
 class ProductImagesForm(ModelForm):
-    image=ImageField(label='image')
+    image=ImageField(label='image', validators=[fsize])
     class Meta:
         model = ProductImages
         fields = ['image']

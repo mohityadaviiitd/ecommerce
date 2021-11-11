@@ -1,0 +1,18 @@
+
+{% extends "estore/base.html" %}
+{% load static %}
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/signin.css' %}" />
+{% endblock %}
+{% block title %}BecomeSeller{% endblock %}
+
+{% block content %}
+<br>
+<br>
+<br>
+	<div class="card">
+		<p>Your password has been set.</p>                 
+        <a href="/signin" class="btn btn-primary">Log in</a>
+  </div>
+
+{% endblock %}

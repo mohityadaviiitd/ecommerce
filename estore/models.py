@@ -1,7 +1,11 @@
 from django.db import models
 from django import forms
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-import uuid
+import uuid, random
+
+
+
+
 class usermanager(BaseUserManager):
     def create_user(self, user_name, email,phone, password=None):
         if not email:
@@ -48,18 +52,18 @@ class Wishlist(models.Model):
         db_table = 'wishlist'
 
 
-class Checkouts(models.Model):
-    checkout_id = models.CharField(primary_key=True, max_length=90)
-    kart = models.ForeignKey('Users', models.DO_NOTHING)
-    delivery_status = models.CharField(max_length=90)
-    shipping_address_id = models.ForeignKey('UserAddress',on_delete=models.CASCADE)
-    expected_date = models.DateTimeField()
-    ordered_date = models.DateTimeField()
-    products_ordered = models.CharField(max_length=9000)
+# class Checkouts(models.Model):
+#     checkout_id = models.CharField(primary_key=True, max_length=90)
+#     kart = models.ForeignKey('Users', models.DO_NOTHING)
+#     delivery_status = models.CharField(max_length=90)
+#     shipping_address_id = models.ForeignKey('UserAddress',on_delete=models.CASCADE)
+#     expected_date = models.DateTimeField()
+#     ordered_date = models.DateTimeField()
+#     products_ordered = models.CharField(max_length=9000)
 
-    class Meta:
-        managed = True
-        db_table = 'checkouts'
+#     class Meta:
+#         managed = True
+#         db_table = 'checkouts'
 
 
 class DelliverablePincodes(models.Model):
@@ -94,6 +98,30 @@ class ProductImages(models.Model):
 #     ('C','Camera&Accessories'),
 # )
 
+class Logs(models.Model):
+    log_id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
+    user=models.ForeignKey('Users', on_delete=models.CASCADE)
+    desc=models.CharField(max_length=1000, null=True, blank=True)
+    date=models.DateTimeField(verbose_name="date created", auto_now_add=True)
+    amount=models.FloatField()
+    token=models.CharField(max_length=1000, null=True, blank=True)
+    class Meta:
+        managed = True
+        db_table = 'logs'
+
+class Code(models.Model):
+    number = models.CharField(max_length=6, blank=True)
+    user=models.ForeignKey('Users', on_delete=models.CASCADE)
+    def __str__(self):
+        return str(self.number)
+    def save(self, *args, **kwargs):
+        ans=""
+        for i in range(0,6):
+            r=random.randint(0,9)
+            ans=ans+str(r)
+        self.number=ans
+        super().save(*args, **kwargs)
+    
 class Products(models.Model):
     product_id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
     product_name = models.CharField(max_length=1000)
@@ -110,31 +138,16 @@ class Products(models.Model):
         managed = True
         db_table = 'products'
 
-class deactivatedProducts(models.Model):
-    product_id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-    product_name = models.CharField(max_length=1000)
-    details = models.CharField(max_length=4000, blank=True, null=True)
-    category = models.CharField(max_length=90)
-    price = models.FloatField()
-    stock = models.IntegerField()
-    seller = models.ForeignKey('Sellers', on_delete=models.CASCADE)
-    status = models.CharField(default='active',max_length=90)
-    date_created=models.DateTimeField(verbose_name="date created", auto_now_add=True)
 
 
-    class Meta:
-        managed = True
-        db_table = 'deactivatedproducts'
+# class Returns(models.Model):
+#     return_id = models.IntegerField(primary_key=True)
+#     user = models.ForeignKey('Users', models.DO_NOTHING)
+#     product = models.ForeignKey(Products, models.DO_NOTHING)
 
-
-class Returns(models.Model):
-    return_id = models.IntegerField(primary_key=True)
-    user = models.ForeignKey('Users', models.DO_NOTHING)
-    product = models.ForeignKey(Products, models.DO_NOTHING)
-
-    class Meta:
-        managed = True
-        db_table = 'returns'
+#     class Meta:
+#         managed = True
+#         db_table = 'returns'
 
 
 
@@ -153,7 +166,7 @@ class Sellers(models.Model):
     user = models.ForeignKey('Users', on_delete=models.CASCADE)
     pdf = models.FileField(upload_to=get_pdf, default=default_pdf)
     approval_status = models.BooleanField(default=False)
-    gst_number = models.CharField(unique=True, max_length=90)
+    gst_number = models.CharField(unique=True, max_length=15)
 
     def has_perm(self, perm, obj=None):
         return self.is_admin
@@ -211,10 +224,12 @@ class Users(AbstractBaseUser):
     wishlist_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     active = models.BooleanField(default=1)
     deleted = models.BooleanField(default=0)
+    is_m=models.BooleanField(default=False)
 
     objects = usermanager()
 
     USERNAME_FIELD='email'
+    EMAIL_FIELD = 'email'
     REQUIRED_FIELDS=['user_name', 'phone']
 
     def has_perm(self, perm, obj=None):

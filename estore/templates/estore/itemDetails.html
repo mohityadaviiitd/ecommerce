@@ -56,7 +56,12 @@
                             </button>
                         </form>
                     </div>
-                    <!-- <div class="product buyNow"><button id="buyNowBtn">Buy Now</button></div> -->
+                    <form action="{% url 'share' %}" method="POST" class="form">
+                        {% csrf_token %}
+                        <input type="hidden" name="link" value="{{currentUrl}}" />
+                        <div class="product buyNow"><button id="buyNowBtn">Share Product</button></div>
+                    </form>
+                    
                 </div>
             </div>
         </div>
