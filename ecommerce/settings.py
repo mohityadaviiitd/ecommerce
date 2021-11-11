@@ -83,22 +83,22 @@ WSGI_APPLICATION = 'ecommerce.wsgi.application'
 
 # Database
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-DATABASES= {
-    'default':{
-        'ENGINE':'django.db.backends.mysql',
-        'NAME':env('NAME'),
-        'USER':env('USER'),
-        'PASSWORD':env('PASSWORD'),
-        'HOST':'localhost',
-        'PORT':'3306',
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+# DATABASES= {
+#     'default':{
+#         'ENGINE':'django.db.backends.mysql',
+#         'NAME':env('NAME'),
+#         'USER':env('USER'),
+#         'PASSWORD':env('PASSWORD'),
+#         'HOST':'localhost',
+#         'PORT':'3306',
+#     }
+# }
 # AUTHENTICATION_BACKENDS={
 #     'django.contrib.auth.backends.ModelBackend',
 #     'allauth.account.auth_backends.AuthenticationBackend',
