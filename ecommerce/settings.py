@@ -17,7 +17,7 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = True
 
 
-ALLOWED_HOSTS = ['127.0.0.1', '192.168.2.248']
+ALLOWED_HOSTS = ['192.168.2.248']
 
 AUTH_USER_MODEL= "estore.Users"
 
@@ -55,7 +55,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_otp.middleware.OTPMiddleware',
+    
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
